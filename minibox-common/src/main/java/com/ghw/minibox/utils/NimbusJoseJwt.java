@@ -76,7 +76,7 @@ public class NimbusJoseJwt {
      *
      * @return PayloadDto对象
      */
-    public PayloadDto getPayloadDto() {
+    public PayloadDto getPayloadDto() throws Exception {
         Date now = new Date();
         Date exp = DateUtil.offsetSecond(now, 60 * 60);
         return PayloadDto.builder()

@@ -10,16 +10,9 @@
     <modules>
         <module>minibox-gateway</module>
         <module>minibox-common</module>
+        <module>minibox-producer</module>
     </modules>
 
-
-    <dependencies>
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-autoconfigure</artifactId>
-            <version>2.3.0.RELEASE</version>
-        </dependency>
-    </dependencies>
     <packaging>pom</packaging>
 
     <parent>
@@ -38,9 +31,15 @@
     <dependencyManagement>
         <dependencies>
             <!-- SpringBoot 2.3.0-->
+<!--            <dependency>-->
+<!--                <groupId>org.springframework.boot</groupId>-->
+<!--                <artifactId>spring-boot-starter</artifactId>-->
+<!--                <version>2.3.0.RELEASE</version>-->
+<!--            </dependency>-->
+            <!--Spring Boot 基础组件都在这里了-->
             <dependency>
                 <groupId>org.springframework.boot</groupId>
-                <artifactId>spring-boot-starter</artifactId>
+                <artifactId>spring-boot-starter-web</artifactId>
                 <version>2.3.0.RELEASE</version>
             </dependency>
             <!--Spring Cloud 相关依赖-->
@@ -65,12 +64,6 @@
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
-            <!--AOP切面工具包-->
-            <dependency>
-                <groupId>org.springframework.boot</groupId>
-                <artifactId>spring-boot-starter-aop</artifactId>
-                <version>2.2.0.RELEASE</version>
-            </dependency>
             <!--MyBatis分页插件starter-->
             <dependency>
                 <groupId>com.github.pagehelper</groupId>
@@ -83,7 +76,7 @@
                 <artifactId>druid-spring-boot-starter</artifactId>
                 <version>1.1.24</version>
             </dependency>
-            <!-- https://mvnrepository.com/artifact/cn.hutool/hutool-all -->
+            <!-- Hutool工具包 -->
             <dependency>
                 <groupId>cn.hutool</groupId>
                 <artifactId>hutool-all</artifactId>
@@ -144,6 +137,7 @@
                 <version>1.16.18</version>
                 <optional>true</optional>
             </dependency>
+            <!--自定义封装模块-->
             <dependency>
                 <groupId>com.ghw</groupId>
                 <artifactId>minibox-common</artifactId>

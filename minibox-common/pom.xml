@@ -12,6 +12,11 @@
     <artifactId>minibox-common</artifactId>
 
     <dependencies>
+        <!--Spring Boot 基础组件都在这里了-->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-web</artifactId>
+        </dependency>
         <!--简化对象封装工具-->
         <dependency>
             <groupId>org.projectlombok</groupId>
@@ -21,11 +26,6 @@
         <dependency>
             <groupId>com.nimbusds</groupId>
             <artifactId>nimbus-jose-jwt</artifactId>
-        </dependency>
-        <!--Springfox swagger官方Starter-->
-        <dependency>
-            <groupId>io.springfox</groupId>
-            <artifactId>springfox-boot-starter</artifactId>
         </dependency>
         <!--Hutool Java工具包-->
         <dependency>
