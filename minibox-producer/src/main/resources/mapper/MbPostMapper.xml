@@ -1,0 +1,150 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ghw.minibox.mapper.MbPostMapper">
+
+    <resultMap type="com.ghw.minibox.entity.MbPost" id="MbPostMap">
+        <result property="tid" column="tid" jdbcType="INTEGER"/>
+        <result property="uid" column="uid" jdbcType="INTEGER"/>
+        <result property="bid" column="bid" jdbcType="INTEGER"/>
+        <result property="title" column="title" jdbcType="VARCHAR"/>
+        <result property="content" column="content" jdbcType="VARCHAR"/>
+        <result property="postState" column="post_state" jdbcType="VARCHAR"/>
+        <result property="createDate" column="create_date" jdbcType="TIMESTAMP"/>
+        <result property="updateDate" column="update_date" jdbcType="TIMESTAMP"/>
+        <result property="state" column="state" jdbcType="INTEGER"/>
+    </resultMap>
+
+    <!--查询单个-->
+    <select id="queryById" resultMap="MbPostMap">
+        select tid,
+               uid,
+               bid,
+               title,
+               content,
+               post_state,
+               create_date,
+               update_date,
+               state
+        from mini_box.mb_post
+        where tid = #{tid}
+    </select>
+
+    <!--查询指定行数据-->
+    <select id="queryAllByLimit" resultMap="MbPostMap">
+        select tid,
+               uid,
+               bid,
+               title,
+               content,
+               post_state,
+               create_date,
+               update_date,
+               state
+        from mini_box.mb_post
+        limit #{offset}, #{limit}
+    </select>
+
+    <!--通过实体作为筛选条件查询-->
+    <select id="queryAll" resultMap="MbPostMap">
+        select
+        tid, uid, bid, title, content, post_state, create_date, update_date, state
+        from mini_box.mb_post
+        <where>
+            <if test="tid != null">
+                and tid = #{tid}
+            </if>
+            <if test="uid != null">
+                and uid = #{uid}
+            </if>
+            <if test="bid != null">
+                and bid = #{bid}
+            </if>
+            <if test="title != null and title != ''">
+                and title = #{title}
+            </if>
+            <if test="content != null and content != ''">
+                and content = #{content}
+            </if>
+            <if test="postState != null and postState != ''">
+                and post_state = #{postState}
+            </if>
+            <if test="createDate != null">
+                and create_date = #{createDate}
+            </if>
+            <if test="updateDate != null">
+                and update_date = #{updateDate}
+            </if>
+            <if test="state != null">
+                and state = #{state}
+            </if>
+        </where>
+    </select>
+
+    <!--新增所有列-->
+    <insert id="insert" keyProperty="tid" useGeneratedKeys="true">
+        insert into mini_box.mb_post(uid, bid, title, content, post_state, create_date, update_date, state)
+        values (#{uid}, #{bid}, #{title}, #{content}, #{postState}, #{createDate}, #{updateDate}, #{state})
+    </insert>
+
+    <insert id="insertBatch" keyProperty="tid" useGeneratedKeys="true">
+        insert into mini_box.mb_post(uid, bid, title, content, post_state, create_date, update_date, state)
+        values
+        <foreach collection="entities" item="entity" separator=",">
+            (#{entity.uid}, #{entity.bid}, #{entity.title}, #{entity.content}, #{entity.postState},
+            #{entity.createDate}, #{entity.updateDate}, #{entity.state})
+        </foreach>
+    </insert>
+
+    <insert id="insertOrUpdateBatch" keyProperty="tid" useGeneratedKeys="true">
+        insert into mini_box.mb_post(uid, bid, title, content, post_state, create_date, update_date, state)
+        values
+        <foreach collection="entities" item="entity" separator=",">
+            (#{entity.uid}, #{entity.bid}, #{entity.title}, #{entity.content}, #{entity.postState},
+            #{entity.createDate}, #{entity.updateDate}, #{entity.state})
+        </foreach>
+        on duplicate key update
+        uid = values(uid) , bid = values(bid) , title = values(title) , content = values(content) , post_state =
+        values(post_state) , create_date = values(create_date) , update_date = values(update_date) , state =
+        values(state)
+    </insert>
+
+    <!--通过主键修改数据-->
+    <update id="update">
+        update mini_box.mb_post
+        <set>
+            <if test="uid != null">
+                uid = #{uid},
+            </if>
+            <if test="bid != null">
+                bid = #{bid},
+            </if>
+            <if test="title != null and title != ''">
+                title = #{title},
+            </if>
+            <if test="content != null and content != ''">
+                content = #{content},
+            </if>
+            <if test="postState != null and postState != ''">
+                post_state = #{postState},
+            </if>
+            <if test="createDate != null">
+                create_date = #{createDate},
+            </if>
+            <if test="updateDate != null">
+                update_date = #{updateDate},
+            </if>
+            <if test="state != null">
+                state = #{state},
+            </if>
+        </set>
+        where tid = #{tid}
+    </update>
+
+    <!--通过主键删除-->
+    <delete id="deleteById">
+        delete
+        from mini_box.mb_post
+        where tid = #{tid}
+    </delete>
+
+</mapper>

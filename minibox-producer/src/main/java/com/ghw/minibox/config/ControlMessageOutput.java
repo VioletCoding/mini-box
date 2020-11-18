@@ -26,10 +26,15 @@ public class ControlMessageOutput implements ApplicationRunner {
     private String serverPort;
     @Value("${spring.cloud.nacos.discovery.server-addr}")
     private String nacosAddress;
-    @Value("${management.endpoint.web.exposure.include}")
-    private String managementEndpoint;
     @Value("${config.info}")
     private String configInfo;
+    @Value("${spring.datasource.druid.url}")
+    private String datasourceUrl;
+    @Value("${spring.datasource.druid.username}")
+    private String datasourceUsername;
+    @Value("${spring.datasource.druid.password}")
+    private String datasourcePassword;
+
 
     @Override
     public String toString() {
@@ -37,18 +42,21 @@ public class ControlMessageOutput implements ApplicationRunner {
                 "springApplicationName='" + springApplicationName + '\'' +
                 ", serverPort='" + serverPort + '\'' +
                 ", nacosAddress='" + nacosAddress + '\'' +
-                ", managementEndpoint='" + managementEndpoint + '\'' +
                 ", configInfo='" + configInfo + '\'' +
+                ", datasourceUrl='" + datasourceUrl + '\'' +
+                ", datasourceUsername='" + datasourceUsername + '\'' +
+                ", datasourcePassword='" + datasourcePassword + '\'' +
                 '}';
     }
 
     /**
-     * 打印启动信息
+     * Callback used to run the bean.
      *
-     * @param args 可以从main函数中取得该参数，在java -jar的时候可以传入参数
+     * @param args incoming application arguments
+     * @throws Exception on error
      */
     @Override
-    public void run(ApplicationArguments args) {
-        log.info("SpringCloud Gateway启动完成，配置信息为：{}", toString());
+    public void run(ApplicationArguments args) throws Exception {
+        log.info("MINIBOX-PRODUCER 启动完毕 配置信息如下：{}", toString());
     }
 }

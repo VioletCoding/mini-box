@@ -1,9 +1,9 @@
 package com.ghw.minibox.dto;
 
-import lombok.Data;
-import lombok.ToString;
+import lombok.*;
 import lombok.experimental.Accessors;
 
+import javax.validation.constraints.NotNull;
 import java.util.List;
 import java.util.Map;
 
@@ -19,6 +19,7 @@ public class ReturnDto<T> {
     /**
      * 响应码
      */
+    @NotNull(message = "请输入响应码")
     private int code;
     /**
      * 响应信息
@@ -38,5 +39,6 @@ public class ReturnDto<T> {
      * 多组数据，类型是list
      */
     private List<T> listData;
+
 
 }

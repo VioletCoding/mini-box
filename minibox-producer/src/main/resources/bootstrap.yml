@@ -1,0 +1,23 @@
+#端口号
+server:
+  port: 20002
+  #应用名
+spring:
+  application:
+    name: MINIBOX-PRODUCER
+    #激活的配置中心的配置文件
+  profiles:
+    active: DEV
+  cloud:
+    #nacos注册中心
+    nacos:
+      discovery:
+        namespace: 55fbbffc-f66a-4226-96a7-fb1c2245651d
+        group: MiniBox
+        server-addr: localhost:8848
+      #naocs配置中心
+      config:
+        file-extension: yaml
+        server-addr: localhost:8848
+        group: MINIBOX-PRODUCER-DEV
+        namespace: 55fbbffc-f66a-4226-96a7-fb1c2245651d
