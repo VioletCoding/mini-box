@@ -1,0 +1,24 @@
+server:
+  port: 20003
+
+spring:
+  application:
+    name: MINIBOX-SEARCH
+  profiles:
+    active: DEV
+
+  cloud:
+    nacos:
+      discovery:
+        namespace: 55fbbffc-f66a-4226-96a7-fb1c2245651d
+        group: MiniBox
+        server-addr: localhost:8848
+      config:
+        server-addr: localhost:8848
+        namespace: 55fbbffc-f66a-4226-96a7-fb1c2245651d
+        group: SEARCH-GROUP-DEV
+        file-extension: yaml
+
+  elasticsearch:
+    rest:
+      uris: localhost:9200

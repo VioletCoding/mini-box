@@ -9,9 +9,9 @@ import java.util.List;
  * (MbUser)表数据库访问层
  *
  * @author Violet
- * @since 2020-11-18 23:34:57
+ * @since 2020-11-19 12:20:21
  */
-public interface MbUserDao {
+public interface MbUserMapper {
 
     /**
      * 通过ID查询单条数据
@@ -20,15 +20,6 @@ public interface MbUserDao {
      * @return 实例对象
      */
     MbUser queryById(Long uid);
-
-    /**
-     * 查询指定行数据
-     *
-     * @param offset 查询起始位置
-     * @param limit  查询条数
-     * @return 对象列表
-     */
-    List<MbUser> queryAllByLimit(@Param("offset") int offset, @Param("limit") int limit);
 
 
     /**

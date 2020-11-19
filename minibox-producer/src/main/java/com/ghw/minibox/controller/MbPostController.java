@@ -12,7 +12,7 @@ import javax.annotation.Resource;
  * (MbPost)表控制层
  *
  * @author makejava
- * @since 2020-11-19 00:57:30
+ * @since 2020-11-19 12:20:17
  */
 @RestController
 @RequestMapping("mbPost")

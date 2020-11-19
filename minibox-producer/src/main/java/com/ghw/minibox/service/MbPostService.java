@@ -8,7 +8,7 @@ import java.util.List;
  * (MbPost)表服务接口
  *
  * @author Violet
- * @since 2020-11-19 00:57:29
+ * @since 2020-11-19 12:20:16
  */
 public interface MbPostService {
 

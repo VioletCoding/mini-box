@@ -12,7 +12,7 @@ import javax.annotation.Resource;
  * (MbPhoto)表控制层
  *
  * @author makejava
- * @since 2020-11-19 00:57:17
+ * @since 2020-11-19 12:20:15
  */
 @RestController
 @RequestMapping("mbPhoto")

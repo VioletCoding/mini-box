@@ -8,9 +8,18 @@ import java.util.List;
  * (MbUser)表服务接口
  *
  * @author Violet
- * @since 2020-11-18 23:34:57
+ * @since 2020-11-19 12:20:22
  */
 public interface MbUserService {
+
+    /**
+     * 注册
+     *
+     * @param user 实体
+     * @return 创建后的实体
+     */
+    boolean register(MbUser user);
+
 
     /**
      * 通过ID查询单条数据
@@ -21,13 +30,12 @@ public interface MbUserService {
     MbUser queryById(Long uid);
 
     /**
-     * 查询多条数据
+     * 通过实体作为筛选条件查询
      *
-     * @param offset 查询起始位置
-     * @param limit  查询条数
+     * @param mbUser 实例对象
      * @return 对象列表
      */
-    List<MbUser> queryAllByLimit(int offset, int limit);
+    List<MbUser> queryAll(MbUser mbUser);
 
     /**
      * 新增数据

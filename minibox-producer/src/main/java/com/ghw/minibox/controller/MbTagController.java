@@ -12,7 +12,7 @@ import javax.annotation.Resource;
  * (MbTag)表控制层
  *
  * @author makejava
- * @since 2020-11-19 00:57:59
+ * @since 2020-11-19 12:20:20
  */
 @RestController
 @RequestMapping("mbTag")

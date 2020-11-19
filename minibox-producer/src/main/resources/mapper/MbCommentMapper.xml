@@ -11,6 +11,8 @@
         <result property="uid" column="uid" jdbcType="INTEGER"/>
         <result property="gid" column="gid" jdbcType="INTEGER"/>
         <result property="score" column="score" jdbcType="NUMERIC"/>
+        <result property="createDate" column="create_date" jdbcType="TIMESTAMP"/>
+        <result property="updateDate" column="update_date" jdbcType="TIMESTAMP"/>
     </resultMap>
 
     <!--查询单个-->
@@ -22,8 +24,10 @@
                tid,
                uid,
                gid,
-               score
-        from mini_box.mb_comment
+               score,
+               create_date,
+               update_date
+        from minibox.mb_comment
         where cid = #{cid}
     </select>
 
@@ -36,16 +40,18 @@
                tid,
                uid,
                gid,
-               score
-        from mini_box.mb_comment
+               score,
+               create_date,
+               update_date
+        from minibox.mb_comment
         limit #{offset}, #{limit}
     </select>
 
     <!--通过实体作为筛选条件查询-->
     <select id="queryAll" resultMap="MbCommentMap">
         select
-        cid, state, content, type, tid, uid, gid, score
-        from mini_box.mb_comment
+        cid, state, content, type, tid, uid, gid, score, create_date, update_date
+        from minibox.mb_comment
         <where>
             <if test="cid != null">
                 and cid = #{cid}
@@ -71,39 +77,46 @@
             <if test="score != null">
                 and score = #{score}
             </if>
+            <if test="createDate != null">
+                and create_date = #{createDate}
+            </if>
+            <if test="updateDate != null">
+                and update_date = #{updateDate}
+            </if>
         </where>
     </select>
 
     <!--新增所有列-->
     <insert id="insert" keyProperty="cid" useGeneratedKeys="true">
-        insert into mini_box.mb_comment(state, content, type, tid, uid, gid, score)
-        values (#{state}, #{content}, #{type}, #{tid}, #{uid}, #{gid}, #{score})
+        insert into minibox.mb_comment(state, content, type, tid, uid, gid, score, create_date, update_date)
+        values (#{state}, #{content}, #{type}, #{tid}, #{uid}, #{gid}, #{score}, #{createDate}, #{updateDate})
     </insert>
 
     <insert id="insertBatch" keyProperty="cid" useGeneratedKeys="true">
-        insert into mini_box.mb_comment(state, content, type, tid, uid, gid, score)
+        insert into minibox.mb_comment(state, content, type, tid, uid, gid, score, create_date, update_date)
         values
         <foreach collection="entities" item="entity" separator=",">
             (#{entity.state}, #{entity.content}, #{entity.type}, #{entity.tid}, #{entity.uid}, #{entity.gid},
-            #{entity.score})
+            #{entity.score}, #{entity.createDate}, #{entity.updateDate})
         </foreach>
     </insert>
 
     <insert id="insertOrUpdateBatch" keyProperty="cid" useGeneratedKeys="true">
-        insert into mini_box.mb_comment(state, content, type, tid, uid, gid, score)
+        insert into minibox.mb_comment(state, content, type, tid, uid, gid, score, create_date, update_date)
         values
         <foreach collection="entities" item="entity" separator=",">
             (#{entity.state}, #{entity.content}, #{entity.type}, #{entity.tid}, #{entity.uid}, #{entity.gid},
-            #{entity.score})
+            #{entity.score}, #{entity.createDate}, #{entity.updateDate})
         </foreach>
         on duplicate key update
         state = values(state) , content = values(content) , type = values(type) , tid = values(tid) , uid = values(uid)
-        , gid = values(gid) , score = values(score)
+        , gid = values(gid) , score = values(score) , create_date = values(create_date) , update_date =
+        values(update_date)
     </insert>
 
     <!--通过主键修改数据-->
     <update id="update">
-        update mini_box.mb_comment
+        update minibox.mb_comment
         <set>
             <if test="state != null">
                 state = #{state},
@@ -126,6 +139,12 @@
             <if test="score != null">
                 score = #{score},
             </if>
+            <if test="createDate != null">
+                create_date = #{createDate},
+            </if>
+            <if test="updateDate != null">
+                update_date = #{updateDate},
+            </if>
         </set>
         where cid = #{cid}
     </update>
@@ -133,7 +152,7 @@
     <!--通过主键删除-->
     <delete id="deleteById">
         delete
-        from mini_box.mb_comment
+        from minibox.mb_comment
         where cid = #{cid}
     </delete>
 

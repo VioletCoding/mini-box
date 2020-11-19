@@ -1,12 +1,9 @@
 package com.ghw.minibox.entity;
 
-import com.ghw.minibox.validatedgroup.LoginGroup;
-import com.ghw.minibox.validatedgroup.RegisterGroup;
-import com.ghw.minibox.validatedgroup.SearchGroup;
-import com.ghw.minibox.validatedgroup.UpdateUserInfoGroup;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.ghw.minibox.validatedgroup.*;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
-import lombok.ToString;
 import lombok.experimental.Accessors;
 
 import javax.validation.constraints.Email;
@@ -19,39 +16,40 @@ import java.util.Date;
  * (MbUser)实体类
  *
  * @author Violet
- * @since 2020-11-18 23:34:56
+ * @since 2020-11-19 12:20:21
  */
 @Data
 @Accessors(chain = true)
-@ToString
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class MbUser implements Serializable {
-    private static final long serialVersionUID = 448352555695927206L;
+    private static final long serialVersionUID = -71315955846878471L;
     /**
      * 主键
      */
     @ApiModelProperty(notes = "主键")
-    @NotNull(message = "用户uid不能为空", groups = {SearchGroup.class})
+    @NotNull(message = "用户uid不能为空", groups = {IsUserLegal.class, SearchGroup.class, UpdateUserInfoGroup.class})
     private Long uid;
     /**
      * 昵称
      */
     @ApiModelProperty(notes = "昵称")
-    @NotNull(message = "用户昵称nickname不能为空", groups = {UpdateUserInfoGroup.class})
+    @NotNull(message = "用户nickname不能为空", groups = {UpdateUserInfoGroup.class})
+    @Size(max = 12)
     private String nickname;
     /**
      * 用户名，本系统是邮箱，需要程序校验
      */
-    @NotNull(message = "用户名username不能为空", groups = {LoginGroup.class, RegisterGroup.class})
-    @Email(message = "用户名必须是email格式")
-    @Size(min = 8, max = 100)
-    @ApiModelProperty(notes = "用户名")
+    @ApiModelProperty(notes = "用户名，本系统是邮箱，需要程序校验")
+    @NotNull(message = "用户username不能为空", groups = {LoginGroup.class, RegisterGroup.class})
+    @Email(message = "邮箱格式不正确")
+    @Size(max = 50)
     private String username;
     /**
      * 密码，MD5加密
      */
-    @NotNull(message = "密码password不能为空", groups = {LoginGroup.class, RegisterGroup.class})
+    @ApiModelProperty(notes = "密码，MD5加密")
+    @NotNull(message = "密码不能为空", groups = {LoginGroup.class, RegisterGroup.class})
     @Size(min = 8, max = 16)
-    @ApiModelProperty(notes = "密码")
     private String password;
     /**
      * 个人简介
@@ -72,7 +70,7 @@ public class MbUser implements Serializable {
     /**
      * 用户状态，枚举 默认是NORMAL（正常），INVALID（失效），BANNED（非法，被封禁）
      */
-    @ApiModelProperty(notes = "用户状态")
+    @ApiModelProperty(notes = "用户状态，枚举 默认是NORMAL（正常），INVALID（失效），BANNED（非法，被封禁）")
     private String userState;
     /**
      * 用户创建日期
@@ -82,17 +80,18 @@ public class MbUser implements Serializable {
     /**
      * 经验，每次升级需要10经验，升级后该字段值update为0
      */
-    @ApiModelProperty(notes = "经验")
+    @ApiModelProperty(notes = "经验，每次升级需要10经验，升级后该字段值update为0")
     private Integer exp;
     /**
      * 字段更新时间，修改该条记录则自动更新这个字段
      */
-    @ApiModelProperty(notes = "字段更新时间")
+    @ApiModelProperty(notes = "字段更新时间，修改该条记录则自动更新这个字段")
     private Date updateDate;
     /**
      * 状态，记录当前记录是否有效，0有效，1无效
      */
-    @ApiModelProperty(notes = "状态")
+    @ApiModelProperty(notes = "状态，记录当前记录是否有效，0有效，1无效")
     private Integer state;
+
 
 }

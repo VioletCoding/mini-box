@@ -1,8 +1,9 @@
 package com.ghw.minibox.service.impl;
 
-import com.ghw.minibox.mapper.MbUserDao;
 import com.ghw.minibox.entity.MbUser;
+import com.ghw.minibox.mapper.MbUserMapper;
 import com.ghw.minibox.service.MbUserService;
+import com.ghw.minibox.utils.DefaultUserInfoEnum;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -12,12 +13,26 @@ import java.util.List;
  * (MbUser)表服务实现类
  *
  * @author Violet
- * @since 2020-11-18 23:34:57
+ * @since 2020-11-19 12:20:22
  */
 @Service
 public class MbUserServiceImpl implements MbUserService {
     @Resource
-    private MbUserDao mbUserDao;
+    private MbUserMapper mbUserMapper;
+
+    /**
+     * 注册
+     *
+     * @param mbUser 实体
+     * @return 创建后的实体
+     */
+    @Override
+    public boolean register(MbUser mbUser) {
+        //默认用户名生成，MongoDB ID生成策略
+        mbUser.setNickname(DefaultUserInfoEnum.NICKNAME.getMessage());
+        int result = mbUserMapper.insert(mbUser);
+        return result > 0;
+    }
 
     /**
      * 通过ID查询单条数据
@@ -27,19 +42,18 @@ public class MbUserServiceImpl implements MbUserService {
      */
     @Override
     public MbUser queryById(Long uid) {
-        return this.mbUserDao.queryById(uid);
+        return this.mbUserMapper.queryById(uid);
     }
 
     /**
-     * 查询多条数据
+     * 通过实体作为筛选条件查询
      *
-     * @param offset 查询起始位置
-     * @param limit  查询条数
+     * @param mbUser 实例对象
      * @return 对象列表
      */
     @Override
-    public List<MbUser> queryAllByLimit(int offset, int limit) {
-        return this.mbUserDao.queryAllByLimit(offset, limit);
+    public List<MbUser> queryAll(MbUser mbUser) {
+        return null;
     }
 
     /**
@@ -50,7 +64,7 @@ public class MbUserServiceImpl implements MbUserService {
      */
     @Override
     public MbUser insert(MbUser mbUser) {
-        this.mbUserDao.insert(mbUser);
+        this.mbUserMapper.insert(mbUser);
         return mbUser;
     }
 
@@ -62,7 +76,7 @@ public class MbUserServiceImpl implements MbUserService {
      */
     @Override
     public MbUser update(MbUser mbUser) {
-        this.mbUserDao.update(mbUser);
+        this.mbUserMapper.update(mbUser);
         return this.queryById(mbUser.getUid());
     }
 
@@ -74,6 +88,6 @@ public class MbUserServiceImpl implements MbUserService {
      */
     @Override
     public boolean deleteById(Long uid) {
-        return this.mbUserDao.deleteById(uid) > 0;
+        return this.mbUserMapper.deleteById(uid) > 0;
     }
 }

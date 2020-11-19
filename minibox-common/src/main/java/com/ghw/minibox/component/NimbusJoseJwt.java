@@ -1,4 +1,4 @@
-package com.ghw.minibox.utils;
+package com.ghw.minibox.component;
 
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.date.DateUtil;

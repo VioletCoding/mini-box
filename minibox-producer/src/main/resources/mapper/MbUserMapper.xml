@@ -1,12 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.ghw.minibox.mapper.MbUserDao">
+<mapper namespace="com.ghw.minibox.mapper.MbUserMapper">
 
     <resultMap type="com.ghw.minibox.entity.MbUser" id="MbUserMap">
         <result property="uid" column="uid" jdbcType="INTEGER"/>
         <result property="nickname" column="nickname" jdbcType="VARCHAR"/>
         <result property="username" column="username" jdbcType="VARCHAR"/>
-        <result property="password" column="password" jdbcType="VARCHAR"/>
         <result property="description" column="description" jdbcType="VARCHAR"/>
         <result property="level" column="level" jdbcType="VARCHAR"/>
         <result property="walletBalance" column="wallet_balance" jdbcType="NUMERIC"/>
@@ -22,7 +21,6 @@
         select uid,
                nickname,
                username,
-               password,
                description,
                level,
                wallet_balance,
@@ -31,7 +29,7 @@
                exp,
                update_date,
                state
-        from mini_box.mb_user
+        from minibox.mb_user
         where uid = #{uid}
     </select>
 
@@ -40,7 +38,6 @@
         select uid,
                nickname,
                username,
-               password,
                description,
                level,
                wallet_balance,
@@ -49,7 +46,7 @@
                exp,
                update_date,
                state
-        from mini_box.mb_user
+        from minibox.mb_user
         limit #{offset}, #{limit}
     </select>
 
@@ -58,7 +55,7 @@
         select
         uid, nickname, username, password, description, level, wallet_balance, user_state, create_date, exp,
         update_date, state
-        from mini_box.mb_user
+        from minibox.mb_user
         <where>
             <if test="uid != null">
                 and uid = #{uid}
@@ -68,9 +65,6 @@
             </if>
             <if test="username != null and username != ''">
                 and username = #{username}
-            </if>
-            <if test="password != null and password != ''">
-                and password = #{password}
             </if>
             <if test="description != null and description != ''">
                 and description = #{description}
@@ -99,16 +93,14 @@
         </where>
     </select>
 
-    <!--新增所有列-->
+    <!--新增部分列，其余使用数据库默认值-->
     <insert id="insert" keyProperty="uid" useGeneratedKeys="true">
-        insert into mini_box.mb_user(nickname, username, password, description, level, wallet_balance, user_state,
-                                     create_date, exp, update_date, state)
-        values (#{nickname}, #{username}, #{password}, #{description}, #{level}, #{walletBalance}, #{userState},
-                #{createDate}, #{exp}, #{updateDate}, #{state})
+        insert into minibox.mb_user(nickname, username, password)
+        values (#{nickname}, #{username}, #{password})
     </insert>
 
     <insert id="insertBatch" keyProperty="uid" useGeneratedKeys="true">
-        insert into mini_box.mb_user(nickname, username, password, description, level, wallet_balance, user_state,
+        insert into minibox.mb_user(nickname, username, password, description, level, wallet_balance, user_state,
         create_date, exp, update_date, state)
         values
         <foreach collection="entities" item="entity" separator=",">
@@ -119,7 +111,7 @@
     </insert>
 
     <insert id="insertOrUpdateBatch" keyProperty="uid" useGeneratedKeys="true">
-        insert into mini_box.mb_user(nickname, username, password, description, level, wallet_balance, user_state,
+        insert into minibox.mb_user(nickname, username, password, description, level, wallet_balance, user_state,
         create_date, exp, update_date, state)
         values
         <foreach collection="entities" item="entity" separator=",">
@@ -136,40 +128,13 @@
 
     <!--通过主键修改数据-->
     <update id="update">
-        update mini_box.mb_user
+        update minibox.mb_user
         <set>
             <if test="nickname != null and nickname != ''">
                 nickname = #{nickname},
             </if>
-            <if test="username != null and username != ''">
-                username = #{username},
-            </if>
-            <if test="password != null and password != ''">
-                password = #{password},
-            </if>
             <if test="description != null and description != ''">
-                description = #{description},
-            </if>
-            <if test="level != null and level != ''">
-                level = #{level},
-            </if>
-            <if test="walletBalance != null">
-                wallet_balance = #{walletBalance},
-            </if>
-            <if test="userState != null and userState != ''">
-                user_state = #{userState},
-            </if>
-            <if test="createDate != null">
-                create_date = #{createDate},
-            </if>
-            <if test="exp != null">
-                exp = #{exp},
-            </if>
-            <if test="updateDate != null">
-                update_date = #{updateDate},
-            </if>
-            <if test="state != null">
-                state = #{state},
+                'description' = #{description},
             </if>
         </set>
         where uid = #{uid}
@@ -178,7 +143,7 @@
     <!--通过主键删除-->
     <delete id="deleteById">
         delete
-        from mini_box.mb_user
+        from minibox.mb_user
         where uid = #{uid}
     </delete>
 

@@ -11,6 +11,7 @@
         <module>minibox-gateway</module>
         <module>minibox-common</module>
         <module>minibox-producer</module>
+        <module>minibox-search</module>
     </modules>
 
     <packaging>pom</packaging>
@@ -30,7 +31,7 @@
 
     <dependencyManagement>
         <dependencies>
-            <!--自定义封装模块 包含了web模块的依赖-->
+            <!--自定义封装模块-->
             <dependency>
                 <groupId>com.ghw</groupId>
                 <artifactId>minibox-common</artifactId>

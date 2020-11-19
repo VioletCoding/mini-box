@@ -25,7 +25,7 @@
                create_date,
                update_date,
                state
-        from mini_box.mb_post
+        from minibox.mb_post
         where tid = #{tid}
     </select>
 
@@ -40,7 +40,7 @@
                create_date,
                update_date,
                state
-        from mini_box.mb_post
+        from minibox.mb_post
         limit #{offset}, #{limit}
     </select>
 
@@ -48,7 +48,7 @@
     <select id="queryAll" resultMap="MbPostMap">
         select
         tid, uid, bid, title, content, post_state, create_date, update_date, state
-        from mini_box.mb_post
+        from minibox.mb_post
         <where>
             <if test="tid != null">
                 and tid = #{tid}
@@ -82,12 +82,12 @@
 
     <!--新增所有列-->
     <insert id="insert" keyProperty="tid" useGeneratedKeys="true">
-        insert into mini_box.mb_post(uid, bid, title, content, post_state, create_date, update_date, state)
+        insert into minibox.mb_post(uid, bid, title, content, post_state, create_date, update_date, state)
         values (#{uid}, #{bid}, #{title}, #{content}, #{postState}, #{createDate}, #{updateDate}, #{state})
     </insert>
 
     <insert id="insertBatch" keyProperty="tid" useGeneratedKeys="true">
-        insert into mini_box.mb_post(uid, bid, title, content, post_state, create_date, update_date, state)
+        insert into minibox.mb_post(uid, bid, title, content, post_state, create_date, update_date, state)
         values
         <foreach collection="entities" item="entity" separator=",">
             (#{entity.uid}, #{entity.bid}, #{entity.title}, #{entity.content}, #{entity.postState},
@@ -96,7 +96,7 @@
     </insert>
 
     <insert id="insertOrUpdateBatch" keyProperty="tid" useGeneratedKeys="true">
-        insert into mini_box.mb_post(uid, bid, title, content, post_state, create_date, update_date, state)
+        insert into minibox.mb_post(uid, bid, title, content, post_state, create_date, update_date, state)
         values
         <foreach collection="entities" item="entity" separator=",">
             (#{entity.uid}, #{entity.bid}, #{entity.title}, #{entity.content}, #{entity.postState},
@@ -110,7 +110,7 @@
 
     <!--通过主键修改数据-->
     <update id="update">
-        update mini_box.mb_post
+        update minibox.mb_post
         <set>
             <if test="uid != null">
                 uid = #{uid},
@@ -143,7 +143,7 @@
     <!--通过主键删除-->
     <delete id="deleteById">
         delete
-        from mini_box.mb_post
+        from minibox.mb_post
         where tid = #{tid}
     </delete>
 

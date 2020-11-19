@@ -14,6 +14,8 @@
         <result property="developer" column="developer" jdbcType="VARCHAR"/>
         <result property="publisher" column="publisher" jdbcType="VARCHAR"/>
         <result property="scoreCount" column="score_count" jdbcType="INTEGER"/>
+        <result property="createDate" column="create_date" jdbcType="TIMESTAMP"/>
+        <result property="updateDate" column="update_date" jdbcType="TIMESTAMP"/>
     </resultMap>
 
     <!--查询单个-->
@@ -28,8 +30,10 @@
                release_time,
                developer,
                publisher,
-               score_count
-        from mini_box.mb_game
+               score_count,
+               create_date,
+               update_date
+        from minibox.mb_game
         where gid = #{gid}
     </select>
 
@@ -45,16 +49,19 @@
                release_time,
                developer,
                publisher,
-               score_count
-        from mini_box.mb_game
+               score_count,
+               create_date,
+               update_date
+        from minibox.mb_game
         limit #{offset}, #{limit}
     </select>
 
     <!--通过实体作为筛选条件查询-->
     <select id="queryAll" resultMap="MbGameMap">
         select
-        gid, name, price, state, game_state, score, description, release_time, developer, publisher, score_count
-        from mini_box.mb_game
+        gid, name, price, state, game_state, score, description, release_time, developer, publisher, score_count,
+        create_date, update_date
+        from minibox.mb_game
         <where>
             <if test="gid != null">
                 and gid = #{gid}
@@ -89,46 +96,53 @@
             <if test="scoreCount != null">
                 and score_count = #{scoreCount}
             </if>
+            <if test="createDate != null">
+                and create_date = #{createDate}
+            </if>
+            <if test="updateDate != null">
+                and update_date = #{updateDate}
+            </if>
         </where>
     </select>
 
     <!--新增所有列-->
     <insert id="insert" keyProperty="gid" useGeneratedKeys="true">
-        insert into mini_box.mb_game(name, price, state, game_state, score, description, release_time, developer,
-                                     publisher, score_count)
+        insert into minibox.mb_game(name, price, state, game_state, score, description, release_time, developer,
+                                    publisher, score_count, create_date, update_date)
         values (#{name}, #{price}, #{state}, #{gameState}, #{score}, #{description}, #{releaseTime}, #{developer},
-                #{publisher}, #{scoreCount})
+                #{publisher}, #{scoreCount}, #{createDate}, #{updateDate})
     </insert>
 
     <insert id="insertBatch" keyProperty="gid" useGeneratedKeys="true">
-        insert into mini_box.mb_game(name, price, state, game_state, score, description, release_time, developer,
-        publisher, score_count)
+        insert into minibox.mb_game(name, price, state, game_state, score, description, release_time, developer,
+        publisher, score_count, create_date, update_date)
         values
         <foreach collection="entities" item="entity" separator=",">
             (#{entity.name}, #{entity.price}, #{entity.state}, #{entity.gameState}, #{entity.score},
             #{entity.description}, #{entity.releaseTime}, #{entity.developer}, #{entity.publisher},
-            #{entity.scoreCount})
+            #{entity.scoreCount}, #{entity.createDate}, #{entity.updateDate})
         </foreach>
     </insert>
 
     <insert id="insertOrUpdateBatch" keyProperty="gid" useGeneratedKeys="true">
-        insert into mini_box.mb_game(name, price, state, game_state, score, description, release_time, developer,
-        publisher, score_count)
+        insert into minibox.mb_game(name, price, state, game_state, score, description, release_time, developer,
+        publisher, score_count, create_date, update_date)
         values
         <foreach collection="entities" item="entity" separator=",">
             (#{entity.name}, #{entity.price}, #{entity.state}, #{entity.gameState}, #{entity.score},
             #{entity.description}, #{entity.releaseTime}, #{entity.developer}, #{entity.publisher},
-            #{entity.scoreCount})
+            #{entity.scoreCount}, #{entity.createDate}, #{entity.updateDate})
         </foreach>
         on duplicate key update
         name = values(name) , price = values(price) , state = values(state) , game_state = values(game_state) , score =
         values(score) , description = values(description) , release_time = values(release_time) , developer =
-        values(developer) , publisher = values(publisher) , score_count = values(score_count)
+        values(developer) , publisher = values(publisher) , score_count = values(score_count) , create_date =
+        values(create_date) , update_date = values(update_date)
     </insert>
 
     <!--通过主键修改数据-->
     <update id="update">
-        update mini_box.mb_game
+        update minibox.mb_game
         <set>
             <if test="name != null and name != ''">
                 name = #{name},
@@ -160,6 +174,12 @@
             <if test="scoreCount != null">
                 score_count = #{scoreCount},
             </if>
+            <if test="createDate != null">
+                create_date = #{createDate},
+            </if>
+            <if test="updateDate != null">
+                update_date = #{updateDate},
+            </if>
         </set>
         where gid = #{gid}
     </update>
@@ -167,7 +187,7 @@
     <!--通过主键删除-->
     <delete id="deleteById">
         delete
-        from mini_box.mb_game
+        from minibox.mb_game
         where gid = #{gid}
     </delete>
 

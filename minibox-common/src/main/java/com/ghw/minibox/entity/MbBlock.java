@@ -2,22 +2,21 @@ package com.ghw.minibox.entity;
 
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
-import lombok.ToString;
 import lombok.experimental.Accessors;
 
 import java.io.Serializable;
+import java.util.Date;
 
 /**
  * (MbBlock)实体类
  *
  * @author Violet
- * @since 2020-11-19 00:57:02
+ * @since 2020-11-19 12:20:08
  */
 @Data
 @Accessors(chain = true)
-@ToString
 public class MbBlock implements Serializable {
-    private static final long serialVersionUID = -59303442220784839L;
+    private static final long serialVersionUID = 820635847901764243L;
     /**
      * 主键
      */
@@ -38,6 +37,16 @@ public class MbBlock implements Serializable {
      */
     @ApiModelProperty(notes = "记录状态，0有效，1无效")
     private Integer state;
+    /**
+     * 创建时间
+     */
+    @ApiModelProperty(notes = "创建时间")
+    private Date createTime;
+    /**
+     * 更新时间
+     */
+    @ApiModelProperty(notes = "更新时间")
+    private Date updateTime;
 
 
 }

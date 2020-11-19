@@ -9,7 +9,7 @@ import java.util.List;
  * (MbComment)表数据库访问层
  *
  * @author Violet
- * @since 2020-11-19 00:56:50
+ * @since 2020-11-19 12:20:10
  */
 public interface MbCommentMapper {
 

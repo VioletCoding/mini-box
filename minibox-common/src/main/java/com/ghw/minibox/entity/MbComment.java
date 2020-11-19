@@ -2,22 +2,21 @@ package com.ghw.minibox.entity;
 
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
-import lombok.ToString;
 import lombok.experimental.Accessors;
 
 import java.io.Serializable;
+import java.util.Date;
 
 /**
  * (MbComment)实体类
  *
  * @author Violet
- * @since 2020-11-19 00:56:50
+ * @since 2020-11-19 12:20:10
  */
 @Data
 @Accessors(chain = true)
-@ToString
 public class MbComment implements Serializable {
-    private static final long serialVersionUID = 570346955477839827L;
+    private static final long serialVersionUID = -88043199982765063L;
     /**
      * 主键
      */
@@ -58,6 +57,16 @@ public class MbComment implements Serializable {
      */
     @ApiModelProperty(notes = "用户对游戏的评分，如果type=GC，该字段必填")
     private Double score;
+    /**
+     * 创建时间
+     */
+    @ApiModelProperty(notes = "创建时间")
+    private Date createDate;
+    /**
+     * 更新时间
+     */
+    @ApiModelProperty(notes = "更新时间")
+    private Date updateDate;
 
 
 }

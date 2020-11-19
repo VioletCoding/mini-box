@@ -11,6 +11,8 @@
         <result property="cid" column="cid" jdbcType="INTEGER"/>
         <result property="gid" column="gid" jdbcType="INTEGER"/>
         <result property="state" column="state" jdbcType="INTEGER"/>
+        <result property="createDate" column="create_date" jdbcType="TIMESTAMP"/>
+        <result property="updateDate" column="update_date" jdbcType="TIMESTAMP"/>
     </resultMap>
 
     <!--查询单个-->
@@ -22,8 +24,10 @@
                tid,
                cid,
                gid,
-               state
-        from mini_box.mb_photo
+               state,
+               create_date,
+               update_date
+        from minibox.mb_photo
         where pid = #{pid}
     </select>
 
@@ -36,16 +40,18 @@
                tid,
                cid,
                gid,
-               state
-        from mini_box.mb_photo
+               state,
+               create_date,
+               update_date
+        from minibox.mb_photo
         limit #{offset}, #{limit}
     </select>
 
     <!--通过实体作为筛选条件查询-->
     <select id="queryAll" resultMap="MbPhotoMap">
         select
-        pid, type, link, uid, tid, cid, gid, state
-        from mini_box.mb_photo
+        pid, type, link, uid, tid, cid, gid, state, create_date, update_date
+        from minibox.mb_photo
         <where>
             <if test="pid != null">
                 and pid = #{pid}
@@ -71,39 +77,45 @@
             <if test="state != null">
                 and state = #{state}
             </if>
+            <if test="createDate != null">
+                and create_date = #{createDate}
+            </if>
+            <if test="updateDate != null">
+                and update_date = #{updateDate}
+            </if>
         </where>
     </select>
 
     <!--新增所有列-->
     <insert id="insert" keyProperty="pid" useGeneratedKeys="true">
-        insert into mini_box.mb_photo(type, link, uid, tid, cid, gid, state)
-        values (#{type}, #{link}, #{uid}, #{tid}, #{cid}, #{gid}, #{state})
+        insert into minibox.mb_photo(type, link, uid, tid, cid, gid, state, create_date, update_date)
+        values (#{type}, #{link}, #{uid}, #{tid}, #{cid}, #{gid}, #{state}, #{createDate}, #{updateDate})
     </insert>
 
     <insert id="insertBatch" keyProperty="pid" useGeneratedKeys="true">
-        insert into mini_box.mb_photo(type, link, uid, tid, cid, gid, state)
+        insert into minibox.mb_photo(type, link, uid, tid, cid, gid, state, create_date, update_date)
         values
         <foreach collection="entities" item="entity" separator=",">
             (#{entity.type}, #{entity.link}, #{entity.uid}, #{entity.tid}, #{entity.cid}, #{entity.gid},
-            #{entity.state})
+            #{entity.state}, #{entity.createDate}, #{entity.updateDate})
         </foreach>
     </insert>
 
     <insert id="insertOrUpdateBatch" keyProperty="pid" useGeneratedKeys="true">
-        insert into mini_box.mb_photo(type, link, uid, tid, cid, gid, state)
+        insert into minibox.mb_photo(type, link, uid, tid, cid, gid, state, create_date, update_date)
         values
         <foreach collection="entities" item="entity" separator=",">
             (#{entity.type}, #{entity.link}, #{entity.uid}, #{entity.tid}, #{entity.cid}, #{entity.gid},
-            #{entity.state})
+            #{entity.state}, #{entity.createDate}, #{entity.updateDate})
         </foreach>
         on duplicate key update
         type = values(type) , link = values(link) , uid = values(uid) , tid = values(tid) , cid = values(cid) , gid =
-        values(gid) , state = values(state)
+        values(gid) , state = values(state) , create_date = values(create_date) , update_date = values(update_date)
     </insert>
 
     <!--通过主键修改数据-->
     <update id="update">
-        update mini_box.mb_photo
+        update minibox.mb_photo
         <set>
             <if test="type != null and type != ''">
                 type = #{type},
@@ -126,6 +138,12 @@
             <if test="state != null">
                 state = #{state},
             </if>
+            <if test="createDate != null">
+                create_date = #{createDate},
+            </if>
+            <if test="updateDate != null">
+                update_date = #{updateDate},
+            </if>
         </set>
         where pid = #{pid}
     </update>
@@ -133,7 +151,7 @@
     <!--通过主键删除-->
     <delete id="deleteById">
         delete
-        from mini_box.mb_photo
+        from minibox.mb_photo
         where pid = #{pid}
     </delete>
 

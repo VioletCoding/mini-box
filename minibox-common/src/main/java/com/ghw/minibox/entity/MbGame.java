@@ -12,13 +12,12 @@ import java.util.Date;
  * (MbGame)实体类
  *
  * @author Violet
- * @since 2020-11-19 00:45:12
+ * @since 2020-11-19 12:20:11
  */
 @Data
 @Accessors(chain = true)
-@ToString
 public class MbGame implements Serializable {
-    private static final long serialVersionUID = 245277053309255228L;
+    private static final long serialVersionUID = -20810077618725182L;
     /**
      * 主键，自增，默认从10000开始自增，建表时候指定，唯一标识
      */
@@ -74,6 +73,16 @@ public class MbGame implements Serializable {
      */
     @ApiModelProperty(notes = "评分人数")
     private Integer scoreCount;
+    /**
+     * 创建时间
+     */
+    @ApiModelProperty(notes = "创建时间")
+    private Date createDate;
+    /**
+     * 更新时间
+     */
+    @ApiModelProperty(notes = "更新时间")
+    private Date updateDate;
 
 
 }

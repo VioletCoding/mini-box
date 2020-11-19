@@ -6,18 +6,18 @@ import lombok.ToString;
 import lombok.experimental.Accessors;
 
 import java.io.Serializable;
+import java.util.Date;
 
 /**
  * (MbPhoto)实体类
  *
  * @author Violet
- * @since 2020-11-19 00:57:16
+ * @since 2020-11-19 12:20:13
  */
 @Data
 @Accessors(chain = true)
-@ToString
 public class MbPhoto implements Serializable {
-    private static final long serialVersionUID = 311578569663694477L;
+    private static final long serialVersionUID = -65749688597497972L;
     /**
      * 主键
      */
@@ -58,6 +58,16 @@ public class MbPhoto implements Serializable {
      */
     @ApiModelProperty(notes = "状态，记录该条状态是否有效,0有效，1无效")
     private Integer state;
+    /**
+     * 创建时间
+     */
+    @ApiModelProperty(notes = "创建时间")
+    private Date createDate;
+    /**
+     * 更新时间
+     */
+    @ApiModelProperty(notes = "更新时间")
+    private Date updateDate;
 
 
 }

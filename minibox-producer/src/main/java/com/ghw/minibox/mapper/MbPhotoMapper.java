@@ -9,7 +9,7 @@ import java.util.List;
  * (MbPhoto)表数据库访问层
  *
  * @author Violet
- * @since 2020-11-19 00:57:16
+ * @since 2020-11-19 12:20:14
  */
 public interface MbPhotoMapper {
 

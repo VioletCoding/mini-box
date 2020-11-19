@@ -9,7 +9,7 @@ import java.util.List;
  * (MbGame)表数据库访问层
  *
  * @author Violet
- * @since 2020-11-19 00:45:12
+ * @since 2020-11-19 12:20:12
  */
 public interface MbGameMapper {
 

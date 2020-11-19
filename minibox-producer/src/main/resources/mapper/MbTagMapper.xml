@@ -6,14 +6,20 @@
         <result property="tid" column="tid" jdbcType="INTEGER"/>
         <result property="tagName" column="tag_name" jdbcType="VARCHAR"/>
         <result property="gid" column="gid" jdbcType="INTEGER"/>
+        <result property="state" column="state" jdbcType="INTEGER"/>
+        <result property="createDate" column="create_date" jdbcType="TIMESTAMP"/>
+        <result property="updateDate" column="update_date" jdbcType="TIMESTAMP"/>
     </resultMap>
 
     <!--查询单个-->
     <select id="queryById" resultMap="MbTagMap">
         select tid,
                tag_name,
-               gid
-        from mini_box.mb_tag
+               gid,
+               state,
+               create_date,
+               update_date
+        from minibox.mb_tag
         where tid = #{tid}
     </select>
 
@@ -21,16 +27,19 @@
     <select id="queryAllByLimit" resultMap="MbTagMap">
         select tid,
                tag_name,
-               gid
-        from mini_box.mb_tag
+               gid,
+               state,
+               create_date,
+               update_date
+        from minibox.mb_tag
         limit #{offset}, #{limit}
     </select>
 
     <!--通过实体作为筛选条件查询-->
     <select id="queryAll" resultMap="MbTagMap">
         select
-        tid, tag_name, gid
-        from mini_box.mb_tag
+        tid, tag_name, gid, state, create_date, update_date
+        from minibox.mb_tag
         <where>
             <if test="tid != null">
                 and tid = #{tid}
@@ -41,42 +50,61 @@
             <if test="gid != null">
                 and gid = #{gid}
             </if>
+            <if test="state != null">
+                and state = #{state}
+            </if>
+            <if test="createDate != null">
+                and create_date = #{createDate}
+            </if>
+            <if test="updateDate != null">
+                and update_date = #{updateDate}
+            </if>
         </where>
     </select>
 
     <!--新增所有列-->
     <insert id="insert" keyProperty="tid" useGeneratedKeys="true">
-        insert into mini_box.mb_tag(tag_name, gid)
-        values (#{tagName}, #{gid})
+        insert into minibox.mb_tag(tag_name, gid, state, create_date, update_date)
+        values (#{tagName}, #{gid}, #{state}, #{createDate}, #{updateDate})
     </insert>
 
     <insert id="insertBatch" keyProperty="tid" useGeneratedKeys="true">
-        insert into mini_box.mb_tag(tag_name, gid)
+        insert into minibox.mb_tag(tag_name, gid, state, create_date, update_date)
         values
         <foreach collection="entities" item="entity" separator=",">
-            (#{entity.tagName}, #{entity.gid})
+            (#{entity.tagName}, #{entity.gid}, #{entity.state}, #{entity.createDate}, #{entity.updateDate})
         </foreach>
     </insert>
 
     <insert id="insertOrUpdateBatch" keyProperty="tid" useGeneratedKeys="true">
-        insert into mini_box.mb_tag(tag_name, gid)
+        insert into minibox.mb_tag(tag_name, gid, state, create_date, update_date)
         values
         <foreach collection="entities" item="entity" separator=",">
-            (#{entity.tagName}, #{entity.gid})
+            (#{entity.tagName}, #{entity.gid}, #{entity.state}, #{entity.createDate}, #{entity.updateDate})
         </foreach>
         on duplicate key update
-        tag_name = values(tag_name) , gid = values(gid)
+        tag_name = values(tag_name) , gid = values(gid) , state = values(state) , create_date = values(create_date) ,
+        update_date = values(update_date)
     </insert>
 
     <!--通过主键修改数据-->
     <update id="update">
-        update mini_box.mb_tag
+        update minibox.mb_tag
         <set>
             <if test="tagName != null and tagName != ''">
                 tag_name = #{tagName},
             </if>
             <if test="gid != null">
                 gid = #{gid},
+            </if>
+            <if test="state != null">
+                state = #{state},
+            </if>
+            <if test="createDate != null">
+                create_date = #{createDate},
+            </if>
+            <if test="updateDate != null">
+                update_date = #{updateDate},
             </if>
         </set>
         where tid = #{tid}
@@ -85,7 +113,7 @@
     <!--通过主键删除-->
     <delete id="deleteById">
         delete
-        from mini_box.mb_tag
+        from minibox.mb_tag
         where tid = #{tid}
     </delete>
 

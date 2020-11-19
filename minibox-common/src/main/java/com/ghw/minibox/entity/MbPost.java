@@ -12,13 +12,12 @@ import java.util.Date;
  * (MbPost)实体类
  *
  * @author Violet
- * @since 2020-11-19 00:57:29
+ * @since 2020-11-19 12:20:16
  */
 @Data
 @Accessors(chain = true)
-@ToString
 public class MbPost implements Serializable {
-    private static final long serialVersionUID = 336793546031618309L;
+    private static final long serialVersionUID = -34132088850314000L;
     /**
      * 主键
      */
@@ -50,14 +49,14 @@ public class MbPost implements Serializable {
     @ApiModelProperty(notes = "帖子状态，10A有效，10B已删除")
     private String postState;
     /**
-     * 帖子发布日期
+     * 创建时间
      */
-    @ApiModelProperty(notes = "帖子发布日期")
+    @ApiModelProperty(notes = "创建时间")
     private Date createDate;
     /**
-     * 帖子修改日期
+     * 更新时间
      */
-    @ApiModelProperty(notes = "帖子修改日期")
+    @ApiModelProperty(notes = "更新时间")
     private Date updateDate;
     /**
      * 状态，记录该条状态是否有效,0有效，1无效

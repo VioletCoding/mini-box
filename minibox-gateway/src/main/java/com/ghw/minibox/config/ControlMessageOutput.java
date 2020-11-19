@@ -26,8 +26,6 @@ public class ControlMessageOutput implements ApplicationRunner {
     private String serverPort;
     @Value("${spring.cloud.nacos.discovery.server-addr}")
     private String nacosAddress;
-    @Value("${management.endpoint.web.exposure.include}")
-    private String managementEndpoint;
     @Value("${config.info}")
     private String configInfo;
 
@@ -37,7 +35,6 @@ public class ControlMessageOutput implements ApplicationRunner {
                 "springApplicationName='" + springApplicationName + '\'' +
                 ", serverPort='" + serverPort + '\'' +
                 ", nacosAddress='" + nacosAddress + '\'' +
-                ", managementEndpoint='" + managementEndpoint + '\'' +
                 ", configInfo='" + configInfo + '\'' +
                 '}';
     }

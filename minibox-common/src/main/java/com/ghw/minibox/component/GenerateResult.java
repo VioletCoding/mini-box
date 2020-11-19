@@ -1,7 +1,7 @@
-package com.ghw.minibox.utils;
+package com.ghw.minibox.component;
 
 import com.ghw.minibox.dto.ReturnDto;
-import org.springframework.http.HttpStatus;
+import com.ghw.minibox.utils.ResultCode;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
@@ -26,8 +26,8 @@ public class GenerateResult<T> {
      */
     public ReturnDto<T> success() {
         return returnDto
-                .setCode(HttpStatus.OK.value())
-                .setMessage(HttpStatus.OK.getReasonPhrase());
+                .setCode(ResultCode.OK.getCode())
+                .setMessage(ResultCode.OK.getMessage());
     }
 
     /**
@@ -38,8 +38,8 @@ public class GenerateResult<T> {
      */
     public ReturnDto<T> success(T data) {
         return returnDto
-                .setCode(HttpStatus.OK.value())
-                .setMessage(HttpStatus.OK.getReasonPhrase())
+                .setCode(ResultCode.OK.getCode())
+                .setMessage(ResultCode.OK.getMessage())
                 .setData(data);
     }
 
@@ -51,8 +51,8 @@ public class GenerateResult<T> {
      */
     public ReturnDto<T> success(Map<String, T> data) {
         return returnDto
-                .setCode(HttpStatus.OK.value())
-                .setMessage(HttpStatus.OK.getReasonPhrase())
+                .setCode(ResultCode.OK.getCode())
+                .setMessage(ResultCode.OK.getMessage())
                 .setMapData(data);
     }
 
@@ -64,8 +64,8 @@ public class GenerateResult<T> {
      */
     public ReturnDto<T> success(List<T> data) {
         return returnDto
-                .setCode(HttpStatus.OK.value())
-                .setMessage(HttpStatus.OK.getReasonPhrase())
+                .setCode(ResultCode.OK.getCode())
+                .setMessage(ResultCode.OK.getMessage())
                 .setListData(data);
     }
 
@@ -76,8 +76,8 @@ public class GenerateResult<T> {
      */
     public ReturnDto<T> fail() {
         return returnDto
-                .setCode(HttpStatus.BAD_REQUEST.value())
-                .setMessage(HttpStatus.BAD_REQUEST.getReasonPhrase());
+                .setCode(ResultCode.BAD_REQUEST.getCode())
+                .setMessage(ResultCode.BAD_REQUEST.getMessage());
     }
 
     /**

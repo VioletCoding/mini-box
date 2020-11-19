@@ -12,7 +12,20 @@
     <artifactId>minibox-producer</artifactId>
 
     <dependencies>
-        <!--自定义封装模块，包含了web模块的依赖-->
+        <!--Spring Boot 基础组件都在这里了-->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-web</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.hibernate.validator</groupId>
+            <artifactId>hibernate-validator</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.hibernate.validator</groupId>
+            <artifactId>hibernate-validator-annotation-processor</artifactId>
+        </dependency>
+        <!--自定义封装模块-->
         <dependency>
             <groupId>com.ghw</groupId>
             <artifactId>minibox-common</artifactId>
@@ -80,6 +93,12 @@
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
+            <optional>true</optional>
+        </dependency>
+        <!--热部署-->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-devtools</artifactId>
             <optional>true</optional>
         </dependency>
 

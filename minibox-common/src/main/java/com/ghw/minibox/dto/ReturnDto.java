@@ -1,5 +1,6 @@
 package com.ghw.minibox.dto;
 
+import com.ghw.minibox.utils.ResultCode;
 import lombok.*;
 import lombok.experimental.Accessors;
 
@@ -14,7 +15,6 @@ import java.util.Map;
  */
 @Data
 @Accessors(chain = true)
-@ToString
 public class ReturnDto<T> {
     /**
      * 响应码
@@ -39,6 +39,11 @@ public class ReturnDto<T> {
      * 多组数据，类型是list
      */
     private List<T> listData;
+
+    /**
+     * 简单返回，直接取对应的枚举，没必要每次都setCode、setMessage、但不适用于带数据的返回
+     */
+    private ResultCode simple;
 
 
 }
