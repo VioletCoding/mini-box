@@ -11,7 +11,7 @@
  Target Server Version : 80018
  File Encoding         : 65001
 
- Date: 19/11/2020 12:18:18
+ Date: 19/11/2020 16:26:20
 */
 
 SET NAMES utf8mb4;
@@ -27,7 +27,7 @@ CREATE TABLE `mb_block`  (
   `gid` bigint(11) NOT NULL COMMENT '关联的游戏id',
   `state` int(1) NOT NULL DEFAULT 0 COMMENT '记录状态，0有效，1无效',
   `create_time` datetime(0) NOT NULL DEFAULT CURRENT_TIMESTAMP(0) COMMENT '创建时间',
-  `update_time` datetime(0) NOT NULL ON UPDATE CURRENT_TIMESTAMP(0) COMMENT '更新时间',
+  `update_time` datetime(0) NOT NULL DEFAULT CURRENT_TIMESTAMP(0) ON UPDATE CURRENT_TIMESTAMP(0) COMMENT '更新时间',
   PRIMARY KEY (`bid`) USING BTREE
 ) ENGINE = InnoDB AUTO_INCREMENT = 10000 CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;
 
@@ -45,7 +45,7 @@ CREATE TABLE `mb_comment`  (
   `gid` bigint(11) NULL DEFAULT NULL COMMENT '帖子ID，如果type=GC，该字段必填',
   `score` decimal(18, 2) NULL DEFAULT NULL COMMENT '用户对游戏的评分，如果type=GC，该字段必填',
   `create_date` datetime(0) NOT NULL DEFAULT CURRENT_TIMESTAMP(0) COMMENT '创建时间',
-  `update_date` datetime(0) NOT NULL ON UPDATE CURRENT_TIMESTAMP(0) COMMENT '更新时间',
+  `update_date` datetime(0) NOT NULL DEFAULT CURRENT_TIMESTAMP(0) ON UPDATE CURRENT_TIMESTAMP(0) COMMENT '更新时间',
   PRIMARY KEY (`cid`) USING BTREE
 ) ENGINE = InnoDB AUTO_INCREMENT = 10000 CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;
 
@@ -66,7 +66,7 @@ CREATE TABLE `mb_game`  (
   `publisher` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL COMMENT '发行商',
   `score_count` int(11) NOT NULL DEFAULT 0 COMMENT '评分人数',
   `create_date` datetime(0) NOT NULL DEFAULT CURRENT_TIMESTAMP(0) COMMENT '创建时间',
-  `update_date` datetime(0) NOT NULL ON UPDATE CURRENT_TIMESTAMP(0) COMMENT '更新时间',
+  `update_date` datetime(0) NOT NULL DEFAULT CURRENT_TIMESTAMP(0) ON UPDATE CURRENT_TIMESTAMP(0) COMMENT '更新时间',
   PRIMARY KEY (`gid`) USING BTREE
 ) ENGINE = InnoDB AUTO_INCREMENT = 10000 CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;
 
@@ -84,7 +84,7 @@ CREATE TABLE `mb_photo`  (
   `gid` bigint(11) NULL DEFAULT NULL COMMENT '如果type=GP，该字段必填',
   `state` int(1) NOT NULL DEFAULT 0 COMMENT '状态，记录该条状态是否有效,0有效，1无效',
   `create_date` datetime(0) NOT NULL DEFAULT CURRENT_TIMESTAMP(0) COMMENT '创建时间',
-  `update_date` datetime(0) NOT NULL ON UPDATE CURRENT_TIMESTAMP(0) COMMENT '更新时间',
+  `update_date` datetime(0) NOT NULL DEFAULT CURRENT_TIMESTAMP(0) ON UPDATE CURRENT_TIMESTAMP(0) COMMENT '更新时间',
   PRIMARY KEY (`pid`) USING BTREE
 ) ENGINE = InnoDB AUTO_INCREMENT = 10000 CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;
 
@@ -100,7 +100,7 @@ CREATE TABLE `mb_post`  (
   `content` varchar(4000) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL COMMENT '帖子内容',
   `post_state` varchar(10) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL DEFAULT '10A' COMMENT '帖子状态，10A有效，10B已删除',
   `create_date` datetime(0) NOT NULL DEFAULT CURRENT_TIMESTAMP(0) COMMENT '创建时间',
-  `update_date` datetime(0) NOT NULL ON UPDATE CURRENT_TIMESTAMP(0) COMMENT '更新时间',
+  `update_date` datetime(0) NOT NULL DEFAULT CURRENT_TIMESTAMP(0) ON UPDATE CURRENT_TIMESTAMP(0) COMMENT '更新时间',
   `state` int(1) NOT NULL DEFAULT 0 COMMENT '状态，记录该条状态是否有效,0有效，1无效',
   PRIMARY KEY (`tid`) USING BTREE
 ) ENGINE = InnoDB AUTO_INCREMENT = 10000 CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;
@@ -114,7 +114,7 @@ CREATE TABLE `mb_role`  (
   `name` varchar(10) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL DEFAULT 'USER' COMMENT '角色名称，枚举值USER | ADMIN',
   `state` int(1) NOT NULL DEFAULT 0 COMMENT '状态，记录当前记录是否有效，0有效，1无效',
   `create_date` datetime(0) NOT NULL DEFAULT CURRENT_TIMESTAMP(0) COMMENT '创建时间',
-  `update_date` datetime(0) NOT NULL ON UPDATE CURRENT_TIMESTAMP(0) COMMENT '更新时间',
+  `update_date` datetime(0) NOT NULL DEFAULT CURRENT_TIMESTAMP(0) ON UPDATE CURRENT_TIMESTAMP(0) COMMENT '更新时间',
   PRIMARY KEY (`rid`) USING BTREE
 ) ENGINE = InnoDB AUTO_INCREMENT = 10000 CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;
 
@@ -128,7 +128,7 @@ CREATE TABLE `mb_tag`  (
   `gid` bigint(11) NOT NULL COMMENT '关联的游戏ID',
   `state` int(1) NOT NULL DEFAULT 0 COMMENT '状态，记录当前记录是否有效，0有效，1无效',
   `create_date` datetime(0) NOT NULL DEFAULT CURRENT_TIMESTAMP(0) COMMENT '创建时间',
-  `update_date` datetime(0) NOT NULL ON UPDATE CURRENT_TIMESTAMP(0) COMMENT '更新时间',
+  `update_date` datetime(0) NOT NULL DEFAULT CURRENT_TIMESTAMP(0) ON UPDATE CURRENT_TIMESTAMP(0) COMMENT '更新时间',
   PRIMARY KEY (`tid`) USING BTREE
 ) ENGINE = InnoDB AUTO_INCREMENT = 10000 CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;
 
@@ -141,16 +141,21 @@ CREATE TABLE `mb_user`  (
   `nickname` varchar(30) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL COMMENT '昵称',
   `username` varchar(100) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL COMMENT '用户名，本系统是邮箱，需要程序校验',
   `password` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL COMMENT '密码，MD5加密',
-  `description` varchar(41) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '个人简介',
+  `description` varchar(41) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL DEFAULT '这个人很懒，什么也没写' COMMENT '个人简介',
   `level` varchar(10) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL DEFAULT 'LV1' COMMENT '个人等级',
   `wallet_balance` decimal(18, 2) NOT NULL DEFAULT 0.00 COMMENT '钱包余额',
   `user_state` varchar(10) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL DEFAULT 'NORMAL' COMMENT '用户状态，枚举 默认是NORMAL（正常），INVALID（失效），BANNED（非法，被封禁）',
   `create_date` datetime(0) NOT NULL DEFAULT CURRENT_TIMESTAMP(0) COMMENT '用户创建日期',
   `exp` int(2) NOT NULL DEFAULT 0 COMMENT '经验，每次升级需要10经验，升级后该字段值update为0',
-  `update_date` datetime(0) NOT NULL ON UPDATE CURRENT_TIMESTAMP(0) COMMENT '字段更新时间，修改该条记录则自动更新这个字段',
+  `update_date` datetime(0) NOT NULL DEFAULT CURRENT_TIMESTAMP(0) ON UPDATE CURRENT_TIMESTAMP(0) COMMENT '字段更新时间，修改该条记录则自动更新这个字段',
   `state` int(1) NOT NULL DEFAULT 0 COMMENT '状态，记录当前记录是否有效，0有效，1无效',
   PRIMARY KEY (`uid`) USING BTREE
 ) ENGINE = InnoDB AUTO_INCREMENT = 10000 CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;
+
+-- ----------------------------
+-- Records of mb_user
+-- ----------------------------
+INSERT INTO `mb_user` VALUES (10000, '用户_5fb60fbcecd8a97de7b3a3d1', '1054197367@qq.com', '123456789', '这个人很懒，什么也没写', 'LV1', 0.00, 'NORMAL', '2020-11-19 14:25:01', 0, '2020-11-19 14:25:01', 0);
 
 -- ----------------------------
 -- Table structure for mb_user_game
@@ -162,7 +167,7 @@ CREATE TABLE `mb_user_game`  (
   `uid` bigint(11) NOT NULL COMMENT '用户ID',
   `state` int(1) NOT NULL DEFAULT 0 COMMENT '状态，记录当前记录是否有效，0有效，1无效',
   `create_date` datetime(0) NOT NULL DEFAULT CURRENT_TIMESTAMP(0) COMMENT '创建时间',
-  `update_date` datetime(0) NOT NULL ON UPDATE CURRENT_TIMESTAMP(0) COMMENT '更新时间',
+  `update_date` datetime(0) NOT NULL DEFAULT CURRENT_TIMESTAMP(0) ON UPDATE CURRENT_TIMESTAMP(0) COMMENT '更新时间',
   PRIMARY KEY (`id`) USING BTREE
 ) ENGINE = InnoDB AUTO_INCREMENT = 10000 CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;
 
@@ -176,7 +181,7 @@ CREATE TABLE `mb_user_role`  (
   `rid` bigint(11) NOT NULL COMMENT '关联的角色ID',
   `state` int(1) NOT NULL DEFAULT 0 COMMENT '状态，记录当前记录是否有效，0有效，1无效',
   `create_date` datetime(0) NOT NULL DEFAULT CURRENT_TIMESTAMP(0) COMMENT '创建时间',
-  `update_date` datetime(0) NOT NULL ON UPDATE CURRENT_TIMESTAMP(0) COMMENT '更新时间',
+  `update_date` datetime(0) NOT NULL DEFAULT CURRENT_TIMESTAMP(0) ON UPDATE CURRENT_TIMESTAMP(0) COMMENT '更新时间',
   PRIMARY KEY (`id`) USING BTREE
 ) ENGINE = InnoDB AUTO_INCREMENT = 10000 CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;
 
