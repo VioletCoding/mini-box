@@ -1,6 +1,7 @@
 package com.ghw.minibox.service;
 
 import com.ghw.minibox.entity.MbUser;
+import org.apache.commons.mail.EmailException;
 
 import java.util.List;
 
@@ -12,13 +13,46 @@ import java.util.List;
  */
 public interface MbUserService {
 
+
     /**
-     * 注册
+     * 通过username来搜索
      *
-     * @param user 实体
-     * @return 创建后的实体
+     * @param username 邮箱
+     * @return 实体
      */
-    boolean register(MbUser user);
+    Boolean queryByUsername(String username);
+
+    /**
+     * 注册之前的操作
+     *
+     * @param username 用户名
+     */
+    void sendEmail(String username) throws EmailException;
+
+    /**
+     * 校验验证码是否正确
+     *
+     * @param key   用户名
+     * @param value key对应的值
+     * @return true or false
+     */
+    boolean authRegCode(String key, String value);
+
+    /**
+     * 验证过后调用此方法进行注册
+     *
+     * @param mbUser 实体
+     * @return true or false
+     */
+    boolean register(MbUser mbUser);
+
+    /**
+     * 登陆
+     *
+     * @param user 用户实体
+     * @return true or false
+     */
+    boolean login(MbUser user);
 
 
     /**

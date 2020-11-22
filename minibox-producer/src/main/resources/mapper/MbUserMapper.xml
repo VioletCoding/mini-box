@@ -33,6 +33,13 @@
         where uid = #{uid}
     </select>
 
+    <!--查询单个通过username-->
+    <select id="queryByUsername" resultMap="MbUserMap">
+        select username
+        from minibox.mb_user
+        where username = #{username}
+    </select>
+
     <!--查询指定行数据-->
     <select id="queryAllByLimit" resultMap="MbUserMap">
         select uid,
@@ -53,7 +60,7 @@
     <!--通过实体作为筛选条件查询-->
     <select id="queryAll" resultMap="MbUserMap">
         select
-        uid, nickname, username, password, description, level, wallet_balance, user_state, create_date, exp,
+        uid, nickname, username, description, level, wallet_balance, user_state, create_date, exp,
         update_date, state
         from minibox.mb_user
         <where>

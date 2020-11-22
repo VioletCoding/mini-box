@@ -1,7 +1,8 @@
 package com.ghw.minibox.dto;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.ghw.minibox.utils.ResultCode;
-import lombok.*;
+import lombok.Data;
 import lombok.experimental.Accessors;
 
 import javax.validation.constraints.NotNull;
@@ -15,12 +16,13 @@ import java.util.Map;
  */
 @Data
 @Accessors(chain = true)
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class ReturnDto<T> {
     /**
      * 响应码
      */
     @NotNull(message = "请输入响应码")
-    private int code;
+    private Integer code;
     /**
      * 响应信息
      */

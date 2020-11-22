@@ -14,6 +14,14 @@ import java.util.List;
 public interface MbUserMapper {
 
     /**
+     * 通过username来搜索
+     *
+     * @param username 邮箱
+     * @return 实体
+     */
+    MbUser queryByUsername(String username);
+
+    /**
      * 通过ID查询单条数据
      *
      * @param uid 主键

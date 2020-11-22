@@ -28,29 +28,33 @@ public class MbUser implements Serializable {
      * 主键
      */
     @ApiModelProperty(notes = "主键")
-    @NotNull(message = "用户uid不能为空", groups = {IsUserLegal.class, SearchGroup.class, UpdateUserInfoGroup.class})
+    @NotNull(message = "用户uid不能为空", groups = {IsUserLegal.class, UpdateUserInfoGroup.class})
     private Long uid;
+
+    @ApiModelProperty(notes = "验证码")
+    @NotNull(message = "验证码不能为空", groups = RegisterGroup.class)
+    private String code;
     /**
      * 昵称
      */
     @ApiModelProperty(notes = "昵称")
     @NotNull(message = "用户nickname不能为空", groups = {UpdateUserInfoGroup.class})
-    @Size(max = 12)
+    @Size(max = 12, groups = {UpdateUserInfoGroup.class})
     private String nickname;
     /**
      * 用户名，本系统是邮箱，需要程序校验
      */
     @ApiModelProperty(notes = "用户名，本系统是邮箱，需要程序校验")
-    @NotNull(message = "用户username不能为空", groups = {LoginGroup.class, RegisterGroup.class})
-    @Email(message = "邮箱格式不正确")
-    @Size(max = 50)
+    @Email(message = "邮箱格式不正确", groups = {LoginGroup.class, RegisterGroup.class, AuthGroup.class})
+    @NotNull(message = "用户username不能为空", groups = {LoginGroup.class, RegisterGroup.class, AuthGroup.class})
+    @Size(max = 50, groups = {LoginGroup.class, RegisterGroup.class, AuthGroup.class})
     private String username;
     /**
      * 密码，MD5加密
      */
     @ApiModelProperty(notes = "密码，MD5加密")
     @NotNull(message = "密码不能为空", groups = {LoginGroup.class, RegisterGroup.class})
-    @Size(min = 8, max = 16)
+    @Size(min = 8, max = 16, groups = {LoginGroup.class, RegisterGroup.class})
     private String password;
     /**
      * 个人简介
@@ -82,7 +86,6 @@ public class MbUser implements Serializable {
      * 经验，每次升级需要10经验，升级后该字段值update为0
      */
     @ApiModelProperty(notes = "经验，每次升级需要10经验，升级后该字段值update为0")
-    @Size(max = 10)
     private Integer exp;
     /**
      * 字段更新时间，修改该条记录则自动更新这个字段
@@ -93,7 +96,6 @@ public class MbUser implements Serializable {
      * 状态，记录当前记录是否有效，0有效，1无效
      */
     @ApiModelProperty(notes = "状态，记录当前记录是否有效，0有效，1无效")
-    @Size(max = 1)
     private Integer state;
 
     @ApiModelProperty(notes = "一个用户可以有一张头像")
