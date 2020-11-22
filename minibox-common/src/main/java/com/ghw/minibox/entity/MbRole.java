@@ -2,11 +2,11 @@ package com.ghw.minibox.entity;
 
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
-import lombok.ToString;
 import lombok.experimental.Accessors;
 
 import java.io.Serializable;
 import java.util.Date;
+import java.util.List;
 
 /**
  * (MbRole)实体类
@@ -44,5 +44,7 @@ public class MbRole implements Serializable {
     @ApiModelProperty(notes = "更新时间")
     private Date updateDate;
 
+    @ApiModelProperty(notes = "一个角色多个用户")
+    private List<MbUser> userList;
 
 }

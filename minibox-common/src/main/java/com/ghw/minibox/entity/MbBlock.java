@@ -47,6 +47,6 @@ public class MbBlock implements Serializable {
      */
     @ApiModelProperty(notes = "更新时间")
     private Date updateTime;
-
-
+    @ApiModelProperty(notes = "一个版块对应一个游戏，否则就是杂谈")
+    private MbGame mbGame;
 }

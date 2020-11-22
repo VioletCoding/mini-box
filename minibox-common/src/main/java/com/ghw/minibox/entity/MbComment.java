@@ -67,6 +67,7 @@ public class MbComment implements Serializable {
      */
     @ApiModelProperty(notes = "更新时间")
     private Date updateDate;
-
+    @ApiModelProperty(notes = "一个评论对应一个用户")
+    private MbUser mbUser;
 
 }

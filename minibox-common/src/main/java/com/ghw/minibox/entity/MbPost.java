@@ -2,11 +2,11 @@ package com.ghw.minibox.entity;
 
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
-import lombok.ToString;
 import lombok.experimental.Accessors;
 
 import java.io.Serializable;
 import java.util.Date;
+import java.util.List;
 
 /**
  * (MbPost)实体类
@@ -64,5 +64,10 @@ public class MbPost implements Serializable {
     @ApiModelProperty(notes = "状态，记录该条状态是否有效,0有效，1无效")
     private Integer state;
 
+    @ApiModelProperty(notes = "一篇帖子多条评论")
+    private List<MbComment> commentList;
+
+    @ApiModelProperty(notes = "一篇帖子多张图片")
+    private List<MbPhoto> photoList;
 
 }

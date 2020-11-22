@@ -2,7 +2,6 @@ package com.ghw.minibox.entity;
 
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
-import lombok.ToString;
 import lombok.experimental.Accessors;
 
 import java.io.Serializable;
@@ -68,6 +67,5 @@ public class MbPhoto implements Serializable {
      */
     @ApiModelProperty(notes = "更新时间")
     private Date updateDate;
-
 
 }

@@ -11,6 +11,7 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import java.io.Serializable;
 import java.util.Date;
+import java.util.List;
 
 /**
  * (MbUser)实体类
@@ -81,6 +82,7 @@ public class MbUser implements Serializable {
      * 经验，每次升级需要10经验，升级后该字段值update为0
      */
     @ApiModelProperty(notes = "经验，每次升级需要10经验，升级后该字段值update为0")
+    @Size(max = 10)
     private Integer exp;
     /**
      * 字段更新时间，修改该条记录则自动更新这个字段
@@ -91,7 +93,15 @@ public class MbUser implements Serializable {
      * 状态，记录当前记录是否有效，0有效，1无效
      */
     @ApiModelProperty(notes = "状态，记录当前记录是否有效，0有效，1无效")
+    @Size(max = 1)
     private Integer state;
 
+    @ApiModelProperty(notes = "一个用户多篇帖子")
+    private List<MbPost> postList;
 
+    @ApiModelProperty(notes = "一个用户多条评论")
+    private List<MbComment> commentList;
+
+    @ApiModelProperty(notes = "一个用户多个游戏")
+    private List<MbGame> gameList;
 }

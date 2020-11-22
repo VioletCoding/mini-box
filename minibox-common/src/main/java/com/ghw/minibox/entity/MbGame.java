@@ -2,11 +2,11 @@ package com.ghw.minibox.entity;
 
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
-import lombok.ToString;
 import lombok.experimental.Accessors;
 
 import java.io.Serializable;
 import java.util.Date;
+import java.util.List;
 
 /**
  * (MbGame)实体类
@@ -84,5 +84,14 @@ public class MbGame implements Serializable {
     @ApiModelProperty(notes = "更新时间")
     private Date updateDate;
 
-
+    @ApiModelProperty(notes = "一个游戏对应一个版块")
+    private MbBlock mbBlock;
+    @ApiModelProperty(notes = "一个游戏多图")
+    private List<MbPhoto> photoList;
+    @ApiModelProperty(notes = "一个游戏多标签")
+    private List<MbTag> tagList;
+    @ApiModelProperty(notes = "一个游戏多用户可以拥有")
+    private List<MbUser> userList;
+    @ApiModelProperty(notes = "一个游戏多评论")
+    private List<MbComment> commentList;
 }
