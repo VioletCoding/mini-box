@@ -4,6 +4,7 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.experimental.Accessors;
 
+import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
@@ -22,11 +23,13 @@ public class MbGame implements Serializable {
      * 主键，自增，默认从10000开始自增，建表时候指定，唯一标识
      */
     @ApiModelProperty(notes = "主键，自增，默认从10000开始自增，建表时候指定，唯一标识 ")
+    @NotNull(message = "游戏gid不能为空")
     private Long gid;
     /**
      * 游戏中文名
      */
     @ApiModelProperty(notes = "游戏中文名")
+    @NotNull(message = "游戏中文名name不能为空")
     private String name;
     /**
      * 游戏价格，保留两位小数，注意默认是0.00，否则会在加减乘除上带来转换问题
@@ -52,21 +55,25 @@ public class MbGame implements Serializable {
      * 游戏简介
      */
     @ApiModelProperty(notes = "游戏简介")
+    @NotNull(message = "游戏简介description不能为空")
     private String description;
     /**
      * 发布时间
      */
     @ApiModelProperty(notes = "发布时间")
+    @NotNull(message = "发布时间releaseTime不能为空")
     private Date releaseTime;
     /**
      * 开发商
      */
     @ApiModelProperty(notes = "开发商")
+    @NotNull(message = "游戏开发商developer不能为空")
     private String developer;
     /**
      * 发行商
      */
     @ApiModelProperty(notes = "发行商")
+    @NotNull(message = "游戏发行商publisher不能为空")
     private String publisher;
     /**
      * 评分人数
@@ -86,12 +93,16 @@ public class MbGame implements Serializable {
 
     @ApiModelProperty(notes = "一个游戏对应一个版块")
     private MbBlock mbBlock;
+
     @ApiModelProperty(notes = "一个游戏多图")
     private List<MbPhoto> photoList;
+
     @ApiModelProperty(notes = "一个游戏多标签")
     private List<MbTag> tagList;
+
     @ApiModelProperty(notes = "一个游戏多用户可以拥有")
     private List<MbUser> userList;
+
     @ApiModelProperty(notes = "一个游戏多评论")
     private List<MbComment> commentList;
 }

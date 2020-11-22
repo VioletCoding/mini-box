@@ -96,6 +96,9 @@ public class MbUser implements Serializable {
     @Size(max = 1)
     private Integer state;
 
+    @ApiModelProperty(notes = "一个用户可以有一张头像")
+    private MbPhoto mbPhoto;
+
     @ApiModelProperty(notes = "一个用户多篇帖子")
     private List<MbPost> postList;
 

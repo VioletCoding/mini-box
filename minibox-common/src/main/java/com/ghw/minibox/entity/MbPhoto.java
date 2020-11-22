@@ -4,6 +4,7 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.experimental.Accessors;
 
+import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 import java.util.Date;
 
@@ -21,16 +22,19 @@ public class MbPhoto implements Serializable {
      * 主键
      */
     @ApiModelProperty(notes = "主键")
+    @NotNull(message = "图片pid不能为空")
     private Long pid;
     /**
      * 图片类型，枚举，用户头像UP、帖子图片TP、评论图片CP、游戏图片GP
      */
     @ApiModelProperty(notes = "图片类型，枚举，用户头像UP、帖子图片TP、评论图片CP、游戏图片GP")
+    @NotNull(message = "图片type不能为空，必须是PostType里定义的枚举值")
     private String type;
     /**
      * 图片链接
      */
     @ApiModelProperty(notes = "图片链接")
+    @NotNull(message = "图片链接link不能为空")
     private String link;
     /**
      * 如果type=UP，该字段必填
@@ -67,5 +71,8 @@ public class MbPhoto implements Serializable {
      */
     @ApiModelProperty(notes = "更新时间")
     private Date updateDate;
+
+    @ApiModelProperty(notes = "一张图片对应一个用户头像")
+    private MbUser mbUser;
 
 }

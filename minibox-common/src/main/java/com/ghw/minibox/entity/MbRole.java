@@ -4,6 +4,7 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.experimental.Accessors;
 
+import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
@@ -22,11 +23,13 @@ public class MbRole implements Serializable {
      * 主键
      */
     @ApiModelProperty(notes = "主键")
+    @NotNull(message = "角色rid不能为空")
     private Long rid;
     /**
      * 角色名称，枚举值USER | ADMIN
      */
     @ApiModelProperty(notes = "角色名称，枚举值USER | ADMIN")
+    @NotNull(message = "角色名称name不能为空，必须是UserRole里定义的枚举值")
     private String name;
     /**
      * 状态，记录当前记录是否有效，0有效，1无效
