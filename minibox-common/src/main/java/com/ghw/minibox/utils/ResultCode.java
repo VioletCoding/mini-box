@@ -20,7 +20,10 @@ public enum ResultCode {
     NOT_FOUND(404, "请求的资源未找到"),
     METHOD_NOT_ALLOWED(405, "请求方式不正确"),
 
-    INTERNAL_SERVER_ERROR(500, "服务器内部错误");
+    INTERNAL_SERVER_ERROR(500, "服务器内部错误"),
+
+    SEND(900, "已发送"),
+    USER_EXIST(901, "用户已存在");
 
 
     private final int code;

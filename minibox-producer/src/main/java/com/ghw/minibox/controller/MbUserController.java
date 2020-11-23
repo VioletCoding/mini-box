@@ -1,5 +1,6 @@
 package com.ghw.minibox.controller;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.ghw.minibox.component.GenerateResult;
 import com.ghw.minibox.dto.ReturnDto;
 import com.ghw.minibox.entity.MbUser;
@@ -12,7 +13,6 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
-import java.util.concurrent.ExecutionException;
 
 /**
  * (MbUser)表控制层
@@ -38,14 +38,23 @@ public class MbUserController {
      * @return ReturnDto
      */
     @PostMapping("beforeRegister")
-    public ReturnDto<MbUser> beforeRegister(@Validated(AuthGroup.class) @RequestBody MbUser mbUser) throws EmailException, InterruptedException, ExecutionException {
-        log.info("进入beforeRegister()方法");
-        Boolean result = mbUserService.queryByUsername(mbUser.getUsername());
-        if (result) {
-            mbUserService.sendEmail(mbUser.getUsername());
-            return gr.custom(ResultCode.OK.getCode(), "验证码发送成功");
-        }
-        return gr.fail();
+    public ReturnDto<MbUser> beforeRegister(@Validated(AuthGroup.class) @RequestBody MbUser mbUser) throws EmailException {
+        log.info("进入beforeRegister方法");
+        String query = mbUserService.queryByUsername(mbUser.getUsername());
+        if (query.equals(ResultCode.SEND.getMessage()))
+            gr.custom(ResultCode.BAD_REQUEST.getCode(), "验证码已发送，请5分钟后再试");
+
+        if (query.equals(ResultCode.USER_EXIST.getMessage()))
+            gr.custom(ResultCode.BAD_REQUEST.getCode(), "用户已存在");
+
+        log.info("调用sendEmail");
+        mbUserService.sendEmail(mbUser.getUsername());
+        log.info("调用sendEmail完毕");
+
+        log.info("结束beforeRegister");
+        return gr.custom(ResultCode.OK.getCode(), "验证码发送成功，请检查邮箱！");
+
+
     }
 
     /**
@@ -55,7 +64,7 @@ public class MbUserController {
      * @return ReturnDto
      */
     @PostMapping("register")
-    public ReturnDto<MbUser> register(@Validated(AuthGroup.class) @RequestBody MbUser mbUser) {
+    public ReturnDto<MbUser> register(@Validated(AuthGroup.class) @RequestBody MbUser mbUser) throws JsonProcessingException {
         log.info("接收到的MbUser==>{}", mbUser);
         boolean result = mbUserService.authRegCode(mbUser.getUsername(), mbUser.getCode());
 

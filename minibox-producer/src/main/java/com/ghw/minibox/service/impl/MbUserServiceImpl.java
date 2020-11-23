@@ -2,11 +2,15 @@ package com.ghw.minibox.service.impl;
 
 
 import cn.hutool.crypto.digest.MD5;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ghw.minibox.component.RedisUtil;
 import com.ghw.minibox.entity.MbUser;
 import com.ghw.minibox.mapper.MbUserMapper;
 import com.ghw.minibox.service.MbUserService;
 import com.ghw.minibox.utils.DefaultUserInfoEnum;
+import com.ghw.minibox.utils.RedisPrefix;
+import com.ghw.minibox.utils.ResultCode;
 import com.ghw.minibox.utils.SendEmail;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.mail.EmailException;
@@ -35,17 +39,24 @@ public class MbUserServiceImpl implements MbUserService {
     private RedisUtil redisUtil;
 
     /**
-     * 通过username来搜索，如果返回的对象不为空，就证明邮箱username已经被占用
+     * 查询Redis持久化记录，如果返回的对象不为空，就证明邮箱username已经被占用
      *
      * @param username 邮箱
      * @return 实体
      */
     @Override
-    public Boolean queryByUsername(String username) {
+    public String queryByUsername(String username) {
         log.info("进入queryByUsername()");
-        MbUser mbUser = mbUserMapper.queryByUsername(username);
+        //从Redis检查是否已经有该用户，看看是否已发送过验证码，如果发送过了，5分钟后才能再次请求
+        String temp = redisUtil.get(RedisPrefix.USER_TEMP.getPrefix() + username);
+        if (temp != null && !temp.equals("")) return ResultCode.SEND.getMessage();
+        //检查用户是否已存在了
+        String result = redisUtil.get(RedisPrefix.USER_EXIST.getPrefix() + username);
+        log.info("从Redis检查该用户是否存在==>{}", result);
+        if (result != null && !result.equals("")) return ResultCode.USER_EXIST.getMessage();
+
         log.info("结束queryByUsername()");
-        return mbUser == null;
+        return ResultCode.BAD_REQUEST.getMessage();
     }
 
 
@@ -56,7 +67,7 @@ public class MbUserServiceImpl implements MbUserService {
      */
     @Async
     @Override
-    public void sendEmail(String username) throws EmailException{
+    public void sendEmail(String username) throws EmailException {
         log.info("进入sendEmail()");
 
         long start = System.currentTimeMillis();
@@ -74,11 +85,11 @@ public class MbUserServiceImpl implements MbUserService {
         sendEmail.createEmail(username, subject, "尊敬的迷你盒用户，您本次的验证码为：" + sb.toString() + " 本次验证码有效时间为5分钟！");
         log.info("本次邮件发送给==>{},主题为==>{},内容为==>{}", username, subject, sb.toString());
 
-        //写进Redis
-        redisUtil.set(username, sb.toString());
+        //写进Redis 注意前缀
+        redisUtil.set(RedisPrefix.USER_TEMP.getPrefix() + username, sb.toString());
         //设置过期时间 300秒
-        redisUtil.expire(username, 300L);
-        log.info("本次存入Redis的Key==>{},Value==>{}", username, sb.toString());
+        redisUtil.expire(RedisPrefix.USER_TEMP.getPrefix() + username, 300L);
+        log.info("本次存入Redis的Key==>{},Value==>{}", RedisPrefix.USER_TEMP.getPrefix() + username, sb.toString());
 
         long end = System.currentTimeMillis();
         long cost = end - start;
@@ -97,8 +108,7 @@ public class MbUserServiceImpl implements MbUserService {
     @Override
     public boolean authRegCode(String key, String value) {
         log.info("进入authRegCode()");
-
-        String valueFromRedis = redisUtil.get(key);
+        String valueFromRedis = redisUtil.get(RedisPrefix.USER_TEMP.getPrefix() + key);
         log.info("从Redis获取到的value==>{}", valueFromRedis);
 
         log.info("结束authRegCode()");
@@ -112,7 +122,7 @@ public class MbUserServiceImpl implements MbUserService {
      * @return true or false
      */
     @Override
-    public boolean register(MbUser mbUser) {
+    public boolean register(MbUser mbUser) throws JsonProcessingException {
         //默认用户名生成，MongoDB ID生成策略
         //生成一个带 "用户_" 前缀的昵称，后缀为随机值
         MbUser user = mbUser.setNickname(DefaultUserInfoEnum.NICKNAME.getMessage());
@@ -124,8 +134,12 @@ public class MbUserServiceImpl implements MbUserService {
         //校验完毕后，就可以插入数据库了
         int result = mbUserMapper.insert(mbUser);
         //验证码用过了记得从redis移除
-        redisUtil.remove(mbUser.getUsername());
-        log.info("从Redis移除了key==>{}", mbUser.getUsername());
+        redisUtil.remove(RedisPrefix.USER_TEMP.getPrefix() + mbUser.getUsername());
+        log.info("从Redis移除了key==>{}", RedisPrefix.USER_TEMP.getPrefix() + mbUser.getUsername());
+        //Redis持久化一个用户，用于判断数据库是否有这个用户，而不用直接查询数据库
+        ObjectMapper objectMapper = new ObjectMapper();
+        redisUtil.set(RedisPrefix.USER_EXIST.getPrefix() + mbUser.getUsername(), objectMapper.writeValueAsString(mbUser));
+        log.info("用户 {} 持久化进Redis成功！", mbUser.getUsername());
         return result > 0;
     }
 

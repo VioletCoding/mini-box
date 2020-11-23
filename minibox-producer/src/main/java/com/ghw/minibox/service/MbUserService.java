@@ -1,5 +1,6 @@
 package com.ghw.minibox.service;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.ghw.minibox.entity.MbUser;
 import org.apache.commons.mail.EmailException;
 
@@ -20,7 +21,7 @@ public interface MbUserService {
      * @param username 邮箱
      * @return 实体
      */
-    Boolean queryByUsername(String username);
+    String queryByUsername(String username);
 
     /**
      * 注册之前的操作
@@ -44,7 +45,7 @@ public interface MbUserService {
      * @param mbUser 实体
      * @return true or false
      */
-    boolean register(MbUser mbUser);
+    boolean register(MbUser mbUser) throws JsonProcessingException;
 
     /**
      * 登陆
