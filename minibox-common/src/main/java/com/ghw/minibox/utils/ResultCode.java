@@ -22,7 +22,7 @@ public enum ResultCode {
 
     INTERNAL_SERVER_ERROR(500, "服务器内部错误"),
 
-    SEND(900, "已发送"),
+    HAS_BEEN_SENT(900, "已发送"),
     USER_EXIST(901, "用户已存在");
 
 

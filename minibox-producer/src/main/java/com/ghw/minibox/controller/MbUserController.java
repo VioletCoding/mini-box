@@ -41,11 +41,11 @@ public class MbUserController {
     public ReturnDto<MbUser> beforeRegister(@Validated(AuthGroup.class) @RequestBody MbUser mbUser) throws EmailException {
         log.info("进入beforeRegister方法");
         String query = mbUserService.queryByUsername(mbUser.getUsername());
-        if (query.equals(ResultCode.SEND.getMessage()))
-            gr.custom(ResultCode.BAD_REQUEST.getCode(), "验证码已发送，请5分钟后再试");
+        if (query.equals(ResultCode.HAS_BEEN_SENT.getMessage()))
+            return gr.custom(ResultCode.BAD_REQUEST.getCode(), "验证码已发送，请5分钟后再试");
 
         if (query.equals(ResultCode.USER_EXIST.getMessage()))
-            gr.custom(ResultCode.BAD_REQUEST.getCode(), "用户已存在");
+            return gr.custom(ResultCode.BAD_REQUEST.getCode(), "用户已存在");
 
         log.info("调用sendEmail");
         mbUserService.sendEmail(mbUser.getUsername());

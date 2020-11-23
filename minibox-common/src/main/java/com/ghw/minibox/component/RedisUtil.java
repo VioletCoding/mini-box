@@ -61,4 +61,8 @@ public class RedisUtil {
         return srt.opsForValue().increment(key, delta);
     }
 
+    public Boolean exist(String key) {
+        return srt.hasKey(key);
+    }
+
 }

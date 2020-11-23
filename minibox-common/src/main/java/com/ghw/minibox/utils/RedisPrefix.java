@@ -17,7 +17,7 @@ public enum RedisPrefix {
     /**
      * 临时的，用于存储5分钟的验证码
      */
-    USER_TEMP("user_temp");
+    USER_TEMP("user_temp_");
 
 
     private final String prefix;

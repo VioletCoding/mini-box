@@ -46,14 +46,16 @@ public class MbUserServiceImpl implements MbUserService {
      */
     @Override
     public String queryByUsername(String username) {
+
         log.info("进入queryByUsername()");
-        //从Redis检查是否已经有该用户，看看是否已发送过验证码，如果发送过了，5分钟后才能再次请求
-        String temp = redisUtil.get(RedisPrefix.USER_TEMP.getPrefix() + username);
-        if (temp != null && !temp.equals("")) return ResultCode.SEND.getMessage();
+        //从Redis检查是否已经有该用户，看看是否已发送过验证码，如果发送过了，300秒后才能再次请求
+        Boolean result = redisUtil.exist(RedisPrefix.USER_TEMP.getPrefix() + username);
+        if (result) return ResultCode.HAS_BEEN_SENT.getMessage();
+
         //检查用户是否已存在了
-        String result = redisUtil.get(RedisPrefix.USER_EXIST.getPrefix() + username);
-        log.info("从Redis检查该用户是否存在==>{}", result);
-        if (result != null && !result.equals("")) return ResultCode.USER_EXIST.getMessage();
+        Boolean exist = redisUtil.exist(RedisPrefix.USER_EXIST.getPrefix() + username);
+        log.info("从Redis检查该用户是否存在==>{}", exist);
+        if (exist) return ResultCode.USER_EXIST.getMessage();
 
         log.info("结束queryByUsername()");
         return ResultCode.BAD_REQUEST.getMessage();
@@ -77,8 +79,9 @@ public class MbUserServiceImpl implements MbUserService {
         //生成一个6位数的简易验证码
         Random random = new Random();
         StringBuilder sb = new StringBuilder();
+        int randomNum;
         for (int i = 0; i < 6; i++) {
-            int randomNum = random.nextInt(10);
+            randomNum = random.nextInt(10);
             sb.append(randomNum);
         }
         //发送
@@ -108,6 +111,7 @@ public class MbUserServiceImpl implements MbUserService {
     @Override
     public boolean authRegCode(String key, String value) {
         log.info("进入authRegCode()");
+
         String valueFromRedis = redisUtil.get(RedisPrefix.USER_TEMP.getPrefix() + key);
         log.info("从Redis获取到的value==>{}", valueFromRedis);
 
