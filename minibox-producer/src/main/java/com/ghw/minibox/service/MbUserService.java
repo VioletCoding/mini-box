@@ -2,8 +2,10 @@ package com.ghw.minibox.service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.ghw.minibox.entity.MbUser;
+import com.qiniu.common.QiniuException;
 import org.apache.commons.mail.EmailException;
 
+import java.io.InputStream;
 import java.util.List;
 
 /**
@@ -54,6 +56,19 @@ public interface MbUserService {
      * @return true or false
      */
     boolean login(MbUser user);
+
+    /**
+     * 异步方法
+     * 七牛云上传，需要指定accessKey和secretKey以及bucket还有输入流
+     *
+     * @param ak          公钥
+     * @param sk          私钥
+     * @param bucket      对象空间
+     * @param inputStream 输入流
+     * @return true or false
+     * @throws QiniuException 七牛云异常
+     */
+    boolean upload(String ak, String sk, String bucket, InputStream inputStream) throws QiniuException;
 
 
     /**

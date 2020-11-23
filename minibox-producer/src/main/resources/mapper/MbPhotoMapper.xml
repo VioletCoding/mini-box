@@ -88,8 +88,8 @@
 
     <!--新增所有列-->
     <insert id="insert" keyProperty="pid" useGeneratedKeys="true">
-        insert into minibox.mb_photo(type, link, uid, tid, cid, gid, state, create_date, update_date)
-        values (#{type}, #{link}, #{uid}, #{tid}, #{cid}, #{gid}, #{state}, #{createDate}, #{updateDate})
+        insert into minibox.mb_photo(type, link, uid, tid, cid, gid)
+        values (#{type}, #{link}, #{uid}, #{tid}, #{cid}, #{gid})
     </insert>
 
     <insert id="insertBatch" keyProperty="pid" useGeneratedKeys="true">

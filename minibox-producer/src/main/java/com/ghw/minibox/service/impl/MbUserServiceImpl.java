@@ -4,20 +4,24 @@ package com.ghw.minibox.service.impl;
 import cn.hutool.crypto.digest.MD5;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.ghw.minibox.component.NimbusJoseJwt;
 import com.ghw.minibox.component.RedisUtil;
+import com.ghw.minibox.entity.MbPhoto;
 import com.ghw.minibox.entity.MbUser;
+import com.ghw.minibox.mapper.MbPhotoMapper;
 import com.ghw.minibox.mapper.MbUserMapper;
 import com.ghw.minibox.service.MbUserService;
-import com.ghw.minibox.utils.DefaultUserInfoEnum;
-import com.ghw.minibox.utils.RedisPrefix;
-import com.ghw.minibox.utils.ResultCode;
-import com.ghw.minibox.utils.SendEmail;
+import com.ghw.minibox.utils.*;
+import com.qiniu.common.QiniuException;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.mail.EmailException;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
+import java.io.InputStream;
 import java.util.List;
 import java.util.Random;
 
@@ -33,9 +37,17 @@ public class MbUserServiceImpl implements MbUserService {
     @Resource
     private MbUserMapper mbUserMapper;
     @Resource
+    private MbPhotoMapper mbPhotoMapper;
+    @Resource
     private SendEmail sendEmail;
     @Resource
     private RedisUtil redisUtil;
+    @Resource
+    private NimbusJoseJwt jwt;
+    @Resource
+    private QiNiuUtil qiNiuUtil;
+    @Value("${qiNiu.defaultPhoto}")
+    private String defaultLink;
 
     /**
      * 查询Redis持久化记录，如果返回的对象不为空，就证明邮箱username已经被占用
@@ -82,7 +94,7 @@ public class MbUserServiceImpl implements MbUserService {
             randomNum = random.nextInt(10);
             sb.append(randomNum);
         }
-        sendEmail.createEmail(username, subject, "尊敬的迷你盒用户，您本次的验证码为：" + sb.toString() + " 本次验证码有效时间为5分钟！");
+        sendEmail.createEmail(username, subject, "尊敬的迷你盒用户，您本次的验证码为\n" + sb.toString() + "\n本次验证码有效时间为5分钟！");
         log.info("本次邮件发送给==>{},主题为==>{},内容为==>{}", username, subject, sb.toString());
         redisUtil.set(RedisPrefix.USER_TEMP.getPrefix() + username, sb.toString());
         redisUtil.expire(RedisPrefix.USER_TEMP.getPrefix() + username, 300L);
@@ -105,6 +117,11 @@ public class MbUserServiceImpl implements MbUserService {
         return value.equals(valueFromRedis);
     }
 
+    @Override
+    public boolean upload(String ak, String sk, String bucket, InputStream inputStream) throws QiniuException {
+        return false;
+    }
+
     /**
      * 校验都成功后可以允许注册
      * <p>
@@ -116,10 +133,13 @@ public class MbUserServiceImpl implements MbUserService {
      * <p>
      * 移除Redis验证码后，会把该用户的部分信息持久化到Redis，以便加快响应后续请求，
      * 特别是同一个邮箱反复点击注册，可以拦截大量请求，前缀是RedisPrefix.USER_EXIST.getPrefix()
+     * <p>
+     * 之后会获取自增uid，并且set到MbPhoto表，图片与uid做映射关系，设置默认用户头像
      *
      * @param mbUser 实体
      * @return true or false
      */
+    @Transactional
     @Override
     public boolean register(MbUser mbUser) throws JsonProcessingException {
         MbUser user = mbUser.setNickname(DefaultUserInfoEnum.NICKNAME.getMessage());
@@ -128,6 +148,7 @@ public class MbUserServiceImpl implements MbUserService {
         String digestHex16 = md5.digestHex16(mbUser.getPassword());
         mbUser.setPassword(digestHex16);
         int result = mbUserMapper.insert(mbUser);
+        mbPhotoMapper.insert(new MbPhoto().setType(PostType.PHOTO_USER.getType()).setLink(defaultLink).setUid(mbUser.getUid()));
         redisUtil.remove(RedisPrefix.USER_TEMP.getPrefix() + mbUser.getUsername());
         log.info("从Redis移除了key==>{}", RedisPrefix.USER_TEMP.getPrefix() + mbUser.getUsername());
         ObjectMapper objectMapper = new ObjectMapper();

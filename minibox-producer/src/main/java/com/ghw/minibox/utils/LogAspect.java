@@ -63,7 +63,7 @@ public class LogAspect {
     }
 
     /**
-     * 打印日志
+     * 异步打印日志
      * <p>
      * setOperation 注解上的描述
      * <p>

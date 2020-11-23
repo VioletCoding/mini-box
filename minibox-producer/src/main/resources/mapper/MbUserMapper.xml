@@ -101,7 +101,7 @@
     </select>
 
     <!--新增部分列，其余使用数据库默认值-->
-    <insert id="insert" keyProperty="uid" useGeneratedKeys="true">
+    <insert id="insert" keyProperty="uid" useGeneratedKeys="true" keyColumn="uid">
         insert into minibox.mb_user(nickname, username, password)
         values (#{nickname}, #{username}, #{password})
     </insert>

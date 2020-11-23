@@ -34,11 +34,17 @@ public class MbUserController {
 
     /**
      * 登陆前的校验
+     * <p>
+     * 调用queryByUsername方法来检查该用户是否已存在，以及判断验证码是否已发送
+     * 如果已发送，那么需要5分钟后等验证码过期了，才能再次请求
+     * <p>
+     * queryByUsername方法通过后，调用发邮件方法sendEmail发送验证码，
+     * 该方法是异步方法
      *
      * @param mbUser 实体
      * @return ReturnDto
      */
-    @AOPLog("注册前的校验")
+    @AOPLog("注册前校验")
     @PostMapping("beforeRegister")
     public ReturnDto<MbUser> beforeRegister(@Validated(AuthGroup.class) @RequestBody MbUser mbUser) throws EmailException {
         String query = mbUserService.queryByUsername(mbUser.getUsername());
@@ -52,11 +58,13 @@ public class MbUserController {
 
     /**
      * 校验完后的注册
+     * 调用authRegCode方法来校验，验证码是否一致
+     * 校验通过后调用register来进行真正的用户注册
      *
      * @param mbUser 实体
      * @return ReturnDto
      */
-    @AOPLog("注册方法")
+    @AOPLog("注册")
     @PostMapping("register")
     public ReturnDto<MbUser> register(@Validated(AuthGroup.class) @RequestBody MbUser mbUser) throws JsonProcessingException {
         boolean result = mbUserService.authRegCode(mbUser.getUsername(), mbUser.getCode());
@@ -64,9 +72,7 @@ public class MbUserController {
             boolean register = mbUserService.register(mbUser);
             if (register) return gr.success();
         }
-        if (!result) {
-            return gr.custom(ResultCode.BAD_REQUEST.getCode(), "验证码无效");
-        }
+        if (!result) return gr.custom(ResultCode.BAD_REQUEST.getCode(), "验证码无效");
         return gr.fail();
     }
 

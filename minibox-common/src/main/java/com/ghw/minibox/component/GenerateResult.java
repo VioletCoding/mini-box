@@ -25,7 +25,7 @@ public class GenerateResult<T> {
      * @return ReturnDto
      */
     public ReturnDto<T> success() {
-        return returnDto.setSimple(ResultCode.OK);
+        return returnDto.setCode(ResultCode.OK.getCode()).setMessage(ResultCode.OK.getMessage());
     }
 
     /**
