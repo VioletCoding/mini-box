@@ -20,7 +20,6 @@ import org.springframework.stereotype.Service;
 import javax.annotation.Resource;
 import java.util.List;
 import java.util.Random;
-import java.util.concurrent.TimeUnit;
 
 /**
  * (MbUser)表服务实现类
@@ -50,13 +49,11 @@ public class MbUserServiceImpl implements MbUserService {
      */
     @Override
     public String queryByUsername(String username) {
-        log.info("进入queryByUsername()");
         Boolean result = redisUtil.exist(RedisPrefix.USER_TEMP.getPrefix() + username);
         if (result) return ResultCode.HAS_BEEN_SENT.getMessage();
         Boolean exist = redisUtil.exist(RedisPrefix.USER_EXIST.getPrefix() + username);
         log.info("从Redis检查该用户是否存在==>{}", exist);
         if (exist) return ResultCode.USER_EXIST.getMessage();
-        log.info("结束queryByUsername()");
         return ResultCode.BAD_REQUEST.getMessage();
     }
 
@@ -77,8 +74,6 @@ public class MbUserServiceImpl implements MbUserService {
     @Async
     @Override
     public void sendEmail(String username) throws EmailException {
-        log.info("进入sendEmail()");
-        long start = System.currentTimeMillis();
         String subject = "Minibox验证码，请注意查收！";
         Random random = new Random();
         StringBuilder sb = new StringBuilder();
@@ -92,10 +87,6 @@ public class MbUserServiceImpl implements MbUserService {
         redisUtil.set(RedisPrefix.USER_TEMP.getPrefix() + username, sb.toString());
         redisUtil.expire(RedisPrefix.USER_TEMP.getPrefix() + username, 300L);
         log.info("本次存入Redis的Key==>{},Value==>{}", RedisPrefix.USER_TEMP.getPrefix() + username, sb.toString());
-        long end = System.currentTimeMillis();
-        long cost = end - start;
-        log.info("执行sendEmail()花费了==> {} 秒", TimeUnit.MILLISECONDS.toSeconds(cost));
-        log.info("结束sendEmail()");
     }
 
     /**
@@ -109,10 +100,8 @@ public class MbUserServiceImpl implements MbUserService {
      */
     @Override
     public boolean authRegCode(String key, String value) {
-        log.info("进入authRegCode");
         String valueFromRedis = redisUtil.get(RedisPrefix.USER_TEMP.getPrefix() + key);
         log.info("从Redis获取到的value==>{}", valueFromRedis);
-        log.info("结束authRegCode()");
         return value.equals(valueFromRedis);
     }
 

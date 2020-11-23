@@ -47,8 +47,6 @@ public class QiNiuUtil {
      */
     @Async
     public Future<DefaultPutRet> upload(String ak, String sk, String bucket, InputStream inputStream) throws QiniuException {
-        log.info("进入upload");
-        log.info("传入的ak为==>{},传入的sk为==>{},传入的bucket为==>{}", ak, sk, bucket);
         Auth auth = Auth.create(ak, sk);
         String uploadToken = auth.uploadToken(bucket);
         log.info("uploadToken为==>{}", uploadToken);
@@ -61,7 +59,6 @@ public class QiNiuUtil {
         ExecutorService executorService = Executors.newCachedThreadPool();
         executorService.submit(futureTask);
         executorService.shutdown();
-        log.info("结束upload");
         return futureTask;
     }
 }

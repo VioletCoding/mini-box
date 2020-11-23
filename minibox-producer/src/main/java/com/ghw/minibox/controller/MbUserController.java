@@ -5,6 +5,7 @@ import com.ghw.minibox.component.GenerateResult;
 import com.ghw.minibox.dto.ReturnDto;
 import com.ghw.minibox.entity.MbUser;
 import com.ghw.minibox.service.MbUserService;
+import com.ghw.minibox.utils.AOPLog;
 import com.ghw.minibox.utils.ResultCode;
 import com.ghw.minibox.validatedgroup.AuthGroup;
 import lombok.extern.slf4j.Slf4j;
@@ -37,24 +38,16 @@ public class MbUserController {
      * @param mbUser 实体
      * @return ReturnDto
      */
+    @AOPLog("注册前的校验")
     @PostMapping("beforeRegister")
     public ReturnDto<MbUser> beforeRegister(@Validated(AuthGroup.class) @RequestBody MbUser mbUser) throws EmailException {
-        log.info("进入beforeRegister方法");
         String query = mbUserService.queryByUsername(mbUser.getUsername());
         if (query.equals(ResultCode.HAS_BEEN_SENT.getMessage()))
             return gr.custom(ResultCode.BAD_REQUEST.getCode(), "验证码已发送，请5分钟后再试");
-
         if (query.equals(ResultCode.USER_EXIST.getMessage()))
             return gr.custom(ResultCode.BAD_REQUEST.getCode(), "用户已存在");
-
-        log.info("调用sendEmail");
         mbUserService.sendEmail(mbUser.getUsername());
-        log.info("调用sendEmail完毕");
-
-        log.info("结束beforeRegister");
         return gr.custom(ResultCode.OK.getCode(), "验证码发送成功，请检查邮箱！");
-
-
     }
 
     /**
@@ -63,11 +56,10 @@ public class MbUserController {
      * @param mbUser 实体
      * @return ReturnDto
      */
+    @AOPLog("注册方法")
     @PostMapping("register")
     public ReturnDto<MbUser> register(@Validated(AuthGroup.class) @RequestBody MbUser mbUser) throws JsonProcessingException {
-        log.info("接收到的MbUser==>{}", mbUser);
         boolean result = mbUserService.authRegCode(mbUser.getUsername(), mbUser.getCode());
-
         if (result) {
             boolean register = mbUserService.register(mbUser);
             if (register) return gr.success();

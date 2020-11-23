@@ -25,6 +25,11 @@
             <groupId>org.hibernate.validator</groupId>
             <artifactId>hibernate-validator-annotation-processor</artifactId>
         </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-aop</artifactId>
+            <version>${spring-boot.version}</version>
+        </dependency>
         <!--自定义封装模块-->
         <dependency>
             <groupId>com.ghw</groupId>
@@ -64,21 +69,6 @@
             <groupId>mysql</groupId>
             <artifactId>mysql-connector-java</artifactId>
         </dependency>
-        <!--SpringData工具包-->
-        <!--        <dependency>-->
-        <!--            <groupId>org.springframework.data</groupId>-->
-        <!--            <artifactId>spring-data-commons</artifactId>-->
-        <!--        </dependency>-->
-        <!-- SpringData-Redis -->
-        <!--        <dependency>-->
-        <!--            <groupId>org.springframework.boot</groupId>-->
-        <!--            <artifactId>spring-boot-starter-data-redis</artifactId>-->
-        <!--        </dependency>-->
-        <!-- Pool-->
-        <!--        <dependency>-->
-        <!--            <groupId>org.apache.commons</groupId>-->
-        <!--            <artifactId>commons-pool2</artifactId>-->
-        <!--        </dependency>-->
         <!--JWT(Json Web Token)登录支持-->
         <dependency>
             <groupId>com.nimbusds</groupId>

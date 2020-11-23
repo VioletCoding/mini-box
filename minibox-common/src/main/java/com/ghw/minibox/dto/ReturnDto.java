@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.ghw.minibox.utils.ResultCode;
 import lombok.Data;
 import lombok.experimental.Accessors;
+import org.springframework.stereotype.Component;
 
 import javax.validation.constraints.NotNull;
 import java.util.List;
@@ -17,6 +18,7 @@ import java.util.Map;
 @Data
 @Accessors(chain = true)
 @JsonInclude(JsonInclude.Include.NON_NULL)
+@Component
 public class ReturnDto<T> {
     /**
      * 响应码
