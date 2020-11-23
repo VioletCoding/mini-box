@@ -28,7 +28,7 @@ public class MbUser implements Serializable {
      * 主键
      */
     @ApiModelProperty(notes = "主键")
-    @NotNull(message = "用户uid不能为空", groups = {IsUserLegal.class, UpdateUserInfoGroup.class})
+    @NotNull(message = "用户uid不能为空", groups = {UpdateUserInfoGroup.class})
     private Long uid;
 
     @ApiModelProperty(notes = "验证码")

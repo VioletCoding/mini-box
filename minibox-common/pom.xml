@@ -12,6 +12,16 @@
     <artifactId>minibox-common</artifactId>
 
     <dependencies>
+        <!--七牛云SDK-->
+        <dependency>
+            <groupId>com.qiniu</groupId>
+            <artifactId>qiniu-java-sdk</artifactId>
+        </dependency>
+        <!--Jackson，用于得到七牛云的回调-->
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-databind</artifactId>
+        </dependency>
         <!--简化对象封装工具-->
         <dependency>
             <groupId>org.projectlombok</groupId>

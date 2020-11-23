@@ -16,6 +16,24 @@ public class SendEmail {
 
     /**
      * 发送邮件
+     * <p>
+     * HtmlEmail 简单的邮件对象
+     * <p>
+     * setHostName SMTP服务器
+     * <p>
+     * setCharset 设置发送的字符编码格式
+     * <p>
+     * addTo 设置收件人
+     * <p>
+     * setFrom 发送人的邮箱和用户名，用户名可以随便填
+     * <p>
+     * setAuthentication 授权码
+     * <p>
+     * setSubject 设置发送主题
+     * <p>
+     * setMsg 设置发送信息
+     * <p>
+     * send 进行发送
      *
      * @param addTo   收件人的邮箱
      * @param subject 发送主题
@@ -23,24 +41,14 @@ public class SendEmail {
      * @throws EmailException 邮箱异常，如果有异常抛出，则发送失败
      */
     public void createEmail(String addTo, String subject, String msg) throws EmailException {
-
         HtmlEmail email = new HtmlEmail();
-
-        //SMTP服务器
         email.setHostName("smtp.qq.com");
-        //设置发送的字符编码格式
         email.setCharset("utf-8");
-        //设置收件人
         email.addTo(addTo);
-        //发送人的邮箱和用户名，用户名可以随便填
         email.setFrom("1054197367@qq.com", "MiniboxOfficial");
-        //授权码
         email.setAuthentication("1054197367@qq.com", authCode);
-        //设置发送主题
         email.setSubject(subject);
-        //设置发送信息
         email.setMsg(msg);
-        //进行发送
         email.send();
     }
 

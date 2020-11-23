@@ -3,6 +3,7 @@ package com.ghw.minibox.utils;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.ghw.minibox.component.GenerateResult;
 import com.ghw.minibox.dto.ReturnDto;
+import com.qiniu.common.QiniuException;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.mail.EmailException;
 import org.springframework.validation.ObjectError;
@@ -11,6 +12,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import javax.annotation.Resource;
+import java.io.UnsupportedEncodingException;
 import java.util.concurrent.ExecutionException;
 
 /**
@@ -68,4 +70,18 @@ public class GlobalExceptionHandler {
         return gr.custom(ResultCode.BAD_REQUEST.getCode(), "Json解析失败");
     }
 
+
+    @ExceptionHandler(QiniuException.class)
+    public ReturnDto<String> qiNiuException(QiniuException e) throws QiniuException {
+        log.error("出现异常 {} , 原因如下 {} , 栈信息如下==> \n ", e.response.toString(), e.response.bodyString());
+        e.printStackTrace();
+        return gr.custom(ResultCode.BAD_REQUEST.getCode(), "文件上传失败");
+    }
+
+    @ExceptionHandler(UnsupportedEncodingException.class)
+    public ReturnDto<String> unSupportedEncodingException(UnsupportedEncodingException e) {
+        log.error("出现异常 {} , 原因如下 {} , 栈信息如下==> \n ", e.getMessage(), e.getCause());
+        e.printStackTrace();
+        return gr.custom(ResultCode.BAD_REQUEST.getCode(), "文件编码解析失败");
+    }
 }

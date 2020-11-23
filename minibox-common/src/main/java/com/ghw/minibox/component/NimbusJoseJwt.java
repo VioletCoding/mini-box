@@ -27,27 +27,31 @@ public class NimbusJoseJwt {
 
     /**
      * 通过HMAC算法生成token
+     * <p>
+     * 该方法会先 创建JWS头，设置签名算法和类型
+     * 然后 将负载信息封装到Payload
+     * 然后 创建JWS对象
+     * 然后 创建HMAC签名器
+     * 最后 签名并序列化
      *
      * @param payloadParam 载荷
      * @return token
      * @throws JOSEException 抛出此异常时，生成token失败
      */
     public String generateTokenByHMAC(String payloadParam) throws JOSEException {
-        //创建JWS头，设置签名算法和类型
         JWSHeader jwsHeader = new JWSHeader.Builder(JWSAlgorithm.HS256).type(JOSEObjectType.JWT).build();
-        //将负载信息封装到Payload
         Payload payload = new Payload(payloadParam);
-        //创建JWS对象
         JWSObject jwsObject = new JWSObject(jwsHeader, payload);
-        //创建HMAC签名器
         JWSSigner jwsSigner = new MACSigner(SECRET);
-        //签名
         jwsObject.sign(jwsSigner);
         return jwsObject.serialize();
     }
 
     /**
      * 通过HMAC算法校验token
+     * <p>
+     * 该方法会先 从token中解析JWS对象
+     * 然后 创建HMAC校验器
      *
      * @param token 颁发的token
      * @return 载荷对象
@@ -55,11 +59,8 @@ public class NimbusJoseJwt {
      * @throws JOSEException  签名和加密异常
      */
     public PayloadDto verifyTokenByHMAC(String token) throws Exception {
-        //从token中解析JWS对象
         JWSObject jwsObject = JWSObject.parse(token);
-        //创建HMAC校验器
         MACVerifier verifier = new MACVerifier(SECRET);
-
         if (!jwsObject.verify(verifier)) {
             throw new Exception("token签名不合法");
         }

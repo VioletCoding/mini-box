@@ -25,9 +25,7 @@ public class GenerateResult<T> {
      * @return ReturnDto
      */
     public ReturnDto<T> success() {
-        return returnDto
-                .setCode(ResultCode.OK.getCode())
-                .setMessage(ResultCode.OK.getMessage());
+        return returnDto.setSimple(ResultCode.OK);
     }
 
     /**
@@ -75,9 +73,7 @@ public class GenerateResult<T> {
      * @return ReturnDto
      */
     public ReturnDto<T> fail() {
-        return returnDto
-                .setCode(ResultCode.BAD_REQUEST.getCode())
-                .setMessage(ResultCode.BAD_REQUEST.getMessage());
+        return returnDto.setSimple(ResultCode.BAD_REQUEST);
     }
 
     /**
