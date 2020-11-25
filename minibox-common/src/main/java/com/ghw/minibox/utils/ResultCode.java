@@ -24,7 +24,8 @@ public enum ResultCode {
 
     HAS_BEEN_SENT(900, "已发送"),
     USER_EXIST(901, "用户已存在"),
-    USER_ILLEGAL(902, "非法用户");
+    USER_AUTH_FAIL(902, "用户认证失败，用户名或密码不正确"),
+    USER_ILLEGAL(903, "非法用户");
 
 
     private final int code;

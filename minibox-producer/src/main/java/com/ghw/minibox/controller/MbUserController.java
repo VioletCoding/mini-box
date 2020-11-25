@@ -2,6 +2,7 @@ package com.ghw.minibox.controller;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.ghw.minibox.component.GenerateResult;
+import com.ghw.minibox.component.NimbusJoseJwt;
 import com.ghw.minibox.dto.ReturnDto;
 import com.ghw.minibox.entity.MbUser;
 import com.ghw.minibox.service.MbUserService;
@@ -9,6 +10,7 @@ import com.ghw.minibox.utils.AOPLog;
 import com.ghw.minibox.utils.ResultCode;
 import com.ghw.minibox.validatedgroup.AuthGroup;
 import com.ghw.minibox.validatedgroup.LoginGroup;
+import com.nimbusds.jose.JOSEException;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.mail.EmailException;
@@ -33,7 +35,10 @@ public class MbUserController {
     private MbUserService mbUserService;
 
     @Resource
-    private GenerateResult<MbUser> gr;
+    private GenerateResult<String> gr;
+
+    @Resource
+    private NimbusJoseJwt jwt;
 
     /**
      * 登陆前的校验
@@ -50,7 +55,7 @@ public class MbUserController {
     @AOPLog("注册前校验")
     @ApiOperation("注册前校验")
     @PostMapping("beforeRegister")
-    public ReturnDto<MbUser> beforeRegister(@Validated(AuthGroup.class) @RequestBody MbUser mbUser) throws EmailException {
+    public ReturnDto<String> beforeRegister(@Validated(AuthGroup.class) @RequestBody MbUser mbUser) throws EmailException {
         String query = mbUserService.queryByUsername(mbUser.getUsername());
         if (query.equals(ResultCode.HAS_BEEN_SENT.getMessage()))
             return gr.custom(ResultCode.BAD_REQUEST.getCode(), "验证码已发送，请5分钟后再试");
@@ -71,7 +76,7 @@ public class MbUserController {
     @AOPLog("注册")
     @ApiOperation("注册")
     @PostMapping("register")
-    public ReturnDto<MbUser> register(@Validated(AuthGroup.class) @RequestBody MbUser mbUser) throws JsonProcessingException {
+    public ReturnDto<String> register(@Validated(AuthGroup.class) @RequestBody MbUser mbUser) throws JsonProcessingException {
         boolean result = mbUserService.authRegCode(mbUser.getUsername(), mbUser.getCode());
         if (result) {
             boolean register = mbUserService.register(mbUser);
@@ -81,28 +86,34 @@ public class MbUserController {
         return gr.fail();
     }
 
+    /**
+     * 登陆API
+     *
+     * @param mbUser 用户实体
+     * @return ReturnDto
+     * @throws JsonProcessingException Json解析失败
+     * @throws JOSEException           JWT签发失败
+     */
     @AOPLog("登陆")
     @ApiOperation("登陆")
     @PostMapping("login")
-    public ReturnDto<MbUser> login(@Validated({LoginGroup.class}) @RequestBody MbUser mbUser) throws JsonProcessingException {
+    public ReturnDto<String> login(@Validated({LoginGroup.class}) @RequestBody MbUser mbUser) throws JsonProcessingException, JOSEException {
         String loginResult = mbUserService.login(mbUser);
-        if (loginResult.equals(ResultCode.OK.getMessage())) return gr.success();
+
+        if (loginResult.equals(ResultCode.OK.getMessage()))
+            return gr.success(jwt.generateTokenByHMAC(mbUser.getUsername()));
+
+
         if (loginResult.equals(ResultCode.NOT_FOUND.getMessage()))
             return gr.custom(ResultCode.NOT_FOUND.getCode(), "用户未注册");
+
+        if (loginResult.equals(ResultCode.USER_AUTH_FAIL.getMessage()))
+            return gr.custom(ResultCode.USER_AUTH_FAIL.getCode(), ResultCode.USER_AUTH_FAIL.getMessage());
+
         if (loginResult.equals(ResultCode.USER_ILLEGAL.getMessage()))
             return gr.custom(ResultCode.USER_ILLEGAL.getCode(), ResultCode.USER_ILLEGAL.getMessage());
-        return gr.fail();
-    }
 
-    /**
-     * 通过主键查询单条数据
-     *
-     * @param uid 主键
-     * @return 单条数据
-     */
-    @GetMapping("selectOne/{uid}")
-    public MbUser selectOne(@PathVariable("uid") Long uid) {
-        return this.mbUserService.queryById(uid);
+        return gr.fail();
     }
 
 }

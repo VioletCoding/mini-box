@@ -23,7 +23,7 @@ import java.util.UUID;
 @Slf4j
 public class NimbusJoseJwt {
 
-    private static final String SECRET = "Violet EverGarden";
+    private static final String SECRET = "This JWT Sign By VioletEverGarden,this is a SpringCloud web project";
 
     /**
      * 通过HMAC算法生成token

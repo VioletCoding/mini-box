@@ -4,7 +4,6 @@ package com.ghw.minibox.service.impl;
 import cn.hutool.crypto.digest.MD5;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.ghw.minibox.component.NimbusJoseJwt;
 import com.ghw.minibox.component.RedisUtil;
 import com.ghw.minibox.entity.MbPhoto;
 import com.ghw.minibox.entity.MbUser;
@@ -41,8 +40,6 @@ public class MbUserServiceImpl implements MbUserService {
     private SendEmail sendEmail;
     @Resource
     private RedisUtil redisUtil;
-    @Resource
-    private NimbusJoseJwt jwt;
     @Resource
     private QiNiuUtil qiNiuUtil;
     @Value("${qiNiu.defaultPhoto}")
@@ -146,7 +143,7 @@ public class MbUserServiceImpl implements MbUserService {
         MD5 md5 = MD5.create();
         String digestHex16 = md5.digestHex16(mbUser.getPassword());
         mbUser.setPassword(digestHex16);
-        mbUser.setUserState(UserStatus.NORMAL.getMessage());
+        mbUser.setUserState(UserStatus.NORMAL.getStatus());
         int result = mbUserMapper.insert(mbUser);
         mbPhotoMapper.insert(new MbPhoto().setType(PostType.PHOTO_USER.getType()).setLink(defaultLink).setUid(mbUser.getUid()));
         redisUtil.remove(RedisPrefix.USER_TEMP.getPrefix() + mbUser.getUsername());
@@ -192,9 +189,16 @@ public class MbUserServiceImpl implements MbUserService {
             log.info("解析json为对象结果==>{}", json2Object);
             if (json2Object.getPassword() != null && !json2Object.getPassword().equals("")) {
                 String hex16Pwd = md5.digestHex16(user.getPassword());
-                if (hex16Pwd.equals(json2Object.getPassword()) && json2Object.getUserState().equals(UserStatus.NORMAL.getMessage())) {
+                if (hex16Pwd.equals(json2Object.getPassword()) && json2Object.getUserState().equals(UserStatus.NORMAL.getStatus())) {
+                    log.info("通过Redis登陆验证成功");
                     return ResultCode.OK.getMessage();
-                } else {
+                }
+                if (!hex16Pwd.equals(json2Object.getPassword())) {
+                    log.info("用户名密码不正确");
+                    return ResultCode.USER_AUTH_FAIL.getMessage();
+                }
+                if (!json2Object.getUserState().equals(UserStatus.NORMAL.getStatus())) {
+                    log.info("用户状态非法");
                     return ResultCode.USER_ILLEGAL.getMessage();
                 }
             }

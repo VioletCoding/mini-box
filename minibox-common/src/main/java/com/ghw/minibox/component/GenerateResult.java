@@ -73,7 +73,9 @@ public class GenerateResult<T> {
      * @return ReturnDto
      */
     public ReturnDto<T> fail() {
-        return returnDto.setSimple(ResultCode.BAD_REQUEST);
+        return returnDto
+                .setCode(ResultCode.BAD_REQUEST.getCode())
+                .setMessage(ResultCode.BAD_REQUEST.getMessage());
     }
 
     /**

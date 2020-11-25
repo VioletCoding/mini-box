@@ -3,6 +3,7 @@ package com.ghw.minibox.utils;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.ghw.minibox.component.GenerateResult;
 import com.ghw.minibox.dto.ReturnDto;
+import com.nimbusds.jose.JOSEException;
 import com.qiniu.common.QiniuException;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.mail.EmailException;
@@ -68,6 +69,13 @@ public class GlobalExceptionHandler {
         log.error("出现异常 {} , 原因如下 {} , 栈信息如下==> \n ", e.getMessage(), e.getCause());
         e.printStackTrace();
         return gr.custom(ResultCode.BAD_REQUEST.getCode(), "Json解析失败");
+    }
+
+    @ExceptionHandler(JOSEException.class)
+    public ReturnDto<String> jOSEException(JOSEException e) {
+        log.error("出现异常 {} , 原因如下 {} , 栈信息如下==> \n ", e.getMessage(), e.getCause());
+        e.printStackTrace();
+        return gr.custom(ResultCode.BAD_REQUEST.getCode(), "jwt签发失败");
     }
 
 
