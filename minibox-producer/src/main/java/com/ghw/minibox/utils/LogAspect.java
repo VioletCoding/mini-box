@@ -18,7 +18,6 @@ import javax.annotation.Resource;
 import java.lang.reflect.Method;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.concurrent.*;
 
 /**
  * @author Violet
@@ -56,9 +55,7 @@ public class LogAspect {
     @Around("pointcut()")
     public Object around(ProceedingJoinPoint joinPoint) throws Throwable {
         Object proceed = joinPoint.proceed();
-        long beginTime = System.currentTimeMillis();
-        long time = System.currentTimeMillis() - beginTime;
-        printLog(joinPoint, time);
+        printLog(joinPoint);
         return proceed;
     }
 
@@ -76,10 +73,10 @@ public class LogAspect {
      * u 请求的方法参数名称
      *
      * @param joinPoint AOP切入点
-     * @param time      时间
      */
     @Async
-    public void printLog(ProceedingJoinPoint joinPoint, long time) throws JsonProcessingException {
+    public void printLog(ProceedingJoinPoint joinPoint) throws JsonProcessingException {
+        long begin = System.currentTimeMillis();
         MethodSignature signature = (MethodSignature) joinPoint.getSignature();
         Method method = signature.getMethod();
         log.info("进入到{}方法", joinPoint.getTarget().getClass().getName() + "." + signature.getName());
@@ -99,7 +96,8 @@ public class LogAspect {
             }
             aopBean.setParam(params.toString());
         }
-        aopBean.setTime(TimeUnit.SECONDS.toSeconds(time));
+        long end = System.currentTimeMillis();
+        aopBean.setTime(end - begin);
         String json = objectMapper.writeValueAsString(aopBean);
         log.info("本次操作结果==>{}", json);
         redisUtil.set(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()), json);

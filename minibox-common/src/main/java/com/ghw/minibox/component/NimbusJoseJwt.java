@@ -3,6 +3,8 @@ package com.ghw.minibox.component;
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.date.DateUtil;
 import cn.hutool.json.JSONUtil;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ghw.minibox.dto.PayloadDto;
 import com.nimbusds.jose.*;
 import com.nimbusds.jose.crypto.MACSigner;
@@ -10,6 +12,8 @@ import com.nimbusds.jose.crypto.MACVerifier;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
+import javax.annotation.Resource;
+import javax.validation.constraints.NotNull;
 import java.text.ParseException;
 import java.util.Date;
 import java.util.UUID;
@@ -22,6 +26,9 @@ import java.util.UUID;
 @Component
 @Slf4j
 public class NimbusJoseJwt {
+
+    @Resource
+    private RedisUtil redisUtil;
 
     private static final String SECRET = "This JWT Sign By VioletEverGarden,this is a SpringCloud web project";
 
@@ -38,13 +45,21 @@ public class NimbusJoseJwt {
      * @return token
      * @throws JOSEException 抛出此异常时，生成token失败
      */
-    public String generateTokenByHMAC(String payloadParam) throws JOSEException {
+    public String generateTokenByHMAC(@NotNull PayloadDto payloadParam) throws JOSEException, JsonProcessingException {
         JWSHeader jwsHeader = new JWSHeader.Builder(JWSAlgorithm.HS256).type(JOSEObjectType.JWT).build();
-        Payload payload = new Payload(payloadParam);
+
+        ObjectMapper objectMapper = new ObjectMapper();
+        String obj2json = objectMapper.writeValueAsString(payloadParam);
+
+        Payload payload = new Payload(obj2json);
+
         JWSObject jwsObject = new JWSObject(jwsHeader, payload);
         JWSSigner jwsSigner = new MACSigner(SECRET);
         jwsObject.sign(jwsSigner);
-        return jwsObject.serialize();
+        String serialize = jwsObject.serialize();
+
+        redisUtil.set(payloadParam.getUsername(), serialize);
+        return serialize;
     }
 
     /**

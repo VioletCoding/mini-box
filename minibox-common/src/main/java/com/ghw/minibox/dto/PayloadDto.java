@@ -1,9 +1,7 @@
 package com.ghw.minibox.dto;
 
 import lombok.Builder;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.experimental.Accessors;
+import lombok.Getter;
 
 import java.util.List;
 
@@ -12,33 +10,31 @@ import java.util.List;
  * @description
  * @date 2020/11/15
  */
-@Data
-@Builder
-@EqualsAndHashCode(callSuper = false)
-@Accessors(chain = true)
+@Builder(toBuilder = true)
+@Getter
 public class PayloadDto {
     /**
      * 主键
      */
-    private String sub;
+    private final String sub;
     /**
      * 签发时间
      */
-    private Long iat;
+    private final Long iat;
     /**
      * 过期时间
      */
-    private Long exp;
+    private final Long exp;
     /**
      * JWT的ID
      */
-    private String jti;
+    private final String jti;
     /**
      * 用户名
      */
-    private String username;
+    private final String username;
     /**
      * 用户拥有的权限
      */
-    private List<String> authorities;
+    private final List<String> authorities;
 }

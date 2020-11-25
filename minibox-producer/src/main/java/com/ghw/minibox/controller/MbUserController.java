@@ -1,13 +1,16 @@
 package com.ghw.minibox.controller;
 
+import cn.hutool.core.util.IdUtil;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.ghw.minibox.component.GenerateResult;
 import com.ghw.minibox.component.NimbusJoseJwt;
+import com.ghw.minibox.dto.PayloadDto;
 import com.ghw.minibox.dto.ReturnDto;
 import com.ghw.minibox.entity.MbUser;
 import com.ghw.minibox.service.MbUserService;
 import com.ghw.minibox.utils.AOPLog;
 import com.ghw.minibox.utils.ResultCode;
+import com.ghw.minibox.utils.UserRole;
 import com.ghw.minibox.validatedgroup.AuthGroup;
 import com.ghw.minibox.validatedgroup.LoginGroup;
 import com.nimbusds.jose.JOSEException;
@@ -15,9 +18,14 @@ import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.mail.EmailException;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * (MbUser)表控制层
@@ -100,8 +108,22 @@ public class MbUserController {
     public ReturnDto<String> login(@Validated({LoginGroup.class}) @RequestBody MbUser mbUser) throws JsonProcessingException, JOSEException {
         String loginResult = mbUserService.login(mbUser);
 
-        if (loginResult.equals(ResultCode.OK.getMessage()))
-            return gr.success(jwt.generateTokenByHMAC(mbUser.getUsername()));
+        if (loginResult.equals(ResultCode.OK.getMessage())) {
+
+            List<String> list = new ArrayList<>();
+            list.add(UserRole.USER.getRole());
+
+            PayloadDto payloadDto = PayloadDto.builder()
+                    .username(mbUser.getUsername())
+                    .exp(604800000L)
+                    .iat(System.currentTimeMillis())
+                    .jti(IdUtil.fastSimpleUUID())
+                    .sub(IdUtil.fastSimpleUUID())
+                    .authorities(list)
+                    .build();
+
+            return gr.success(jwt.generateTokenByHMAC(payloadDto));
+        }
 
 
         if (loginResult.equals(ResultCode.NOT_FOUND.getMessage()))

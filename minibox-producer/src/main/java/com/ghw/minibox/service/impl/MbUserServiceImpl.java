@@ -57,9 +57,10 @@ public class MbUserServiceImpl implements MbUserService {
      */
     @Override
     public String queryByUsername(String username) {
-        Boolean result = redisUtil.exist(RedisPrefix.USER_TEMP.getPrefix() + username);
+        String lowerCase = username.toLowerCase();
+        Boolean result = redisUtil.exist(RedisPrefix.USER_TEMP.getPrefix() + lowerCase);
         if (result) return ResultCode.HAS_BEEN_SENT.getMessage();
-        Boolean exist = redisUtil.exist(RedisPrefix.USER_EXIST.getPrefix() + username);
+        Boolean exist = redisUtil.exist(RedisPrefix.USER_EXIST.getPrefix() + lowerCase);
         log.info("从Redis检查该用户是否存在==>{}", exist);
         if (exist) return ResultCode.USER_EXIST.getMessage();
         return ResultCode.BAD_REQUEST.getMessage();
@@ -81,6 +82,7 @@ public class MbUserServiceImpl implements MbUserService {
     @Async
     @Override
     public void sendEmail(String username) throws EmailException {
+        String lowerCase = username.toLowerCase();
         String subject = "Minibox验证码，请注意查收！";
         Random random = new Random();
         StringBuilder sb = new StringBuilder();
@@ -89,11 +91,11 @@ public class MbUserServiceImpl implements MbUserService {
             randomNum = random.nextInt(10);
             sb.append(randomNum);
         }
-        sendEmail.createEmail(username, subject, "尊敬的迷你盒用户，您本次的验证码为\n" + sb.toString() + "\n本次验证码有效时间为5分钟！");
-        log.info("本次邮件发送给==>{},主题为==>{},内容为==>{}", username, subject, sb.toString());
-        redisUtil.set(RedisPrefix.USER_TEMP.getPrefix() + username, sb.toString());
-        redisUtil.expire(RedisPrefix.USER_TEMP.getPrefix() + username, 300L);
-        log.info("本次存入Redis的Key==>{},Value==>{}", RedisPrefix.USER_TEMP.getPrefix() + username, sb.toString());
+        sendEmail.createEmail(lowerCase, subject, "尊敬的迷你盒用户，您本次的验证码为\n" + sb.toString() + "\n本次验证码有效时间为5分钟！");
+        log.info("本次邮件发送给==>{},主题为==>{},内容为==>{}", lowerCase, subject, sb.toString());
+        redisUtil.set(RedisPrefix.USER_TEMP.getPrefix() + lowerCase, sb.toString());
+        redisUtil.expire(RedisPrefix.USER_TEMP.getPrefix() + lowerCase, 300L);
+        log.info("本次存入Redis的Key==>{},Value==>{}", RedisPrefix.USER_TEMP.getPrefix() + lowerCase, sb.toString());
     }
 
     /**
@@ -107,7 +109,7 @@ public class MbUserServiceImpl implements MbUserService {
      */
     @Override
     public boolean authRegCode(String key, String value) {
-        String valueFromRedis = redisUtil.get(RedisPrefix.USER_TEMP.getPrefix() + key);
+        String valueFromRedis = redisUtil.get(RedisPrefix.USER_TEMP.getPrefix() + key.toLowerCase());
         log.info("从Redis获取到的value==>{}", valueFromRedis);
         return value.equals(valueFromRedis);
     }
@@ -138,6 +140,7 @@ public class MbUserServiceImpl implements MbUserService {
     @Transactional
     @Override
     public boolean register(MbUser mbUser) throws JsonProcessingException {
+        mbUser.setUsername(mbUser.getUsername().toLowerCase());
         MbUser user = mbUser.setNickname(DefaultUserInfoEnum.NICKNAME.getMessage());
         log.info("生成的nickname为==>{}", user.getNickname());
         MD5 md5 = MD5.create();
@@ -177,6 +180,7 @@ public class MbUserServiceImpl implements MbUserService {
      */
     @Override
     public String login(MbUser user) throws JsonProcessingException {
+        user.setUsername(user.getUsername().toLowerCase());
         String rs = redisUtil.get(RedisPrefix.USER_EXIST.getPrefix() + user.getUsername());
         log.info("从Redis获取到的结果为==>{}", rs);
         MbUser json2Object;
@@ -216,6 +220,7 @@ public class MbUserServiceImpl implements MbUserService {
             log.info("检测Redis与MySQL状态不同步，现已执行同步方法");
             String pwd = mbUser.getPassword();
             String hex16Pwd = md5.digestHex16(user.getPassword());
+
             if (pwd.equals(hex16Pwd) && mbUser.getUserState().equals(UserStatus.NORMAL.getStatus()))
                 return ResultCode.OK.getMessage();
         }
