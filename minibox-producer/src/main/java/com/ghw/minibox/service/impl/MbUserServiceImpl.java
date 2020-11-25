@@ -12,7 +12,6 @@ import com.ghw.minibox.mapper.MbPhotoMapper;
 import com.ghw.minibox.mapper.MbUserMapper;
 import com.ghw.minibox.service.MbUserService;
 import com.ghw.minibox.utils.*;
-import com.qiniu.common.QiniuException;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.mail.EmailException;
 import org.springframework.beans.factory.annotation.Value;
@@ -71,15 +70,14 @@ public class MbUserServiceImpl implements MbUserService {
 
 
     /**
-     * 异步发送邮件，并写入Redis
+     * 异步方法
+     * 发送邮件，并写入Redis
      * <p>
      * 如果queryByUsername校验通过，那么可以往下执行这个方法
      * <p>
-     * 该方法会生成一个6位数的随机验证码
+     * 该方法会生成一个6位数的随机验证码，并且放到邮件内容发送给注册的用户
      * <p>
-     * 并且放到邮件内容发送给注册的用户
-     * <p>
-     * 验证码会放进Redis里保存五分钟，300秒后自动失效
+     * 验证码会放进Redis里保存300秒钟，300秒后自动失效
      *
      * @param username 邮箱
      */
@@ -118,11 +116,12 @@ public class MbUserServiceImpl implements MbUserService {
     }
 
     @Override
-    public boolean upload(String ak, String sk, String bucket, InputStream inputStream) throws QiniuException {
+    public boolean upload(String ak, String sk, String bucket, InputStream inputStream) {
         return false;
     }
 
     /**
+     * 必须带回滚
      * 校验都成功后可以允许注册
      * <p>
      * 默认用户名生成，生成一个带 "用户_" 前缀的昵称，后缀为随机值，随机值为MongoDB ID生成策略
@@ -147,6 +146,7 @@ public class MbUserServiceImpl implements MbUserService {
         MD5 md5 = MD5.create();
         String digestHex16 = md5.digestHex16(mbUser.getPassword());
         mbUser.setPassword(digestHex16);
+        mbUser.setUserState(UserStatus.NORMAL.getMessage());
         int result = mbUserMapper.insert(mbUser);
         mbPhotoMapper.insert(new MbPhoto().setType(PostType.PHOTO_USER.getType()).setLink(defaultLink).setUid(mbUser.getUid()));
         redisUtil.remove(RedisPrefix.USER_TEMP.getPrefix() + mbUser.getUsername());
@@ -157,9 +157,65 @@ public class MbUserServiceImpl implements MbUserService {
         return result > 0;
     }
 
+    /**
+     * 登陆方法，用于用户登陆
+     * <p>
+     * 首先从Redis获取用户的持久化信息
+     * <p>
+     * -如果获取到了：通过ObjectMapper转成对象，比对加密后的pwd是否一致，一致返回ResultCode.OK.getMessage()
+     * -否则：通过username查找MySQL
+     * <p>
+     * --如果没有结果：返回ResultCode.NOT_FOUND.getMessage()
+     * <p>
+     * --如果有结果：同步数据到Redis，比对加密后的密码是否一致，以及用户状态是否为UserStatus.NORMAL.getStatus()
+     * ---true：返回ResultCode.OK.getMessage()
+     * ---false：返回ResultCode.NOT_FOUND.getMessage()
+     * ---false：如果状态不为UserStatus.NORMAL.getStatus()返回ResultCode.USER_ILLEGAL.getMessage()
+     * <p>
+     * 以上情况都不符合，返回ResultCode.NOT_FOUND.getMessage()
+     *
+     * @param user 用户实体
+     * @return ResultCode
+     * @throws JsonProcessingException Json解析失败
+     */
     @Override
-    public boolean login(MbUser user) {
-        return false;
+    public String login(MbUser user) throws JsonProcessingException {
+        String rs = redisUtil.get(RedisPrefix.USER_EXIST.getPrefix() + user.getUsername());
+        log.info("从Redis获取到的结果为==>{}", rs);
+        MbUser json2Object;
+        ObjectMapper objectMapper;
+        MD5 md5 = new MD5();
+
+        if (rs != null && !rs.equals("")) {
+            objectMapper = new ObjectMapper();
+            json2Object = objectMapper.readValue(rs, MbUser.class);
+            log.info("解析json为对象结果==>{}", json2Object);
+            if (json2Object.getPassword() != null && !json2Object.getPassword().equals("")) {
+                String hex16Pwd = md5.digestHex16(user.getPassword());
+                if (hex16Pwd.equals(json2Object.getPassword()) && json2Object.getUserState().equals(UserStatus.NORMAL.getMessage())) {
+                    return ResultCode.OK.getMessage();
+                } else {
+                    return ResultCode.USER_ILLEGAL.getMessage();
+                }
+            }
+        }
+
+        if (!redisUtil.exist(RedisPrefix.USER_EXIST.getPrefix() + user.getUsername())) {
+            log.info("未能从Redis获取到用户信息，准备查找MySQL...");
+            MbUser mbUser = mbUserMapper.queryByUsername(user.getUsername());
+            if (mbUser == null) {
+                log.info("未能从MySQL获取到用户信息，用户未注册！");
+                return ResultCode.NOT_FOUND.getMessage();
+            }
+            objectMapper = new ObjectMapper();
+            redisUtil.set(RedisPrefix.USER_EXIST.getPrefix() + mbUser.getUsername(), objectMapper.writeValueAsString(mbUser));
+            log.info("检测Redis与MySQL状态不同步，现已执行同步方法");
+            String pwd = mbUser.getPassword();
+            String hex16Pwd = md5.digestHex16(user.getPassword());
+            if (pwd.equals(hex16Pwd) && mbUser.getUserState().equals(UserStatus.NORMAL.getStatus()))
+                return ResultCode.OK.getMessage();
+        }
+        return ResultCode.NOT_FOUND.getMessage();
     }
 
     /**

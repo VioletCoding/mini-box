@@ -23,7 +23,8 @@ public enum ResultCode {
     INTERNAL_SERVER_ERROR(500, "服务器内部错误"),
 
     HAS_BEEN_SENT(900, "已发送"),
-    USER_EXIST(901, "用户已存在");
+    USER_EXIST(901, "用户已存在"),
+    USER_ILLEGAL(902, "非法用户");
 
 
     private final int code;

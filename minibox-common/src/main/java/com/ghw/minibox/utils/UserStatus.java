@@ -12,15 +12,17 @@ import lombok.Getter;
 @Getter
 public enum UserStatus {
 
-    NORMAL("NORMAL"),
-    INVALID("INVALID"),
-    BANNED("BANNED");
+    NORMAL("NORMAL", "正常"),
+    INVALID("INVALID", "非法用户"),
+    BANNED("BANNED", "用户被封禁");
 
 
     private final String status;
+    private final String message;
 
-    UserStatus(String status) {
+    UserStatus(String status, String message) {
         this.status = status;
+        this.message = message;
     }
 
 }

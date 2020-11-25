@@ -8,6 +8,8 @@ import com.ghw.minibox.service.MbUserService;
 import com.ghw.minibox.utils.AOPLog;
 import com.ghw.minibox.utils.ResultCode;
 import com.ghw.minibox.validatedgroup.AuthGroup;
+import com.ghw.minibox.validatedgroup.LoginGroup;
+import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.mail.EmailException;
 import org.springframework.validation.annotation.Validated;
@@ -18,12 +20,13 @@ import javax.annotation.Resource;
 /**
  * (MbUser)表控制层
  *
- * @author makejava
+ * @author Violet
  * @since 2020-11-19 12:20:22
  */
 @RestController
 @RequestMapping("user")
 @Slf4j
+@ApiOperation("用户控制层")
 public class MbUserController {
 
     @Resource
@@ -45,6 +48,7 @@ public class MbUserController {
      * @return ReturnDto
      */
     @AOPLog("注册前校验")
+    @ApiOperation("注册前校验")
     @PostMapping("beforeRegister")
     public ReturnDto<MbUser> beforeRegister(@Validated(AuthGroup.class) @RequestBody MbUser mbUser) throws EmailException {
         String query = mbUserService.queryByUsername(mbUser.getUsername());
@@ -65,6 +69,7 @@ public class MbUserController {
      * @return ReturnDto
      */
     @AOPLog("注册")
+    @ApiOperation("注册")
     @PostMapping("register")
     public ReturnDto<MbUser> register(@Validated(AuthGroup.class) @RequestBody MbUser mbUser) throws JsonProcessingException {
         boolean result = mbUserService.authRegCode(mbUser.getUsername(), mbUser.getCode());
@@ -73,6 +78,19 @@ public class MbUserController {
             if (register) return gr.success();
         }
         if (!result) return gr.custom(ResultCode.BAD_REQUEST.getCode(), "验证码无效");
+        return gr.fail();
+    }
+
+    @AOPLog("登陆")
+    @ApiOperation("登陆")
+    @PostMapping("login")
+    public ReturnDto<MbUser> login(@Validated({LoginGroup.class}) @RequestBody MbUser mbUser) throws JsonProcessingException {
+        String loginResult = mbUserService.login(mbUser);
+        if (loginResult.equals(ResultCode.OK.getMessage())) return gr.success();
+        if (loginResult.equals(ResultCode.NOT_FOUND.getMessage()))
+            return gr.custom(ResultCode.NOT_FOUND.getCode(), "用户未注册");
+        if (loginResult.equals(ResultCode.USER_ILLEGAL.getMessage()))
+            return gr.custom(ResultCode.USER_ILLEGAL.getCode(), ResultCode.USER_ILLEGAL.getMessage());
         return gr.fail();
     }
 

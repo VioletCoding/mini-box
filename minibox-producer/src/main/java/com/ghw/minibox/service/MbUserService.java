@@ -55,7 +55,7 @@ public interface MbUserService {
      * @param user 用户实体
      * @return true or false
      */
-    boolean login(MbUser user);
+    String login(MbUser user) throws JsonProcessingException;
 
     /**
      * 异步方法
