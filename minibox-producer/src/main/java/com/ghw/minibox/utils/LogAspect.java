@@ -62,6 +62,8 @@ public class LogAspect {
     /**
      * 异步打印日志
      * <p>
+     * 该方法会打印标注了@AOPLog注解的方法的执行信息，包括方法在哪个类、入参是什么、执行时间
+     * <p>
      * setOperation 注解上的描述
      * <p>
      * className 请求的类名

@@ -22,10 +22,13 @@ public enum ResultCode {
 
     INTERNAL_SERVER_ERROR(500, "服务器内部错误"),
 
-    HAS_BEEN_SENT(900, "已发送"),
+    HAS_BEEN_SENT(900, "邮件已发送"),
     USER_EXIST(901, "用户已存在"),
-    USER_AUTH_FAIL(902, "用户认证失败，用户名或密码不正确"),
-    USER_ILLEGAL(903, "非法用户");
+    USER_BANNED(902, "用户被封禁"),
+    USER_AUTH_FAIL(903, "用户名或密码不正确"),
+    USER_ILLEGAL(904, "用户非法"),
+
+    RECORD_DISABLE(905, "该条记录不可用");
 
 
     private final int code;

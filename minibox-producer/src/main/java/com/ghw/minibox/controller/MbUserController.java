@@ -1,6 +1,5 @@
 package com.ghw.minibox.controller;
 
-import cn.hutool.core.util.IdUtil;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.ghw.minibox.component.GenerateResult;
 import com.ghw.minibox.component.NimbusJoseJwt;
@@ -27,6 +26,7 @@ import javax.annotation.Resource;
 import java.util.ArrayList;
 import java.util.List;
 
+
 /**
  * (MbUser)表控制层
  *
@@ -38,13 +38,10 @@ import java.util.List;
 @Slf4j
 @ApiOperation("用户控制层")
 public class MbUserController {
-
     @Resource
     private MbUserService mbUserService;
-
     @Resource
     private GenerateResult<String> gr;
-
     @Resource
     private NimbusJoseJwt jwt;
 
@@ -106,35 +103,26 @@ public class MbUserController {
     @ApiOperation("登陆")
     @PostMapping("login")
     public ReturnDto<String> login(@Validated({LoginGroup.class}) @RequestBody MbUser mbUser) throws JsonProcessingException, JOSEException {
-        String loginResult = mbUserService.login(mbUser);
 
-        if (loginResult.equals(ResultCode.OK.getMessage())) {
+        ReturnDto<String> login = mbUserService.login(mbUser);
 
-            List<String> list = new ArrayList<>();
-            list.add(UserRole.USER.getRole());
-
-            PayloadDto payloadDto = PayloadDto.builder()
-                    .username(mbUser.getUsername())
-                    .exp(604800000L)
-                    .iat(System.currentTimeMillis())
-                    .jti(IdUtil.fastSimpleUUID())
-                    .sub(IdUtil.fastSimpleUUID())
-                    .authorities(list)
-                    .build();
-
-            return gr.success(jwt.generateTokenByHMAC(payloadDto));
+        if (login.getCode() == ResultCode.OK.getCode()) {
+            log.info("进入了OK");
+            List<String> roleList = new ArrayList<>();
+            roleList.add(UserRole.USER.getRole());
+            PayloadDto payloadDto = jwt.buildToken(mbUser.getUsername(), 604800000L, roleList);
+            String token = jwt.generateTokenByHMAC(payloadDto);
+            return gr.success(token);
         }
 
-
-        if (loginResult.equals(ResultCode.NOT_FOUND.getMessage()))
-            return gr.custom(ResultCode.NOT_FOUND.getCode(), "用户未注册");
-
-        if (loginResult.equals(ResultCode.USER_AUTH_FAIL.getMessage()))
+        if (login.getCode() == ResultCode.USER_AUTH_FAIL.getCode()) {
+            log.info("进入了USER_AUTH_FAIL");
             return gr.custom(ResultCode.USER_AUTH_FAIL.getCode(), ResultCode.USER_AUTH_FAIL.getMessage());
-
-        if (loginResult.equals(ResultCode.USER_ILLEGAL.getMessage()))
+        }
+        if (login.getCode() == ResultCode.USER_ILLEGAL.getCode()) {
+            log.info("进入了USER_ILLEGAL");
             return gr.custom(ResultCode.USER_ILLEGAL.getCode(), ResultCode.USER_ILLEGAL.getMessage());
-
+        }
         return gr.fail();
     }
 

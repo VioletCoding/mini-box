@@ -2,6 +2,7 @@ package com.ghw.minibox.component;
 
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.date.DateUtil;
+import cn.hutool.core.util.IdUtil;
 import cn.hutool.json.JSONUtil;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -16,6 +17,7 @@ import javax.annotation.Resource;
 import javax.validation.constraints.NotNull;
 import java.text.ParseException;
 import java.util.Date;
+import java.util.List;
 import java.util.UUID;
 
 /**
@@ -60,6 +62,25 @@ public class NimbusJoseJwt {
 
         redisUtil.set(payloadParam.getUsername(), serialize);
         return serialize;
+    }
+
+    /**
+     * 定制jwt载荷
+     *
+     * @param username    用户名
+     * @param exp         过期时间
+     * @param authorities 权限
+     * @return token
+     */
+    public PayloadDto buildToken(String username, Long exp, List<String> authorities) {
+        return PayloadDto.builder()
+                .username(username)
+                .exp(exp)
+                .iat(System.currentTimeMillis())
+                .jti(IdUtil.fastSimpleUUID())
+                .sub(IdUtil.fastSimpleUUID())
+                .authorities(authorities)
+                .build();
     }
 
     /**

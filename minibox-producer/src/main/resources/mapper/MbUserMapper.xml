@@ -35,7 +35,7 @@
 
     <!--查询单个通过username-->
     <select id="queryByUsername" resultMap="MbUserMap">
-        select username
+        select uid, username, password,user_state
         from minibox.mb_user
         where username = #{username}
     </select>

@@ -1,6 +1,7 @@
 package com.ghw.minibox.service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.ghw.minibox.dto.ReturnDto;
 import com.ghw.minibox.entity.MbUser;
 import com.qiniu.common.QiniuException;
 import org.apache.commons.mail.EmailException;
@@ -50,12 +51,13 @@ public interface MbUserService {
     boolean register(MbUser mbUser) throws JsonProcessingException;
 
     /**
-     * 登陆
+     * 登陆-查Redis
      *
-     * @param user 用户实体
-     * @return true or false
+     * @param mbUser 用户实体
+     * @return ReturnDto
      */
-    String login(MbUser user) throws JsonProcessingException;
+    ReturnDto<String> login(MbUser mbUser);
+
 
     /**
      * 异步方法

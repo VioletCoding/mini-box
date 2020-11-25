@@ -32,7 +32,7 @@ public class MbUser implements Serializable {
     private Long uid;
 
     @ApiModelProperty(notes = "验证码")
-    @NotNull(message = "验证码不能为空", groups = RegisterGroup.class)
+    @NotNull(message = "验证码code不能为空", groups = RegisterGroup.class)
     private String code;
     /**
      * 昵称

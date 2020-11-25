@@ -4,7 +4,9 @@ package com.ghw.minibox.service.impl;
 import cn.hutool.crypto.digest.MD5;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.ghw.minibox.component.GenerateResult;
 import com.ghw.minibox.component.RedisUtil;
+import com.ghw.minibox.dto.ReturnDto;
 import com.ghw.minibox.entity.MbPhoto;
 import com.ghw.minibox.entity.MbUser;
 import com.ghw.minibox.mapper.MbPhotoMapper;
@@ -40,10 +42,12 @@ public class MbUserServiceImpl implements MbUserService {
     private SendEmail sendEmail;
     @Resource
     private RedisUtil redisUtil;
-    @Resource
-    private QiNiuUtil qiNiuUtil;
+    //    @Resource
+//    private QiNiuUtil qiNiuUtil;
     @Value("${qiNiu.defaultPhoto}")
     private String defaultLink;
+    @Resource
+    private GenerateResult<String> gs;
 
     /**
      * 查询Redis持久化记录，如果返回的对象不为空，就证明邮箱username已经被占用
@@ -158,73 +162,33 @@ public class MbUserServiceImpl implements MbUserService {
     }
 
     /**
-     * 登陆方法，用于用户登陆
+     * 登陆-查MySQL
      * <p>
-     * 首先从Redis获取用户的持久化信息
-     * <p>
-     * -如果获取到了：通过ObjectMapper转成对象，比对加密后的pwd是否一致，一致返回ResultCode.OK.getMessage()
-     * -否则：通过username查找MySQL
-     * <p>
-     * --如果没有结果：返回ResultCode.NOT_FOUND.getMessage()
-     * <p>
-     * --如果有结果：同步数据到Redis，比对加密后的密码是否一致，以及用户状态是否为UserStatus.NORMAL.getStatus()
-     * ---true：返回ResultCode.OK.getMessage()
-     * ---false：返回ResultCode.NOT_FOUND.getMessage()
-     * ---false：如果状态不为UserStatus.NORMAL.getStatus()返回ResultCode.USER_ILLEGAL.getMessage()
-     * <p>
-     * 以上情况都不符合，返回ResultCode.NOT_FOUND.getMessage()
+     * 逻辑跟redis2login差不多，不过这是保底的方法了，再不行的话，用户就是查无此人
      *
-     * @param user 用户实体
-     * @return ResultCode
-     * @throws JsonProcessingException Json解析失败
+     * @param mbUser 用户实体
+     * @return ReturnDto
      */
     @Override
-    public String login(MbUser user) throws JsonProcessingException {
-        user.setUsername(user.getUsername().toLowerCase());
-        String rs = redisUtil.get(RedisPrefix.USER_EXIST.getPrefix() + user.getUsername());
-        log.info("从Redis获取到的结果为==>{}", rs);
-        MbUser json2Object;
-        ObjectMapper objectMapper;
+    public ReturnDto<String> login(MbUser mbUser) {
+
+        MbUser fromMySQL = mbUserMapper.queryByUsername(mbUser.getUsername());
+        if (fromMySQL == null) return gs.custom(ResultCode.NOT_FOUND.getCode(), ResultCode.NOT_FOUND.getMessage());
+
         MD5 md5 = new MD5();
+        String hex16 = md5.digestHex16(mbUser.getPassword());
+        log.info("打印一下fromMySQL==>{}",fromMySQL);
+        if (fromMySQL.getPassword().equals(hex16)) {
+            String userState = fromMySQL.getUserState();
 
-        if (rs != null && !rs.equals("")) {
-            objectMapper = new ObjectMapper();
-            json2Object = objectMapper.readValue(rs, MbUser.class);
-            log.info("解析json为对象结果==>{}", json2Object);
-            if (json2Object.getPassword() != null && !json2Object.getPassword().equals("")) {
-                String hex16Pwd = md5.digestHex16(user.getPassword());
-                if (hex16Pwd.equals(json2Object.getPassword()) && json2Object.getUserState().equals(UserStatus.NORMAL.getStatus())) {
-                    log.info("通过Redis登陆验证成功");
-                    return ResultCode.OK.getMessage();
-                }
-                if (!hex16Pwd.equals(json2Object.getPassword())) {
-                    log.info("用户名密码不正确");
-                    return ResultCode.USER_AUTH_FAIL.getMessage();
-                }
-                if (!json2Object.getUserState().equals(UserStatus.NORMAL.getStatus())) {
-                    log.info("用户状态非法");
-                    return ResultCode.USER_ILLEGAL.getMessage();
-                }
-            }
+            if (userState.equals(UserStatus.NORMAL.getStatus()))
+                return gs.success();
+            if (userState.equals(UserStatus.BANNED.getStatus()))
+                return gs.custom(ResultCode.USER_BANNED.getCode(), ResultCode.USER_BANNED.getMessage());
+            if (userState.equals(UserStatus.INVALID.getStatus()))
+                return gs.custom(ResultCode.USER_ILLEGAL.getCode(), ResultCode.USER_ILLEGAL.getMessage());
         }
-
-        if (!redisUtil.exist(RedisPrefix.USER_EXIST.getPrefix() + user.getUsername())) {
-            log.info("未能从Redis获取到用户信息，准备查找MySQL...");
-            MbUser mbUser = mbUserMapper.queryByUsername(user.getUsername());
-            if (mbUser == null) {
-                log.info("未能从MySQL获取到用户信息，用户未注册！");
-                return ResultCode.NOT_FOUND.getMessage();
-            }
-            objectMapper = new ObjectMapper();
-            redisUtil.set(RedisPrefix.USER_EXIST.getPrefix() + mbUser.getUsername(), objectMapper.writeValueAsString(mbUser));
-            log.info("检测Redis与MySQL状态不同步，现已执行同步方法");
-            String pwd = mbUser.getPassword();
-            String hex16Pwd = md5.digestHex16(user.getPassword());
-
-            if (pwd.equals(hex16Pwd) && mbUser.getUserState().equals(UserStatus.NORMAL.getStatus()))
-                return ResultCode.OK.getMessage();
-        }
-        return ResultCode.NOT_FOUND.getMessage();
+        return gs.fail();
     }
 
     /**
