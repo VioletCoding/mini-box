@@ -93,10 +93,14 @@ public class MbUserController {
     @ApiOperation("登陆")
     @PostMapping("login")
     public ReturnDto<String> login(@Validated({LoginGroup.class}) @RequestBody MbUser mbUser) throws JsonProcessingException, JOSEException {
-        log.info("mbUser==>{}", mbUser);
         String login = mbUserService.login(mbUser);
-        if (login != null) return gr.success(login);
-        return gr.fail();
+
+        if (login.equals(ResultCode.USER_AUTH_FAIL.getMessage()))
+            return gr.custom(ResultCode.USER_AUTH_FAIL.getCode(), ResultCode.USER_AUTH_FAIL.getMessage());
+        if (login.equals(ResultCode.NOT_FOUND.getMessage()))
+            return gr.custom(ResultCode.NOT_FOUND.getCode(), "用户不存在");
+
+        return gr.success(login);
     }
 
     @AOPLog("登出")

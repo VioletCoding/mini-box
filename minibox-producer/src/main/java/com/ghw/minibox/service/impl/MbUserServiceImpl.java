@@ -168,7 +168,7 @@ public class MbUserServiceImpl implements MbUserService {
     @Override
     public String login(MbUser mbUser) throws JsonProcessingException, JOSEException {
         MbUser fromMySQL = mbUserMapper.queryByUsername(mbUser.getUsername());
-        if (fromMySQL == null) return null;
+        if (fromMySQL == null) return ResultCode.NOT_FOUND.getMessage();
         MD5 md5 = new MD5();
         String hex16 = md5.digestHex16(mbUser.getPassword());
         if (fromMySQL.getPassword().equals(hex16)) {
@@ -177,7 +177,7 @@ public class MbUserServiceImpl implements MbUserService {
             PayloadDto payloadDto = jwt.buildToken(mbUser.getUsername(), 604800000L, roleList);
             return jwt.generateTokenByHMAC(payloadDto);
         }
-        return null;
+        return ResultCode.USER_AUTH_FAIL.getMessage();
     }
 
     /**
