@@ -54,9 +54,10 @@ public class MbUserController {
     @ApiOperation("注册前校验")
     @PostMapping("beforeRegister")
     public ReturnDto<String> beforeRegister(@Validated(SingleGroup.class) @RequestBody MbUser mbUser) throws EmailException {
+        log.info("mbUser==>{}", mbUser);
         boolean queryByUsername = mbUserService.queryByUsername(mbUser.getUsername());
         if (queryByUsername) return gr.success();
-        return gr.fail();
+        return gr.custom(ResultCode.USER_EXIST.getCode(), ResultCode.USER_EXIST.getMessage());
     }
 
     /**
@@ -92,6 +93,7 @@ public class MbUserController {
     @ApiOperation("登陆")
     @PostMapping("login")
     public ReturnDto<String> login(@Validated({LoginGroup.class}) @RequestBody MbUser mbUser) throws JsonProcessingException, JOSEException {
+        log.info("mbUser==>{}", mbUser);
         String login = mbUserService.login(mbUser);
         if (login != null) return gr.success(login);
         return gr.fail();
