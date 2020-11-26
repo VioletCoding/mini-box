@@ -1,8 +1,8 @@
 package com.ghw.minibox.service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.ghw.minibox.dto.ReturnDto;
 import com.ghw.minibox.entity.MbUser;
+import com.nimbusds.jose.JOSEException;
 import com.qiniu.common.QiniuException;
 import org.apache.commons.mail.EmailException;
 
@@ -24,14 +24,14 @@ public interface MbUserService {
      * @param username 邮箱
      * @return 实体
      */
-    String queryByUsername(String username);
+    boolean queryByUsername(String username) throws EmailException;
 
     /**
      * 注册之前的操作
      *
      * @param username 用户名
      */
-    void sendEmail(String username) throws EmailException;
+    void sendEmail(String username, String subject, String msg) throws EmailException;
 
     /**
      * 校验验证码是否正确
@@ -48,7 +48,7 @@ public interface MbUserService {
      * @param mbUser 实体
      * @return true or false
      */
-    boolean register(MbUser mbUser) throws JsonProcessingException;
+    boolean register(MbUser mbUser);
 
     /**
      * 登陆-查Redis
@@ -56,7 +56,22 @@ public interface MbUserService {
      * @param mbUser 用户实体
      * @return ReturnDto
      */
-    ReturnDto<String> login(MbUser mbUser);
+    String login(MbUser mbUser) throws JsonProcessingException, JOSEException;
+
+    /**
+     * 忘记密码校验
+     *
+     * @param mbUser 实体
+     */
+    boolean forgetPassword(MbUser mbUser) throws EmailException;
+
+    /**
+     * 重置密码
+     *
+     * @param mbUser 实体
+     * @return ReturnDto<String>
+     */
+    boolean doResetPassword(MbUser mbUser);
 
 
     /**

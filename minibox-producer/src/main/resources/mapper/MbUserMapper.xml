@@ -35,10 +35,18 @@
 
     <!--查询单个通过username-->
     <select id="queryByUsername" resultMap="MbUserMap">
-        select uid, username, password,user_state
+        select uid, username, password, user_state
         from minibox.mb_user
         where username = #{username}
     </select>
+
+    <!--重置密码-->
+    <update id="updatePassword">
+        UPDATE mb_user
+        SET password = #{password}
+        WHERE username = #{username}
+          AND user_state = 'NORMAL';
+    </update>
 
     <!--查询指定行数据-->
     <select id="queryAllByLimit" resultMap="MbUserMap">

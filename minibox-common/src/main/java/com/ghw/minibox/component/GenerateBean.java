@@ -1,7 +1,7 @@
 package com.ghw.minibox.component;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.ghw.minibox.dto.ReturnDto;
+import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Component;
 
 /**
@@ -11,10 +11,7 @@ import org.springframework.stereotype.Component;
  */
 @Component
 public class GenerateBean {
-    public ReturnDto<Object> getReturnDto() {
-        return new ReturnDto<>();
-    }
-
+    @Bean
     public ObjectMapper getObjectMapper() {
         return new ObjectMapper();
     }

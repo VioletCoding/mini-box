@@ -51,6 +51,13 @@ public class RedisUtil {
         return srt.opsForValue().get(key);
     }
 
+    /**
+     * 失效时间
+     *
+     * @param key    redis的key
+     * @param expire 过期时间，单位是秒
+     * @throws NullPointerException 空指针异常
+     */
     public void expire(String key, Long expire) throws NullPointerException {
         if (key == null || key.equals("")) return;
         if (expire == null) return;

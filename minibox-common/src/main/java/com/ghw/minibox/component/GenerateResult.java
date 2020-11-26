@@ -4,7 +4,6 @@ import com.ghw.minibox.dto.ReturnDto;
 import com.ghw.minibox.utils.ResultCode;
 import org.springframework.stereotype.Component;
 
-import javax.annotation.Resource;
 import java.util.List;
 import java.util.Map;
 
@@ -13,19 +12,15 @@ import java.util.Map;
  * @description 生成返回的统一结果集
  * @date 2020/11/18
  */
-
 @Component
 public class GenerateResult<T> {
-    @Resource
-    private ReturnDto<T> returnDto;
-
     /**
      * 成功，但不返回数据
      *
      * @return ReturnDto
      */
     public ReturnDto<T> success() {
-        return returnDto.setCode(ResultCode.OK.getCode()).setMessage(ResultCode.OK.getMessage());
+        return new ReturnDto<T>().setCode(ResultCode.OK.getCode()).setMessage(ResultCode.OK.getMessage());
     }
 
     /**
@@ -35,7 +30,7 @@ public class GenerateResult<T> {
      * @return ReturnDto
      */
     public ReturnDto<T> success(T data) {
-        return returnDto
+        return new ReturnDto<T>()
                 .setCode(ResultCode.OK.getCode())
                 .setMessage(ResultCode.OK.getMessage())
                 .setData(data);
@@ -48,7 +43,7 @@ public class GenerateResult<T> {
      * @return ReturnDto
      */
     public ReturnDto<T> success(Map<String, T> data) {
-        return returnDto
+        return new ReturnDto<T>()
                 .setCode(ResultCode.OK.getCode())
                 .setMessage(ResultCode.OK.getMessage())
                 .setMapData(data);
@@ -61,7 +56,7 @@ public class GenerateResult<T> {
      * @return ReturnDto
      */
     public ReturnDto<T> success(List<T> data) {
-        return returnDto
+        return new ReturnDto<T>()
                 .setCode(ResultCode.OK.getCode())
                 .setMessage(ResultCode.OK.getMessage())
                 .setListData(data);
@@ -73,7 +68,7 @@ public class GenerateResult<T> {
      * @return ReturnDto
      */
     public ReturnDto<T> fail() {
-        return returnDto
+        return new ReturnDto<T>()
                 .setCode(ResultCode.BAD_REQUEST.getCode())
                 .setMessage(ResultCode.BAD_REQUEST.getMessage());
     }
@@ -86,7 +81,7 @@ public class GenerateResult<T> {
      * @return ReturnDto
      */
     public ReturnDto<T> custom(int code, String message) {
-        return returnDto
+        return new ReturnDto<T>()
                 .setCode(code)
                 .setMessage(message);
     }
@@ -100,7 +95,7 @@ public class GenerateResult<T> {
      * @return ReturnDto
      */
     public ReturnDto<T> custom(int code, String message, T data) {
-        return returnDto
+        return new ReturnDto<T>()
                 .setCode(code)
                 .setMessage(message)
                 .setData(data);

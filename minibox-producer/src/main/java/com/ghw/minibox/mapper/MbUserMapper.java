@@ -22,6 +22,14 @@ public interface MbUserMapper {
     MbUser queryByUsername(String username);
 
     /**
+     * 重置密码
+     *
+     * @param mbUser 实体
+     * @return >0
+     */
+    int updatePassword(MbUser mbUser);
+
+    /**
      * 通过ID查询单条数据
      *
      * @param uid 主键

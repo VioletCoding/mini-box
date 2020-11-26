@@ -1,18 +1,17 @@
 package com.ghw.minibox.service.impl;
 
-
 import cn.hutool.crypto.digest.MD5;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.ghw.minibox.component.GenerateResult;
+import com.ghw.minibox.component.NimbusJoseJwt;
 import com.ghw.minibox.component.RedisUtil;
-import com.ghw.minibox.dto.ReturnDto;
+import com.ghw.minibox.dto.PayloadDto;
 import com.ghw.minibox.entity.MbPhoto;
 import com.ghw.minibox.entity.MbUser;
 import com.ghw.minibox.mapper.MbPhotoMapper;
 import com.ghw.minibox.mapper.MbUserMapper;
 import com.ghw.minibox.service.MbUserService;
 import com.ghw.minibox.utils.*;
+import com.nimbusds.jose.JOSEException;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.mail.EmailException;
 import org.springframework.beans.factory.annotation.Value;
@@ -22,6 +21,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
@@ -42,12 +42,12 @@ public class MbUserServiceImpl implements MbUserService {
     private SendEmail sendEmail;
     @Resource
     private RedisUtil redisUtil;
+    @Resource
+    private NimbusJoseJwt jwt;
     //    @Resource
 //    private QiNiuUtil qiNiuUtil;
     @Value("${qiNiu.defaultPhoto}")
     private String defaultLink;
-    @Resource
-    private GenerateResult<String> gs;
 
     /**
      * 查询Redis持久化记录，如果返回的对象不为空，就证明邮箱username已经被占用
@@ -60,14 +60,16 @@ public class MbUserServiceImpl implements MbUserService {
      * @return 实体
      */
     @Override
-    public String queryByUsername(String username) {
+    public boolean queryByUsername(String username) throws EmailException {
         String lowerCase = username.toLowerCase();
-        Boolean result = redisUtil.exist(RedisPrefix.USER_TEMP.getPrefix() + lowerCase);
-        if (result) return ResultCode.HAS_BEEN_SENT.getMessage();
-        Boolean exist = redisUtil.exist(RedisPrefix.USER_EXIST.getPrefix() + lowerCase);
-        log.info("从Redis检查该用户是否存在==>{}", exist);
-        if (exist) return ResultCode.USER_EXIST.getMessage();
-        return ResultCode.BAD_REQUEST.getMessage();
+        MbUser mbUser = mbUserMapper.queryByUsername(lowerCase);
+        if (mbUser == null) {
+            String subject = "Minibox验证码，请注意查收！";
+            String msg = "您正在注册迷你盒，本次验证码5分钟内有效：";
+            sendEmail(lowerCase, subject, msg);
+            return true;
+        }
+        return false;
     }
 
 
@@ -85,9 +87,8 @@ public class MbUserServiceImpl implements MbUserService {
      */
     @Async
     @Override
-    public void sendEmail(String username) throws EmailException {
+    public void sendEmail(String username, String subject, String msg) throws EmailException {
         String lowerCase = username.toLowerCase();
-        String subject = "Minibox验证码，请注意查收！";
         Random random = new Random();
         StringBuilder sb = new StringBuilder();
         int randomNum;
@@ -95,11 +96,9 @@ public class MbUserServiceImpl implements MbUserService {
             randomNum = random.nextInt(10);
             sb.append(randomNum);
         }
-        sendEmail.createEmail(lowerCase, subject, "尊敬的迷你盒用户，您本次的验证码为\n" + sb.toString() + "\n本次验证码有效时间为5分钟！");
-        log.info("本次邮件发送给==>{},主题为==>{},内容为==>{}", lowerCase, subject, sb.toString());
+        sendEmail.createEmail(lowerCase, subject, msg + sb.toString());
         redisUtil.set(RedisPrefix.USER_TEMP.getPrefix() + lowerCase, sb.toString());
         redisUtil.expire(RedisPrefix.USER_TEMP.getPrefix() + lowerCase, 300L);
-        log.info("本次存入Redis的Key==>{},Value==>{}", RedisPrefix.USER_TEMP.getPrefix() + lowerCase, sb.toString());
     }
 
     /**
@@ -114,7 +113,7 @@ public class MbUserServiceImpl implements MbUserService {
     @Override
     public boolean authRegCode(String key, String value) {
         String valueFromRedis = redisUtil.get(RedisPrefix.USER_TEMP.getPrefix() + key.toLowerCase());
-        log.info("从Redis获取到的value==>{}", valueFromRedis);
+        log.info("authRegCode==>{}", valueFromRedis);
         return value.equals(valueFromRedis);
     }
 
@@ -143,22 +142,19 @@ public class MbUserServiceImpl implements MbUserService {
      */
     @Transactional
     @Override
-    public boolean register(MbUser mbUser) throws JsonProcessingException {
+    public boolean register(MbUser mbUser) {
         mbUser.setUsername(mbUser.getUsername().toLowerCase());
-        MbUser user = mbUser.setNickname(DefaultUserInfoEnum.NICKNAME.getMessage());
-        log.info("生成的nickname为==>{}", user.getNickname());
+        mbUser.setNickname(DefaultUserInfoEnum.NICKNAME.getMessage());
         MD5 md5 = MD5.create();
         String digestHex16 = md5.digestHex16(mbUser.getPassword());
         mbUser.setPassword(digestHex16);
-        mbUser.setUserState(UserStatus.NORMAL.getStatus());
         int result = mbUserMapper.insert(mbUser);
         mbPhotoMapper.insert(new MbPhoto().setType(PostType.PHOTO_USER.getType()).setLink(defaultLink).setUid(mbUser.getUid()));
-        redisUtil.remove(RedisPrefix.USER_TEMP.getPrefix() + mbUser.getUsername());
-        log.info("从Redis移除了key==>{}", RedisPrefix.USER_TEMP.getPrefix() + mbUser.getUsername());
-        ObjectMapper objectMapper = new ObjectMapper();
-        redisUtil.set(RedisPrefix.USER_EXIST.getPrefix() + mbUser.getUsername(), objectMapper.writeValueAsString(mbUser));
-        log.info("用户 {} 持久化进Redis成功！", mbUser.getUsername());
-        return result > 0;
+        if (result > 0) {
+            redisUtil.remove(RedisPrefix.USER_TEMP.getPrefix() + mbUser.getUsername());
+            return true;
+        }
+        return false;
     }
 
     /**
@@ -170,25 +166,50 @@ public class MbUserServiceImpl implements MbUserService {
      * @return ReturnDto
      */
     @Override
-    public ReturnDto<String> login(MbUser mbUser) {
-
+    public String login(MbUser mbUser) throws JsonProcessingException, JOSEException {
         MbUser fromMySQL = mbUserMapper.queryByUsername(mbUser.getUsername());
-        if (fromMySQL == null) return gs.custom(ResultCode.NOT_FOUND.getCode(), ResultCode.NOT_FOUND.getMessage());
-
+        if (fromMySQL == null) return null;
         MD5 md5 = new MD5();
         String hex16 = md5.digestHex16(mbUser.getPassword());
-        log.info("打印一下fromMySQL==>{}",fromMySQL);
         if (fromMySQL.getPassword().equals(hex16)) {
-            String userState = fromMySQL.getUserState();
-
-            if (userState.equals(UserStatus.NORMAL.getStatus()))
-                return gs.success();
-            if (userState.equals(UserStatus.BANNED.getStatus()))
-                return gs.custom(ResultCode.USER_BANNED.getCode(), ResultCode.USER_BANNED.getMessage());
-            if (userState.equals(UserStatus.INVALID.getStatus()))
-                return gs.custom(ResultCode.USER_ILLEGAL.getCode(), ResultCode.USER_ILLEGAL.getMessage());
+            List<String> roleList = new ArrayList<>();
+            roleList.add(UserRole.USER.getRole());
+            PayloadDto payloadDto = jwt.buildToken(mbUser.getUsername(), 604800000L, roleList);
+            return jwt.generateTokenByHMAC(payloadDto);
         }
-        return gs.fail();
+        return null;
+    }
+
+    /**
+     * 忘记密码校验
+     *
+     * @param mbUser 实体
+     */
+    @Override
+    public boolean forgetPassword(MbUser mbUser) throws EmailException {
+        MbUser queryByUsername = mbUserMapper.queryByUsername(mbUser.getUsername());
+        if (queryByUsername == null) return false;
+        String subject = "您正在重置迷你盒的密码";
+        String msg = "您正在重置迷你盒的密码，有效期5分钟，验证码为：";
+        sendEmail(mbUser.getUsername(), subject, msg);
+        return true;
+    }
+
+    /**
+     * 重置密码
+     *
+     * @param mbUser 实体
+     * @return ReturnDto<String>
+     */
+    @Transactional
+    @Override
+    public boolean doResetPassword(MbUser mbUser) {
+        MD5 md5 = new MD5();
+        String hex16 = md5.digestHex16(mbUser.getPassword());
+        mbUser.setPassword(hex16);
+        int result = mbUserMapper.updatePassword(mbUser);
+        redisUtil.remove(RedisPrefix.USER_TEMP.getPrefix() + mbUser.getUsername());
+        return result > 0;
     }
 
     /**

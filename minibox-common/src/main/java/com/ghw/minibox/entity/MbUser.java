@@ -28,26 +28,26 @@ public class MbUser implements Serializable {
      * 主键
      */
     @ApiModelProperty(notes = "主键")
-    @NotNull(message = "用户uid不能为空", groups = {UpdateUserInfoGroup.class})
+    @NotNull(message = "用户uid不能为空")
     private Long uid;
 
     @ApiModelProperty(notes = "验证码")
-    @NotNull(message = "验证码code不能为空", groups = RegisterGroup.class)
+    @NotNull(message = "验证码code不能为空", groups = {AuthGroup.class})
     private String code;
     /**
      * 昵称
      */
     @ApiModelProperty(notes = "昵称")
-    @NotNull(message = "用户nickname不能为空", groups = {UpdateUserInfoGroup.class})
-    @Size(max = 12, groups = {UpdateUserInfoGroup.class})
+    @NotNull(message = "用户nickname不能为空")
+    @Size(max = 12)
     private String nickname;
     /**
      * 用户名，本系统是邮箱，需要程序校验
      */
     @ApiModelProperty(notes = "用户名，本系统是邮箱，需要程序校验")
-    @Email(message = "邮箱格式不正确", groups = {LoginGroup.class, RegisterGroup.class, AuthGroup.class})
-    @NotNull(message = "用户username不能为空", groups = {LoginGroup.class, RegisterGroup.class, AuthGroup.class})
-    @Size(max = 50, groups = {LoginGroup.class, RegisterGroup.class, AuthGroup.class})
+    @Email(message = "邮箱格式不正确", groups = {LoginGroup.class, RegisterGroup.class, SingleGroup.class})
+    @NotNull(message = "用户username不能为空", groups = {LoginGroup.class, RegisterGroup.class, SingleGroup.class})
+    @Size(max = 50, groups = {LoginGroup.class, RegisterGroup.class, SingleGroup.class})
     private String username;
     /**
      * 密码，MD5加密
@@ -60,7 +60,7 @@ public class MbUser implements Serializable {
      * 个人简介
      */
     @ApiModelProperty(notes = "个人简介")
-    @Size(max = 40, groups = {UpdateUserInfoGroup.class})
+    @Size(max = 40)
     private String description;
     /**
      * 个人等级

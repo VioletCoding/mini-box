@@ -7,6 +7,7 @@ import cn.hutool.json.JSONUtil;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ghw.minibox.dto.PayloadDto;
+import com.ghw.minibox.utils.RedisPrefix;
 import com.nimbusds.jose.*;
 import com.nimbusds.jose.crypto.MACSigner;
 import com.nimbusds.jose.crypto.MACVerifier;
@@ -60,7 +61,8 @@ public class NimbusJoseJwt {
         jwsObject.sign(jwsSigner);
         String serialize = jwsObject.serialize();
 
-        redisUtil.set(payloadParam.getUsername(), serialize);
+        redisUtil.set(RedisPrefix.USER_TOKEN.getPrefix() + payloadParam.getUsername(), serialize);
+        redisUtil.expire(RedisPrefix.USER_TOKEN.getPrefix() + payloadParam.getUsername(), payloadParam.getExp());
         return serialize;
     }
 
