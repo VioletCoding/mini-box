@@ -3,7 +3,6 @@ package com.ghw.minibox.component;
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.util.IdUtil;
-import cn.hutool.json.JSONUtil;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ghw.minibox.dto.PayloadDto;
@@ -32,6 +31,8 @@ public class NimbusJoseJwt {
 
     @Resource
     private RedisUtil redisUtil;
+    @Resource
+    private ObjectMapper objectMapper;
 
     private static final String SECRET = "This JWT Sign By VioletEverGarden,this is a SpringCloud web project";
 
@@ -103,8 +104,12 @@ public class NimbusJoseJwt {
             throw new Exception("token签名不合法");
         }
         String payload = jwsObject.getPayload().toString();
-        PayloadDto payloadDto = JSONUtil.toBean(payload, PayloadDto.class);
-        if (payloadDto.getExp() < new Date().getTime()) {
+        log.info("payload==>{}", payload);
+        PayloadDto payloadDto = objectMapper.readValue(payload, PayloadDto.class);
+//        PayloadDto payloadDto = JSONUtil.toBean(payload, PayloadDto.class);
+        log.info("token的过期时间为==>{}", payloadDto.getExp());
+        log.info("现在的时间为==>{}", new Date().getTime());
+        if (new Date().getTime() - payloadDto.getExp() < 0) {
             throw new Exception("token已过期");
         }
         return payloadDto;

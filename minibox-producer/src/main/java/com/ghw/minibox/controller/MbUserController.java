@@ -16,10 +16,7 @@ import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.mail.EmailException;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 
@@ -97,6 +94,14 @@ public class MbUserController {
     public ReturnDto<String> login(@Validated({LoginGroup.class}) @RequestBody MbUser mbUser) throws JsonProcessingException, JOSEException {
         String login = mbUserService.login(mbUser);
         if (login != null) return gr.success(login);
+        return gr.fail();
+    }
+
+    @AOPLog("登出")
+    @GetMapping("logout/{token}")
+    public ReturnDto<String> logout(@PathVariable String token) throws Exception {
+        boolean login = mbUserService.logout(token);
+        if (login) return gr.success();
         return gr.fail();
     }
 

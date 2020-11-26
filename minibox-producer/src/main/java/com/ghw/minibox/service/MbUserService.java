@@ -59,6 +59,14 @@ public interface MbUserService {
     String login(MbUser mbUser) throws JsonProcessingException, JOSEException;
 
     /**
+     * 判断是否登陆
+     *
+     * @param token token
+     * @return true or false
+     */
+    boolean logout(String token) throws Exception;
+
+    /**
      * 忘记密码校验
      *
      * @param mbUser 实体

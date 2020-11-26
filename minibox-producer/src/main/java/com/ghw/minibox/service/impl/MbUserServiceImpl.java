@@ -181,6 +181,25 @@ public class MbUserServiceImpl implements MbUserService {
     }
 
     /**
+     * 判断是否登陆
+     *
+     * @param token token
+     * @return true or false
+     */
+    @Override
+    public boolean logout(String token) throws Exception {
+        if (token == null || token.equals("")) return false;
+        PayloadDto payloadDto = jwt.verifyTokenByHMAC(token);
+        log.info("payloadDto==>{}", payloadDto);
+        Boolean exist = redisUtil.exist(RedisPrefix.USER_TOKEN.getPrefix() + payloadDto.getUsername());
+        if (exist) {
+            redisUtil.remove(RedisPrefix.USER_TOKEN.getPrefix() + payloadDto.getUsername());
+            return true;
+        }
+        return false;
+    }
+
+    /**
      * 忘记密码校验
      *
      * @param mbUser 实体
