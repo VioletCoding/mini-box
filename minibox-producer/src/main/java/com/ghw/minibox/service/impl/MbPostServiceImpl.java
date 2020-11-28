@@ -66,13 +66,11 @@ public class MbPostServiceImpl implements MbPostService {
     /**
      * 查询多条数据
      *
-     * @param offset 查询起始位置
-     * @param limit  查询条数
      * @return 对象列表
      */
     @Override
-    public List<MbPost> queryAllByLimit(int offset, int limit) {
-        return this.mbPostMapper.queryAllByLimit(offset, limit);
+    public List<MbPost> showAllPost() {
+        return this.mbPostMapper.queryAll(null);
     }
 
     /**

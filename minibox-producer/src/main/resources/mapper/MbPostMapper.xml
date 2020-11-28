@@ -47,37 +47,8 @@
     <!--通过实体作为筛选条件查询-->
     <select id="queryAll" resultMap="MbPostMap">
         select
-        tid, uid, bid, title, content, post_state, create_date, update_date, state
+        tid, uid, bid, title, content, post_state, create_date,state
         from minibox.mb_post
-        <where>
-            <if test="tid != null">
-                and tid = #{tid}
-            </if>
-            <if test="uid != null">
-                and uid = #{uid}
-            </if>
-            <if test="bid != null">
-                and bid = #{bid}
-            </if>
-            <if test="title != null and title != ''">
-                and title = #{title}
-            </if>
-            <if test="content != null and content != ''">
-                and content = #{content}
-            </if>
-            <if test="postState != null and postState != ''">
-                and post_state = #{postState}
-            </if>
-            <if test="createDate != null">
-                and create_date = #{createDate}
-            </if>
-            <if test="updateDate != null">
-                and update_date = #{updateDate}
-            </if>
-            <if test="state != null">
-                and state = #{state}
-            </if>
-        </where>
     </select>
 
     <!--新增所有列-->

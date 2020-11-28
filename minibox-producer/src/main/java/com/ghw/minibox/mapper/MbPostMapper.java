@@ -39,6 +39,7 @@ public interface MbPostMapper {
      */
     List<MbPost> queryAll(MbPost mbPost);
 
+
     /**
      * 新增数据
      *
