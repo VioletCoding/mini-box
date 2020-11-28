@@ -81,16 +81,23 @@ public class LogAspect {
         long begin = System.currentTimeMillis();
         MethodSignature signature = (MethodSignature) joinPoint.getSignature();
         Method method = signature.getMethod();
+
         log.info("开始执行{}方法", joinPoint.getTarget().getClass().getName() + "." + signature.getName());
+
         AOPBean aopBean = new AOPBean();
         AOPLog annotation = method.getAnnotation(AOPLog.class);
+
         if (annotation != null) aopBean.setOperation(annotation.value());
+
         String className = joinPoint.getTarget().getClass().getName();
         String methodName = signature.getName();
+
         aopBean.setMethod(className + "." + methodName + "()");
+
         Object[] args = joinPoint.getArgs();
         LocalVariableTableParameterNameDiscoverer u = new LocalVariableTableParameterNameDiscoverer();
         String[] paramNames = u.getParameterNames(method);
+
         if (args != null && paramNames != null) {
             StringBuilder params = new StringBuilder();
             for (int i = 0; i < args.length; i++) {
@@ -98,9 +105,13 @@ public class LogAspect {
             }
             aopBean.setParam(params.toString());
         }
+
         long end = System.currentTimeMillis();
+
         aopBean.setTime(end - begin);
+
         String json = objectMapper.writeValueAsString(aopBean);
+        log.info("本次使用的线程==>{}", Thread.currentThread().getName());
         log.info("本次操作结果==>{}", json);
         redisUtil.set(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()), json);
         log.info("已将操作记录写入到Redis");

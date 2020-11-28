@@ -105,6 +105,7 @@ public class MbPostServiceImpl implements MbPostService {
     @AOPLog("图片上传至七牛云")
     @Override
     public boolean addPictureInPost(MultipartFile[] multipartFiles, Long tid) throws IOException {
+        int result = 0;
         for (MultipartFile m : multipartFiles) {
             String simpleUUID = IdUtil.fastSimpleUUID();
             qn.asyncUpload(this.ak, this.sk, this.bucket, simpleUUID, m.getBytes());
@@ -112,10 +113,9 @@ public class MbPostServiceImpl implements MbPostService {
                     .setLink(this.link + simpleUUID)
                     .setType(PostType.PHOTO_POST.getType())
                     .setTid(tid);
-            int savePhoto = mbPhotoMapper.insert(mbPhoto);
-            return savePhoto > 0;
+            result = mbPhotoMapper.insert(mbPhoto);
         }
-        return false;
+        return result > 0;
     }
 
     /**

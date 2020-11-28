@@ -52,7 +52,6 @@ public class MbPostController {
         boolean result = mbPostService.addPictureInPost(multipartFiles, tid);
         if (result) return gr.success();
         return gr.fail();
-
     }
 
 }
