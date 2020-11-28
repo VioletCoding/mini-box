@@ -44,7 +44,7 @@ public class MbUserController {
      * 调用queryByUsername方法来检查该用户是否已存在，以及判断验证码是否已发送
      * 如果已发送，那么需要5分钟后等验证码过期了，才能再次请求
      * <p>
-     * queryByUsername方法通过后，调用发邮件方法sendEmail发送验证码，
+     * queryByUsername方法校验通过后，调用发邮件方法sendEmail发送验证码，
      * 该方法是异步方法
      *
      * @param mbUser 实体
@@ -54,7 +54,6 @@ public class MbUserController {
     @ApiOperation("注册前校验")
     @PostMapping("beforeRegister")
     public ReturnDto<String> beforeRegister(@Validated(SingleGroup.class) @RequestBody MbUser mbUser) throws EmailException {
-        log.info("mbUser==>{}", mbUser);
         boolean queryByUsername = mbUserService.queryByUsername(mbUser.getUsername());
         if (queryByUsername) return gr.success();
         return gr.custom(ResultCode.USER_EXIST.getCode(), ResultCode.USER_EXIST.getMessage());

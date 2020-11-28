@@ -82,8 +82,8 @@
 
     <!--新增所有列-->
     <insert id="insert" keyProperty="tid" useGeneratedKeys="true">
-        insert into minibox.mb_post(uid, bid, title, content, post_state, create_date, update_date, state)
-        values (#{uid}, #{bid}, #{title}, #{content}, #{postState}, #{createDate}, #{updateDate}, #{state})
+        insert into minibox.mb_post(uid, bid, title, content)
+        values (#{uid}, #{bid}, #{title}, #{content})
     </insert>
 
     <insert id="insertBatch" keyProperty="tid" useGeneratedKeys="true">

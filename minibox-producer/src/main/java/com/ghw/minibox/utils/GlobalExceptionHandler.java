@@ -7,10 +7,12 @@ import com.nimbusds.jose.JOSEException;
 import com.qiniu.common.QiniuException;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.mail.EmailException;
+import org.apache.tomcat.util.http.fileupload.impl.FileSizeLimitExceededException;
 import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.multipart.MaxUploadSizeExceededException;
 
 import javax.annotation.Resource;
 import java.io.UnsupportedEncodingException;
@@ -91,5 +93,21 @@ public class GlobalExceptionHandler {
         log.error("出现异常 {} , 原因如下 {} , 栈信息如下==> \n ", e.getMessage(), e.getCause());
         e.printStackTrace();
         return gr.custom(ResultCode.BAD_REQUEST.getCode(), "文件编码解析失败");
+    }
+
+
+    @ExceptionHandler(FileSizeLimitExceededException.class)
+    public ReturnDto<String> fileSizeLimitExceededException(FileSizeLimitExceededException e) {
+        log.error("出现异常 {} , 原因如下 {} , 栈信息如下==> \n ", e.getMessage(), e.getCause());
+        e.printStackTrace();
+        return gr.custom(ResultCode.BAD_REQUEST.getCode(), "文件大小超出限制，单个文件最大3MB");
+    }
+
+
+    @ExceptionHandler(MaxUploadSizeExceededException.class)
+    public ReturnDto<String> maxUploadSizeExceededException(MaxUploadSizeExceededException e) {
+        log.error("出现异常 {} , 原因如下 {} , 栈信息如下==> \n ", e.getMessage(), e.getCause());
+        e.printStackTrace();
+        return gr.custom(ResultCode.BAD_REQUEST.getCode(), "文件大小超出限制，总文件大小最大30MB");
     }
 }

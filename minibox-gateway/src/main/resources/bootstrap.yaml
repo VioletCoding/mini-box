@@ -1,29 +1,38 @@
 #端口号
 server:
   port: 20001
+
+producer:
+  address: http://localhost:20002
+
 #激活的配置中心的配置文件
 spring:
   profiles:
     active: DEV
   #应用名
   application:
-    name: MiniBox-Gateway
+    name: MINIBOX-GATEWAY
   cloud:
     nacos:
       discovery:
         #nacos注册中心
         server-addr: localhost:8848
         namespace: 55fbbffc-f66a-4226-96a7-fb1c2245651d
-        group: DEV
+        group: MINIBOX
         #naocs配置中心
       config:
         #分组
-        group: MiniBox-Gateway-GROUP-DEV
+        group: MINIBOX-GATEWAY-GROUP-DEV
         #命名空间
         namespace: 55fbbffc-f66a-4226-96a7-fb1c2245651d
         #地址
         server-addr: localhost:8848
         #配置文件后缀名
         file-extension: yaml
+    gateway:
+      routes:
+        - id: producer-user-beforeRegister
+          uri: ${producer.address}/user/beforeRegister
+          predicates:
+            - Path=/user/beforeRegister
 
-#其余配置都在nacos配置中心

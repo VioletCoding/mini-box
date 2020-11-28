@@ -5,6 +5,7 @@ import lombok.Data;
 import lombok.experimental.Accessors;
 
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
@@ -30,12 +31,12 @@ public class MbPost implements Serializable {
      */
     @ApiModelProperty(notes = "关联的用户ID")
     @NotNull(message = "关联的用户uid不能为空")
+    @Size(min = 5)
     private Long uid;
     /**
      * 记录这个帖子在哪个版块下发表的，默认是【杂谈】
      */
     @ApiModelProperty(notes = "记录这个帖子在哪个版块下发表的，默认是【杂谈】")
-    @NotNull(message = "帖子bid不能为空")
     private Long bid;
     /**
      * 帖子标题

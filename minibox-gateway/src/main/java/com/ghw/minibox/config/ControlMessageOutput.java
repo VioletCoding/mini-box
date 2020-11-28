@@ -48,4 +48,6 @@ public class ControlMessageOutput implements ApplicationRunner {
     public void run(ApplicationArguments args) {
         log.info("SpringCloud Gateway启动完成，配置信息为：{}", toString());
     }
+
+
 }

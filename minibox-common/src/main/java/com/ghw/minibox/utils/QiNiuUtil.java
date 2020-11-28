@@ -1,20 +1,16 @@
 package com.ghw.minibox.utils;
 
-import cn.hutool.core.util.IdUtil;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com.ghw.minibox.component.impl.UpCompletionHandlerImpl;
 import com.qiniu.common.QiniuException;
-import com.qiniu.http.Response;
 import com.qiniu.storage.Configuration;
 import com.qiniu.storage.Region;
 import com.qiniu.storage.UploadManager;
-import com.qiniu.storage.model.DefaultPutRet;
 import com.qiniu.util.Auth;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 
+import java.io.IOException;
 import java.io.InputStream;
-import java.util.concurrent.*;
 
 /**
  * @author Violet
@@ -24,10 +20,8 @@ import java.util.concurrent.*;
 @Component
 @Slf4j
 public class QiNiuUtil {
-
     /**
-     * 异步方法
-     * 七牛云上传，需要指定accessKey和secretKey以及bucket还有输入流
+     * 异步七牛云上传
      * <p>
      * Configuration 构造一个带指定 Region 对象的配置类
      * <p>
@@ -38,27 +32,38 @@ public class QiNiuUtil {
      * Callable<DefaultPutRet> 实现Callable，为了拿异步回调
      * FutureTask<DefaultPutRet> 获取异步回调
      *
-     * @param ak          公钥
-     * @param sk          私钥
-     * @param bucket      对象空间
-     * @param inputStream 输入流
-     * @return 异步回调，七牛云上传后的回调
-     * @throws QiniuException 七牛云异常
+     * @param ak     公钥
+     * @param sk     私钥
+     * @param bucket 对象空间
+     * @param key    文件名
+     * @param bytes  字节数组
+     * @throws QiniuException -
      */
-    @Async
-    public Future<DefaultPutRet> upload(String ak, String sk, String bucket, InputStream inputStream) throws QiniuException {
+    public void asyncUpload(String ak, String sk, String bucket, String key, byte[] bytes) throws IOException {
         Auth auth = Auth.create(ak, sk);
         String uploadToken = auth.uploadToken(bucket);
         log.info("uploadToken为==>{}", uploadToken);
         Configuration cfg = new Configuration(Region.huanan());
         UploadManager um = new UploadManager(cfg);
-        Response response = um.put(inputStream, IdUtil.fastSimpleUUID(), uploadToken, null, null);
-        ObjectMapper objectMapper = new ObjectMapper();
-        Callable<DefaultPutRet> callable = () -> objectMapper.readValue(response.bodyString(), DefaultPutRet.class);
-        FutureTask<DefaultPutRet> futureTask = new FutureTask<>(callable);
-        ExecutorService executorService = Executors.newCachedThreadPool();
-        executorService.submit(futureTask);
-        executorService.shutdown();
-        return futureTask;
+        um.asyncPut(bytes, key, uploadToken, null, null, false, new UpCompletionHandlerImpl());
+    }
+
+    /**
+     * 同步流式上传文件
+     *
+     * @param ak          公钥
+     * @param sk          私钥
+     * @param bucket      对象空间
+     * @param key         文件名
+     * @param inputStream 输入流
+     * @throws IOException -
+     */
+    public void sycnUpload(String ak, String sk, String bucket, String key, InputStream inputStream) throws IOException {
+        Auth auth = Auth.create(ak, sk);
+        String uploadToken = auth.uploadToken(bucket);
+        log.info("uploadToken为==>{}", uploadToken);
+        Configuration cfg = new Configuration(Region.huanan());
+        UploadManager um = new UploadManager(cfg);
+        um.put(inputStream, key, uploadToken, null, null);
     }
 }

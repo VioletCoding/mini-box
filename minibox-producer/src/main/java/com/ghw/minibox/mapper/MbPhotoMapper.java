@@ -2,6 +2,7 @@ package com.ghw.minibox.mapper;
 
 import com.ghw.minibox.entity.MbPhoto;
 import org.apache.ibatis.annotations.Param;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -45,6 +46,7 @@ public interface MbPhotoMapper {
      * @param mbPhoto 实例对象
      * @return 影响行数
      */
+    @Transactional
     int insert(MbPhoto mbPhoto);
 
     /**

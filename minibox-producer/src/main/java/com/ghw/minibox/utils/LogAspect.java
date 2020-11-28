@@ -81,7 +81,7 @@ public class LogAspect {
         long begin = System.currentTimeMillis();
         MethodSignature signature = (MethodSignature) joinPoint.getSignature();
         Method method = signature.getMethod();
-        log.info("进入到{}方法", joinPoint.getTarget().getClass().getName() + "." + signature.getName());
+        log.info("开始执行{}方法", joinPoint.getTarget().getClass().getName() + "." + signature.getName());
         AOPBean aopBean = new AOPBean();
         AOPLog annotation = method.getAnnotation(AOPLog.class);
         if (annotation != null) aopBean.setOperation(annotation.value());
@@ -104,6 +104,6 @@ public class LogAspect {
         log.info("本次操作结果==>{}", json);
         redisUtil.set(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()), json);
         log.info("已将操作记录写入到Redis");
-        log.info("{}方法执行完毕", joinPoint.getTarget().getClass().getName() + "." + signature.getName());
+        log.info("结束执行{}方法", joinPoint.getTarget().getClass().getName() + "." + signature.getName());
     }
 }
