@@ -13,6 +13,14 @@ import java.util.List;
  */
 public interface MbPostMapper {
 
+
+    /**
+     * 在首页显示帖子列表，通过PageHelper分页
+     *
+     * @return 帖子列表
+     */
+    List<MbPost> showPostList();
+
     /**
      * 通过ID查询单条数据
      *

@@ -13,6 +13,43 @@
         <result property="updateDate" column="update_date" jdbcType="TIMESTAMP"/>
         <result property="state" column="state" jdbcType="INTEGER"/>
     </resultMap>
+    <!-- 2.start 这个Map用来在首页显示帖子列表，随机拿一张图片，懒得重新设计表了-->
+    <resultMap type="com.ghw.minibox.entity.MbPost" id="showPostListMap">
+        <result property="tid" column="tid" jdbcType="INTEGER"/>
+        <result property="uid" column="uid" jdbcType="INTEGER"/>
+        <result property="bid" column="bid" jdbcType="INTEGER"/>
+        <result property="title" column="title" jdbcType="VARCHAR"/>
+        <result property="createDate" column="create_date" jdbcType="TIMESTAMP"/>
+
+        <association property="mbBlock" javaType="com.ghw.minibox.entity.MbBlock">
+            <result property="name" column="name" jdbcType="VARCHAR"/>
+        </association>
+        <collection property="photoList" ofType="com.ghw.minibox.entity.MbPhoto">
+            <id property="pid" column="pid" jdbcType="INTEGER"/>
+            <result property="link" column="link" jdbcType="VARCHAR"/>
+        </collection>
+    </resultMap>
+
+    <select id="showPostList" resultMap="showPostListMap">
+        SELECT mp.tid,
+               mp.bid,
+               mp.create_date,
+               mp.title,
+               mp.uid,
+               mb.`name`,
+               mpt.pid,
+               mpt.link
+        FROM mb_post mp
+                 LEFT JOIN mb_block mb ON (mp.bid = mb.bid)
+                 LEFT JOIN mb_photo mpt ON (mpt.tid = mp.tid)
+        WHERE mpt.type = 'TP'
+          AND mpt.state = 0
+          AND mb.state = 0
+          AND mp.state = 0
+          AND mp.post_state = 0
+    </select>
+    <!-- 2.end -->
+
 
     <!--查询单个-->
     <select id="queryById" resultMap="MbPostMap">
@@ -46,8 +83,14 @@
 
     <!--通过实体作为筛选条件查询-->
     <select id="queryAll" resultMap="MbPostMap">
-        select
-        tid, uid, bid, title, content, post_state, create_date,state
+        select tid,
+               uid,
+               bid,
+               title,
+               content,
+               post_state,
+               create_date,
+               state
         from minibox.mb_post
     </select>
 

@@ -1,5 +1,6 @@
 package com.ghw.minibox.entity;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -57,15 +58,23 @@ public class MbPost implements Serializable {
      */
     @ApiModelProperty(notes = "帖子状态，0有效，1删除")
     private String postState;
+
+    /**
+     * 这个字段不存数据库，目前临时解决方法是随便取一张做头图。。。。
+     */
+    @ApiModelProperty(notes = "帖子头图")
+    private String headPhotoLink;
     /**
      * 创建时间
      */
     @ApiModelProperty(notes = "创建时间")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     private Date createDate;
     /**
      * 更新时间
      */
     @ApiModelProperty(notes = "更新时间")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     private Date updateDate;
     /**
      * 状态，记录该条状态是否有效,0有效，1无效

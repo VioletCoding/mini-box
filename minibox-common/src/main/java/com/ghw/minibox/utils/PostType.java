@@ -36,7 +36,11 @@ public enum PostType {
     /**
      * 游戏图片
      */
-    PHOTO_GAME("GP");
+    PHOTO_GAME("GP"),
+    /**
+     * 帖子头图，在列表显示的时候用
+     */
+    POST_HEAD_PHOTO("HP");
 
     private final String type;
 

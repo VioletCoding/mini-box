@@ -17,6 +17,14 @@ import java.util.List;
  */
 public interface MbPostService {
 
+
+    /**
+     * 在首页显示帖子列表，通过PageHelper分页
+     *
+     * @return 帖子列表
+     */
+    List<MbPost> showPostList(int pageNum, int pageSize);
+
     /**
      * 通过ID查询单条数据
      *

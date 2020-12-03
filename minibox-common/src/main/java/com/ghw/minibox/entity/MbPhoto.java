@@ -1,5 +1,6 @@
 package com.ghw.minibox.entity;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.experimental.Accessors;
@@ -16,6 +17,7 @@ import java.util.Date;
  */
 @Data
 @Accessors(chain = true)
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class MbPhoto implements Serializable {
     private static final long serialVersionUID = -65749688597497972L;
     /**

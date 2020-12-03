@@ -6,8 +6,6 @@ import com.ghw.minibox.entity.MbPost;
 import com.ghw.minibox.service.MbPostService;
 import com.ghw.minibox.utils.AOPLog;
 import com.ghw.minibox.utils.ResultCode;
-import com.github.pagehelper.PageHelper;
-import com.github.pagehelper.PageInfo;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
@@ -62,11 +60,7 @@ public class MbPostController {
     @GetMapping("showAll")
     public ReturnDto<List<MbPost>> showAllPost(@RequestParam(value = "pageNum", required = false) int pageNum,
                                                @RequestParam(value = "pageSize", required = false) int pageSize) {
-        PageHelper.startPage(pageNum, pageSize);
-        List<MbPost> mbPostList = mbPostService.showAllPost();
-        PageInfo<MbPost> mbPostPageInfo = new PageInfo<>(mbPostList);
-        log.info("打印一下分页信息==>{}", mbPostPageInfo.toString());
-        return new GenerateResult<List<MbPost>>().success(mbPostList);
+        List<MbPost> mbPosts = mbPostService.showPostList(pageNum, pageSize);
+        return new GenerateResult<List<MbPost>>().success(mbPosts);
     }
-
 }

@@ -52,6 +52,25 @@ public class MbPostServiceImpl implements MbPostService {
     @Value("${qiNiu.link}")
     private String link;
 
+
+    /**
+     * 在首页显示帖子列表，通过PageHelper分页
+     *
+     * @return 帖子列表
+     */
+    @AOPLog("首页帖子列表")
+    @Override
+    public List<MbPost> showPostList(int pageNum, int pageSize) {
+        //PageHelper.startPage(pageNum, pageSize);
+        List<MbPost> mbPostList = mbPostMapper.showPostList();
+        for (MbPost m : mbPostList) {
+            List<MbPhoto> photoList = m.getPhotoList();
+            MbPhoto photo = photoList.get(0);
+            m.setHeadPhotoLink(photo.getLink());
+        }
+        return mbPostList;
+    }
+
     /**
      * 通过ID查询单条数据
      *
