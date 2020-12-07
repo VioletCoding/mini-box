@@ -13,6 +13,13 @@ import java.util.List;
 public interface MbCommentService {
 
     /**
+     * 获取评论条数
+     *
+     * @return 评论条数
+     */
+    int countComment();
+
+    /**
      * 通过ID查询单条数据
      *
      * @param cid 主键

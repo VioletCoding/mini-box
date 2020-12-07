@@ -47,6 +47,7 @@
           AND mb.state = 0
           AND mp.state = 0
           AND mp.post_state = 0
+        ORDER BY mp.create_date DESC;
     </select>
     <!-- 2.end -->
 

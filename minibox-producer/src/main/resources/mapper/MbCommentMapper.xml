@@ -15,6 +15,11 @@
         <result property="updateDate" column="update_date" jdbcType="TIMESTAMP"/>
     </resultMap>
 
+    <select id="countComment" resultType="java.lang.Integer">
+        SELECT count(cid)
+        from mb_comment
+    </select>
+
     <!--查询单个-->
     <select id="queryById" resultMap="MbCommentMap">
         select cid,

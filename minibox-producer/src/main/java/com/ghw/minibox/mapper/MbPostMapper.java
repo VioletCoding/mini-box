@@ -21,6 +21,7 @@ public interface MbPostMapper {
      */
     List<MbPost> showPostList();
 
+
     /**
      * 通过ID查询单条数据
      *

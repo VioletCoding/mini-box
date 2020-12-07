@@ -6,6 +6,7 @@ import com.ghw.minibox.dto.ReturnDto;
 import com.ghw.minibox.entity.MbPhoto;
 import com.ghw.minibox.entity.MbPost;
 import com.ghw.minibox.entity.MbUser;
+import com.ghw.minibox.mapper.MbCommentMapper;
 import com.ghw.minibox.mapper.MbPhotoMapper;
 import com.ghw.minibox.mapper.MbPostMapper;
 import com.ghw.minibox.mapper.MbUserMapper;
@@ -14,6 +15,8 @@ import com.ghw.minibox.utils.AOPLog;
 import com.ghw.minibox.utils.PostType;
 import com.ghw.minibox.utils.QiNiuUtil;
 import com.ghw.minibox.utils.ResultCode;
+import com.github.pagehelper.PageHelper;
+import com.github.pagehelper.PageInfo;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -39,6 +42,8 @@ public class MbPostServiceImpl implements MbPostService {
     @Resource
     private MbPhotoMapper mbPhotoMapper;
     @Resource
+    private MbCommentMapper mbCommentMapper;
+    @Resource
     private GenerateResult<ResultCode> gr;
     @Resource
     private QiNiuUtil qn;
@@ -55,20 +60,24 @@ public class MbPostServiceImpl implements MbPostService {
 
     /**
      * 在首页显示帖子列表，通过PageHelper分页
+     * countComment该帖子内有多少条评论
+     * 循环遍历帖子的图片，获取头图的第一张图片的链接作为头图
      *
-     * @return 帖子列表
+     * @return 分页过后的帖子列表
      */
     @AOPLog("首页帖子列表")
     @Override
-    public List<MbPost> showPostList(int pageNum, int pageSize) {
-        //PageHelper.startPage(pageNum, pageSize);
+    public PageInfo<MbPost> showPostList(int pageNum, int pageSize) {
+        PageHelper.startPage(pageNum, pageSize);
         List<MbPost> mbPostList = mbPostMapper.showPostList();
+        int countComment = mbCommentMapper.countComment();
         for (MbPost m : mbPostList) {
             List<MbPhoto> photoList = m.getPhotoList();
             MbPhoto photo = photoList.get(0);
             m.setHeadPhotoLink(photo.getLink());
+            m.setCountComment(countComment);
         }
-        return mbPostList;
+        return new PageInfo<>(mbPostList);
     }
 
     /**

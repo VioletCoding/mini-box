@@ -64,6 +64,12 @@ public class MbPost implements Serializable {
      */
     @ApiModelProperty(notes = "帖子头图")
     private String headPhotoLink;
+
+    /**
+     * 这个字段不存数据库，只是为了方便首页列表展示评论数
+     */
+    @ApiModelProperty(notes = "首页评论数")
+    private Integer countComment;
     /**
      * 创建时间
      */

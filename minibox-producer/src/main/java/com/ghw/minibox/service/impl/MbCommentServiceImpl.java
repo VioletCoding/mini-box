@@ -20,6 +20,16 @@ public class MbCommentServiceImpl implements MbCommentService {
     private MbCommentMapper mbCommentMapper;
 
     /**
+     * 获取评论条数
+     *
+     * @return 评论条数
+     */
+    @Override
+    public int countComment() {
+        return mbCommentMapper.countComment();
+    }
+
+    /**
      * 通过ID查询单条数据
      *
      * @param cid 主键
