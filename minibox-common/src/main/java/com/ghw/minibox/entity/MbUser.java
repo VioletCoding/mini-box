@@ -1,7 +1,11 @@
 package com.ghw.minibox.entity;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.ghw.minibox.validatedgroup.*;
+import com.ghw.minibox.validatedgroup.AuthGroup;
+import com.ghw.minibox.validatedgroup.LoginGroup;
+import com.ghw.minibox.validatedgroup.RegisterGroup;
+import com.ghw.minibox.validatedgroup.SingleGroup;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.experimental.Accessors;
@@ -81,6 +85,7 @@ public class MbUser implements Serializable {
      * 用户创建日期
      */
     @ApiModelProperty(notes = "用户创建日期")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     private Date createDate;
     /**
      * 经验，每次升级需要10经验，升级后该字段值update为0

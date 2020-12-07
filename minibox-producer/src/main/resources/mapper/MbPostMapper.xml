@@ -3,17 +3,19 @@
 <mapper namespace="com.ghw.minibox.mapper.MbPostMapper">
     <!-- 1.start 这个Map用来在首页显示帖子列表，随机拿一张图片，懒得重新设计表了-->
     <resultMap type="com.ghw.minibox.entity.MbPost" id="showPostListMap">
+        <!--列表主要显示内容-->
         <id property="tid" column="tid" jdbcType="INTEGER"/>
         <result property="uid" column="uid" jdbcType="INTEGER"/>
         <result property="bid" column="bid" jdbcType="INTEGER"/>
         <result property="title" column="title" jdbcType="VARCHAR"/>
         <result property="createDate" column="create_date" jdbcType="TIMESTAMP"/>
         <result property="countComment" column="countComment" jdbcType="INTEGER"/>
-
+        <!--每个帖子，属于哪一个版块-->
         <association property="mbBlock" javaType="com.ghw.minibox.entity.MbBlock">
+            <id property="bid" column="bid" jdbcType="INTEGER"/>
             <result property="name" column="name" jdbcType="VARCHAR"/>
         </association>
-
+        <!--首页展示的帖子大图-->
         <collection property="photoList" ofType="com.ghw.minibox.entity.MbPhoto">
             <id property="pid" column="pid" jdbcType="INTEGER"/>
             <result property="link" column="link" jdbcType="VARCHAR"/>
