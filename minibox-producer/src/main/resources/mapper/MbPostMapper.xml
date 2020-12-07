@@ -1,29 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.ghw.minibox.mapper.MbPostMapper">
-
-    <resultMap type="com.ghw.minibox.entity.MbPost" id="MbPostMap">
-        <result property="tid" column="tid" jdbcType="INTEGER"/>
-        <result property="uid" column="uid" jdbcType="INTEGER"/>
-        <result property="bid" column="bid" jdbcType="INTEGER"/>
-        <result property="title" column="title" jdbcType="VARCHAR"/>
-        <result property="content" column="content" jdbcType="VARCHAR"/>
-        <result property="postState" column="post_state" jdbcType="VARCHAR"/>
-        <result property="createDate" column="create_date" jdbcType="TIMESTAMP"/>
-        <result property="updateDate" column="update_date" jdbcType="TIMESTAMP"/>
-        <result property="state" column="state" jdbcType="INTEGER"/>
-    </resultMap>
-    <!-- 2.start 这个Map用来在首页显示帖子列表，随机拿一张图片，懒得重新设计表了-->
+    <!-- 1.start 这个Map用来在首页显示帖子列表，随机拿一张图片，懒得重新设计表了-->
     <resultMap type="com.ghw.minibox.entity.MbPost" id="showPostListMap">
-        <result property="tid" column="tid" jdbcType="INTEGER"/>
+        <id property="tid" column="tid" jdbcType="INTEGER"/>
         <result property="uid" column="uid" jdbcType="INTEGER"/>
         <result property="bid" column="bid" jdbcType="INTEGER"/>
         <result property="title" column="title" jdbcType="VARCHAR"/>
         <result property="createDate" column="create_date" jdbcType="TIMESTAMP"/>
+        <result property="countComment" column="countComment" jdbcType="INTEGER"/>
 
         <association property="mbBlock" javaType="com.ghw.minibox.entity.MbBlock">
             <result property="name" column="name" jdbcType="VARCHAR"/>
         </association>
+
         <collection property="photoList" ofType="com.ghw.minibox.entity.MbPhoto">
             <id property="pid" column="pid" jdbcType="INTEGER"/>
             <result property="link" column="link" jdbcType="VARCHAR"/>
@@ -38,7 +28,8 @@
                mp.uid,
                mb.`name`,
                mpt.pid,
-               mpt.link
+               mpt.link,
+               (SELECT count(1) FROM mb_comment mc WHERE mc.tid = mp.tid AND mc.state = 0) AS countComment
         FROM mb_post mp
                  LEFT JOIN mb_block mb ON (mp.bid = mb.bid)
                  LEFT JOIN mb_photo mpt ON (mpt.tid = mp.tid)
@@ -49,38 +40,60 @@
           AND mp.post_state = 0
         ORDER BY mp.create_date DESC;
     </select>
-    <!-- 2.end -->
+    <!-- 1.end -->
 
 
-    <!--查询单个-->
-    <select id="queryById" resultMap="MbPostMap">
-        select tid,
-               uid,
-               bid,
-               title,
-               content,
-               post_state,
-               create_date,
-               update_date,
-               state
-        from minibox.mb_post
-        where tid = #{tid}
+    <!-- 2. 帖子详情-->
+    <resultMap type="com.ghw.minibox.entity.MbPost" id="MbPostMap">
+        <!--帖子内容-->
+        <id property="tid" column="tid" jdbcType="INTEGER"/>
+        <result property="title" column="title" jdbcType="VARCHAR"/>
+        <result property="content" column="post_content" jdbcType="VARCHAR"/>
+        <result property="createDate" column="create_date" jdbcType="TIMESTAMP"/>
+        <!--是谁发的帖子-->
+        <association property="mbUser" javaType="com.ghw.minibox.entity.MbUser">
+            <id property="uid" column="author_id" jdbcType="INTEGER"/>
+            <result property="nickname" column="nickname" jdbcType="VARCHAR"/>
+            <result property="level" column="level" jdbcType="VARCHAR"/>
+        </association>
+        <!--帖子里的所有评论-->
+        <collection property="commentList" ofType="com.ghw.minibox.entity.MbComment">
+            <id property="cid" column="cid" jdbcType="INTEGER"/>
+            <result property="content" column="comment_content" jdbcType="VARCHAR"/>
+            <result property="createDate" column="comment_date" jdbcType="TIMESTAMP"/>
+            <!--每条评论是谁发的-->
+            <association property="mbUser" javaType="com.ghw.minibox.entity.MbUser">
+                <id property="uid" column="comment_user_id" jdbcType="INTEGER"/>
+                <result property="nickname" column="comment_user_nickname" jdbcType="VARCHAR"/>
+                <result property="level" column="comment_user_level" jdbcType="VARCHAR"/>
+            </association>
+        </collection>
+    </resultMap>
+
+    <select id="showPostDetail" resultMap="MbPostMap">
+        SELECT mp.tid,
+               mp.title,
+               mp.content      AS post_content,
+               mp.create_date,
+
+               mu.uid          AS author_id,
+               mu.nickname,
+               mc.content      AS comment_content,
+               mc.create_date  AS comment_date,
+
+               mulist.uid      AS comment_user_id,
+               mulist.nickname AS comment_user_nickname,
+               mulist.level    AS comment_user_level
+
+        FROM mb_post mp
+                 LEFT JOIN mb_user mu ON (mp.uid = mu.uid)
+                 LEFT JOIN mb_comment mc ON (mc.tid = mp.tid)
+                 LEFT JOIN mb_user mulist ON (mc.uid = mulist.uid)
+        WHERE mp.tid = #{tid}
+          AND mp.state = 0
+          AND mp.post_state = 0
     </select>
-
-    <!--查询指定行数据-->
-    <select id="queryAllByLimit" resultMap="MbPostMap">
-        select tid,
-               uid,
-               bid,
-               title,
-               content,
-               post_state,
-               create_date,
-               update_date,
-               state
-        from minibox.mb_post
-        limit #{offset}, #{limit}
-    </select>
+    <!--2. end-->
 
     <!--通过实体作为筛选条件查询-->
     <select id="queryAll" resultMap="MbPostMap">

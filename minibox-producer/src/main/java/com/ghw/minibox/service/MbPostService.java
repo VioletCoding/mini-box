@@ -3,7 +3,6 @@ package com.ghw.minibox.service;
 import com.ghw.minibox.dto.ReturnDto;
 import com.ghw.minibox.entity.MbPost;
 import com.ghw.minibox.utils.ResultCode;
-import com.github.pagehelper.PageInfo;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -24,7 +23,7 @@ public interface MbPostService {
      *
      * @return 帖子列表
      */
-    PageInfo<MbPost> showPostList(int pageNum, int pageSize);
+    List<MbPost> showPostList(int pageNum, int pageSize);
 
     /**
      * 通过ID查询单条数据
@@ -32,14 +31,12 @@ public interface MbPostService {
      * @param tid 主键
      * @return 实例对象
      */
+    MbPost showPostDetail(Long tid);
+
+
+
     MbPost queryById(Long tid);
 
-    /**
-     * 查询多条数据
-     *
-     * @return 对象列表
-     */
-    List<MbPost> showAllPost();
 
     /**
      * 新增数据

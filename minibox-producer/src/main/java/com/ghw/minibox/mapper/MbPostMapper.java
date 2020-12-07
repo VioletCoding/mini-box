@@ -21,6 +21,14 @@ public interface MbPostMapper {
      */
     List<MbPost> showPostList();
 
+    /**
+     * 显示帖子详情
+     *
+     * @param tid 帖子ID
+     * @return 帖子内容，包括作者的部分信息
+     */
+    MbPost showPostDetail(Long tid);
+
 
     /**
      * 通过ID查询单条数据

@@ -1,5 +1,6 @@
 package com.ghw.minibox.entity;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.experimental.Accessors;
@@ -17,6 +18,7 @@ import java.util.List;
  */
 @Data
 @Accessors(chain = true)
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class MbComment implements Serializable {
     private static final long serialVersionUID = -88043199982765063L;
     /**

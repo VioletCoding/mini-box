@@ -97,7 +97,7 @@ public class MbPost implements Serializable {
     @ApiModelProperty(notes = "一个帖子对应一个版块")
     private MbBlock mbBlock;
 
-    @ApiModelProperty(notes = "一个帖子对应一个用户")
+    @ApiModelProperty(notes = "一个帖子对应一个用户，该用户是发帖人")
     private MbUser mbUser;
 
 }

@@ -6,7 +6,6 @@ import com.ghw.minibox.dto.ReturnDto;
 import com.ghw.minibox.entity.MbPhoto;
 import com.ghw.minibox.entity.MbPost;
 import com.ghw.minibox.entity.MbUser;
-import com.ghw.minibox.mapper.MbCommentMapper;
 import com.ghw.minibox.mapper.MbPhotoMapper;
 import com.ghw.minibox.mapper.MbPostMapper;
 import com.ghw.minibox.mapper.MbUserMapper;
@@ -15,8 +14,6 @@ import com.ghw.minibox.utils.AOPLog;
 import com.ghw.minibox.utils.PostType;
 import com.ghw.minibox.utils.QiNiuUtil;
 import com.ghw.minibox.utils.ResultCode;
-import com.github.pagehelper.PageHelper;
-import com.github.pagehelper.PageInfo;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -41,8 +38,8 @@ public class MbPostServiceImpl implements MbPostService {
     private MbUserMapper mbUserMapper;
     @Resource
     private MbPhotoMapper mbPhotoMapper;
-    @Resource
-    private MbCommentMapper mbCommentMapper;
+    //@Resource
+    //private MbCommentMapper mbCommentMapper;
     @Resource
     private GenerateResult<ResultCode> gr;
     @Resource
@@ -67,38 +64,27 @@ public class MbPostServiceImpl implements MbPostService {
      */
     @AOPLog("首页帖子列表")
     @Override
-    public PageInfo<MbPost> showPostList(int pageNum, int pageSize) {
-        PageHelper.startPage(pageNum, pageSize);
+    public List<MbPost> showPostList(int pageNum, int pageSize) {
+        //PageHelper.startPage(pageNum, pageSize);
         List<MbPost> mbPostList = mbPostMapper.showPostList();
-        int countComment = mbCommentMapper.countComment();
         for (MbPost m : mbPostList) {
             List<MbPhoto> photoList = m.getPhotoList();
             MbPhoto photo = photoList.get(0);
             m.setHeadPhotoLink(photo.getLink());
-            m.setCountComment(countComment);
         }
-        return new PageInfo<>(mbPostList);
+        return mbPostList;
     }
 
+
     /**
-     * 通过ID查询单条数据
+     * 展示帖子详情
      *
      * @param tid 主键
-     * @return 实例对象
+     * @return 帖子详情，帖子作者，评论列表，评论谁发的
      */
     @Override
-    public MbPost queryById(Long tid) {
-        return this.mbPostMapper.queryById(tid);
-    }
-
-    /**
-     * 查询多条数据
-     *
-     * @return 对象列表
-     */
-    @Override
-    public List<MbPost> showAllPost() {
-        return this.mbPostMapper.queryAll(null);
+    public MbPost showPostDetail(Long tid) {
+        return mbPostMapper.showPostDetail(tid);
     }
 
     /**
@@ -154,6 +140,17 @@ public class MbPostServiceImpl implements MbPostService {
     public MbPost update(MbPost mbPost) {
         this.mbPostMapper.update(mbPost);
         return this.queryById(mbPost.getTid());
+    }
+
+    /**
+     * 通过ID查询单条数据
+     *
+     * @param tid 主键
+     * @return 实例对象
+     */
+    @Override
+    public MbPost queryById(Long tid) {
+        return null;
     }
 
     /**
