@@ -14,11 +14,12 @@ import java.util.List;
 public interface MbCommentMapper {
 
     /**
-     * 获取评论条数
+     * 新增数据
      *
-     * @return 评论条数
+     * @param mbComment 实例对象
+     * @return 影响行数
      */
-    int countComment();
+    int insert(MbComment mbComment);
 
     /**
      * 通过ID查询单条数据
@@ -45,14 +46,6 @@ public interface MbCommentMapper {
      * @return 对象列表
      */
     List<MbComment> queryAll(MbComment mbComment);
-
-    /**
-     * 新增数据
-     *
-     * @param mbComment 实例对象
-     * @return 影响行数
-     */
-    int insert(MbComment mbComment);
 
     /**
      * 批量新增数据（MyBatis原生foreach方法）

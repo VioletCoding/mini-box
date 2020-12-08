@@ -28,7 +28,11 @@ public enum ResultCode {
     USER_AUTH_FAIL(903, "用户名或密码不正确"),
     USER_ILLEGAL(904, "用户非法"),
 
-    RECORD_DISABLE(905, "该条记录不可用");
+    RECORD_DISABLE(905, "该条记录不可用"),
+
+    TID_IS_NULL(906, "当type=TC时，tid不能为空"),
+    GID_IS_NULL(907, "当type=GC时，gid不能为空"),
+    SCORE_IS_NULL(908, "当type=GC时，score不能为空");
 
 
     private final int code;

@@ -3,6 +3,7 @@ package com.ghw.minibox.service.impl;
 import com.ghw.minibox.entity.MbComment;
 import com.ghw.minibox.mapper.MbCommentMapper;
 import com.ghw.minibox.service.MbCommentService;
+import com.ghw.minibox.utils.ResultCode;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -19,15 +20,31 @@ public class MbCommentServiceImpl implements MbCommentService {
     @Resource
     private MbCommentMapper mbCommentMapper;
 
+
     /**
-     * 获取评论条数
+     * 发表评论
      *
-     * @return 评论条数
+     * @param mbComment 实例对象
+     * @return 实例对象
      */
     @Override
-    public int countComment() {
-        return mbCommentMapper.countComment();
+    public ResultCode postComment(MbComment mbComment) {
+        if (mbComment.getType().equals("TC") && mbComment.getTid() == null)
+            return ResultCode.TID_IS_NULL;
+
+        if (mbComment.getType().equals("GC")) {
+            if (mbComment.getGid() == null)
+                return ResultCode.GID_IS_NULL;
+            if (mbComment.getScore() == null)
+                return ResultCode.SCORE_IS_NULL;
+        }
+
+        if (mbCommentMapper.insert(mbComment) > 0) {
+            return ResultCode.OK;
+        }
+        return ResultCode.INTERNAL_SERVER_ERROR;
     }
+
 
     /**
      * 通过ID查询单条数据
@@ -52,17 +69,6 @@ public class MbCommentServiceImpl implements MbCommentService {
         return this.mbCommentMapper.queryAllByLimit(offset, limit);
     }
 
-    /**
-     * 新增数据
-     *
-     * @param mbComment 实例对象
-     * @return 实例对象
-     */
-    @Override
-    public MbComment insert(MbComment mbComment) {
-        this.mbCommentMapper.insert(mbComment);
-        return mbComment;
-    }
 
     /**
      * 修改数据

@@ -1,6 +1,7 @@
 package com.ghw.minibox.service;
 
 import com.ghw.minibox.entity.MbComment;
+import com.ghw.minibox.utils.ResultCode;
 
 import java.util.List;
 
@@ -12,12 +13,15 @@ import java.util.List;
  */
 public interface MbCommentService {
 
+
     /**
-     * 获取评论条数
+     * 发表评论
      *
-     * @return 评论条数
+     * @param mbComment 实例对象
+     * @return 实例对象
      */
-    int countComment();
+    ResultCode postComment(MbComment mbComment);
+
 
     /**
      * 通过ID查询单条数据
@@ -35,14 +39,6 @@ public interface MbCommentService {
      * @return 对象列表
      */
     List<MbComment> queryAllByLimit(int offset, int limit);
-
-    /**
-     * 新增数据
-     *
-     * @param mbComment 实例对象
-     * @return 实例对象
-     */
-    MbComment insert(MbComment mbComment);
 
     /**
      * 修改数据

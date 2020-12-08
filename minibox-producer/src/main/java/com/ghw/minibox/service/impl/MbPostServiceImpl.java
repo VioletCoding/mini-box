@@ -88,7 +88,7 @@ public class MbPostServiceImpl implements MbPostService {
     }
 
     /**
-     * 新增数据
+     * 发表帖子
      *
      * @param mbPost 实例对象
      * @return 统一结果

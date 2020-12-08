@@ -14,6 +14,15 @@ import java.util.Map;
  */
 @Component
 public class GenerateResult<T> {
+
+
+    public ReturnDto<ResultCode> fromService(ResultCode rc) {
+        return new ReturnDto<ResultCode>()
+                .setCode(rc.getCode())
+                .setMessage(rc.getMessage());
+    }
+
+
     /**
      * 成功，但不返回数据
      *

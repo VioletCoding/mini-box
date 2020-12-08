@@ -15,11 +15,6 @@
         <result property="updateDate" column="update_date" jdbcType="TIMESTAMP"/>
     </resultMap>
 
-    <select id="countComment" resultType="java.lang.Integer">
-        SELECT count(cid)
-        from mb_comment
-    </select>
-
     <!--查询单个-->
     <select id="queryById" resultMap="MbCommentMap">
         select cid,
@@ -93,8 +88,8 @@
 
     <!--新增所有列-->
     <insert id="insert" keyProperty="cid" useGeneratedKeys="true">
-        insert into minibox.mb_comment(state, content, type, tid, uid, gid, score, create_date, update_date)
-        values (#{state}, #{content}, #{type}, #{tid}, #{uid}, #{gid}, #{score}, #{createDate}, #{updateDate})
+        insert into minibox.mb_comment(content, type, tid, uid, gid, score)
+        values (#{content}, #{type}, #{tid}, #{uid}, #{gid}, #{score})
     </insert>
 
     <insert id="insertBatch" keyProperty="cid" useGeneratedKeys="true">

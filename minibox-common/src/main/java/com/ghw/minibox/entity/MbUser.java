@@ -2,10 +2,7 @@ package com.ghw.minibox.entity;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.ghw.minibox.validatedgroup.AuthGroup;
-import com.ghw.minibox.validatedgroup.LoginGroup;
-import com.ghw.minibox.validatedgroup.RegisterGroup;
-import com.ghw.minibox.validatedgroup.SingleGroup;
+import com.ghw.minibox.validatedgroup.*;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.experimental.Accessors;

@@ -56,6 +56,12 @@ public class MbReply implements Serializable {
      */
     @ApiModelProperty(notes = "在哪篇文章（帖子）下的回复")
     private Long replyInPost;
+
+    @ApiModelProperty(notes = "在哪个游戏下的回复")
+    private Long replyInGame;
+
+    @ApiModelProperty(notes = "记录状态，0有效，1无效，默认0")
+    private Integer status;
     /**
      * 回复了哪一条评论
      */

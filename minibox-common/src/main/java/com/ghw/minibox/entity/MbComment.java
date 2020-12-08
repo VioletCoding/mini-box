@@ -2,6 +2,8 @@ package com.ghw.minibox.entity;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.ghw.minibox.validatedgroup.CommentInGameGroup;
+import com.ghw.minibox.validatedgroup.CommentInPostGroup;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.experimental.Accessors;
@@ -37,28 +39,30 @@ public class MbComment implements Serializable {
      * 评论内容
      */
     @ApiModelProperty(notes = "评论内容")
-    @NotNull(message = "评论内容content不能为空")
+    @NotNull(message = "评论内容content不能为空",groups = {CommentInPostGroup.class, CommentInGameGroup.class})
     private String content;
     /**
      * 评论类型，TC为正常帖子下的评论，RC是回复其他用户的评论，GC是游戏下的评论
      */
     @ApiModelProperty(notes = "评论类型，TC为正常帖子下的评论，RC是回复其他用户的评论，GC是游戏下的评论")
-    @NotNull(message = "评论类型type不能为空")
+    @NotNull(message = "评论类型type不能为空", groups = {CommentInPostGroup.class, CommentInGameGroup.class})
     private String type;
     /**
      * 帖子ID，如果type=TC，该字段必填
      */
     @ApiModelProperty(notes = "帖子ID，如果type=TC，该字段必填")
+    @NotNull(message = "评论tid不能为空")
     private Long tid;
     /**
      * 帖子ID，如果type=RC，该字段必填
      */
-    @ApiModelProperty(notes = "帖子ID，如果type=RC，该字段必填")
+    @ApiModelProperty(notes = "用户ID，如果type=RC，该字段必填")
+    @NotNull(message = "用户uid不能为空", groups = {CommentInPostGroup.class, CommentInGameGroup.class})
     private Long uid;
     /**
      * 帖子ID，如果type=GC，该字段必填
      */
-    @ApiModelProperty(notes = "帖子ID，如果type=GC，该字段必填")
+    @ApiModelProperty(notes = "游戏ID，如果type=GC，该字段必填")
     private Long gid;
     /**
      * 用户对游戏的评分，如果type=GC，该字段必填

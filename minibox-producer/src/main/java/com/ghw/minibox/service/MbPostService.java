@@ -34,12 +34,11 @@ public interface MbPostService {
     MbPost showPostDetail(Long tid);
 
 
-
     MbPost queryById(Long tid);
 
 
     /**
-     * 新增数据
+     * 发表新帖子
      *
      * @param mbPost 实例对象
      * @return 实例对象
