@@ -55,20 +55,4 @@ public interface MbPostService {
      */
     boolean addPictureInPost(MultipartFile[] multipartFiles, Long tid) throws IOException;
 
-    /**
-     * 修改数据
-     *
-     * @param mbPost 实例对象
-     * @return 实例对象
-     */
-    MbPost update(MbPost mbPost);
-
-    /**
-     * 通过主键删除数据
-     *
-     * @param tid 主键
-     * @return 是否成功
-     */
-    boolean deleteById(Long tid);
-
 }

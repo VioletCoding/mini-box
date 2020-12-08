@@ -84,6 +84,6 @@ public class MbComment implements Serializable {
     private MbPhoto mbPhoto;
 
     @ApiModelProperty(notes = "一个评论有多个回复")
-    private List<MbComment> commentList;
+    private List<MbReply> replyList;
 
 }
