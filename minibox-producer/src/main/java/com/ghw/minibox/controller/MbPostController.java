@@ -59,9 +59,8 @@ public class MbPostController {
     @ApiOperation("帖子列表显示")
     @AOPLog("帖子列表显示")
     @GetMapping("showAll")
-    public ReturnDto<List<MbPost>> showAllPost(@RequestParam(value = "pageNum") int pageNum,
-                                               @RequestParam(value = "pageSize") int pageSize) {
-        List<MbPost> mbPostList = mbPostService.showPostList(pageNum, pageSize);
+    public ReturnDto<List<MbPost>> showAllPost() {
+        List<MbPost> mbPostList = mbPostService.showPostList();
         return new GenerateResult<List<MbPost>>().success(mbPostList);
     }
 

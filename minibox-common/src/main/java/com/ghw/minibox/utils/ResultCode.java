@@ -32,7 +32,10 @@ public enum ResultCode {
 
     TID_IS_NULL(906, "当type=TC时，tid不能为空"),
     GID_IS_NULL(907, "当type=GC时，gid不能为空"),
-    SCORE_IS_NULL(908, "当type=GC时，score不能为空");
+    SCORE_IS_NULL(908, "当type=GC时，score不能为空"),
+
+    REPLY_IN_POST_IS_NULL(909, "当type=TR时，replyInPost不能为空"),
+    REPLY_IN_GAME_IS_NULL(910, "当type=GR时，replyInGame不能为空");
 
 
     private final int code;

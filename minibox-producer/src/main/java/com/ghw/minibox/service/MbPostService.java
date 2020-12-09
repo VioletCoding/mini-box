@@ -19,11 +19,11 @@ public interface MbPostService {
 
 
     /**
-     * 在首页显示帖子列表，通过PageHelper分页
+     * 在首页显示帖子列表
      *
      * @return 帖子列表
      */
-    List<MbPost> showPostList(int pageNum, int pageSize);
+    List<MbPost> showPostList();
 
     /**
      * 通过ID查询单条数据

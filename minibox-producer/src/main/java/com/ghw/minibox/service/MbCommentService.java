@@ -1,9 +1,8 @@
 package com.ghw.minibox.service;
 
 import com.ghw.minibox.entity.MbComment;
+import com.ghw.minibox.entity.MbReply;
 import com.ghw.minibox.utils.ResultCode;
-
-import java.util.List;
 
 /**
  * (MbComment)表服务接口
@@ -22,6 +21,14 @@ public interface MbCommentService {
      */
     ResultCode postComment(MbComment mbComment);
 
+    /**
+     * 发表回复
+     *
+     * @param mbReply 实体
+     * @return 枚举响应体，成功返回OK
+     */
+    ResultCode postReply(MbReply mbReply);
+
 
     /**
      * 通过ID查询单条数据
@@ -30,15 +37,6 @@ public interface MbCommentService {
      * @return 实例对象
      */
     MbComment queryById(Long cid);
-
-    /**
-     * 查询多条数据
-     *
-     * @param offset 查询起始位置
-     * @param limit  查询条数
-     * @return 对象列表
-     */
-    List<MbComment> queryAllByLimit(int offset, int limit);
 
     /**
      * 修改数据

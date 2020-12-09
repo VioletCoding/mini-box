@@ -38,8 +38,6 @@ public class MbPostServiceImpl implements MbPostService {
     private MbUserMapper mbUserMapper;
     @Resource
     private MbPhotoMapper mbPhotoMapper;
-    //@Resource
-    //private MbCommentMapper mbCommentMapper;
     @Resource
     private GenerateResult<ResultCode> gr;
     @Resource
@@ -56,35 +54,43 @@ public class MbPostServiceImpl implements MbPostService {
 
 
     /**
-     * 在首页显示帖子列表，通过PageHelper分页
-     * countComment该帖子内有多少条评论
+     * 在首页显示帖子列表
      * 循环遍历帖子的图片，获取头图的第一张图片的链接作为头图
      *
      * @return 分页过后的帖子列表
      */
     @AOPLog("首页帖子列表")
     @Override
-    public List<MbPost> showPostList(int pageNum, int pageSize) {
-        //PageHelper.startPage(pageNum, pageSize);
-        List<MbPost> mbPostList = mbPostMapper.showPostList();
-        for (MbPost m : mbPostList) {
+    public List<MbPost> showPostList() {
+        List<MbPost> showPostList = mbPostMapper.showPostList();
+        for (MbPost m : showPostList) {
             List<MbPhoto> photoList = m.getPhotoList();
             MbPhoto photo = photoList.get(0);
             m.setHeadPhotoLink(photo.getLink());
+            break;
         }
-        return mbPostList;
+        return showPostList;
     }
 
 
     /**
      * 展示帖子详情
+     * 获取帖子里任意一张图片作为封面图
      *
      * @param tid 主键
      * @return 帖子详情，帖子作者，评论列表，评论谁发的
      */
     @Override
     public MbPost showPostDetail(Long tid) {
-        return mbPostMapper.showPostDetail(tid);
+        MbPost mbPost = mbPostMapper.showPostDetail(tid);
+        if (mbPost.getPhotoList() != null) {
+            List<MbPhoto> photoList = mbPost.getPhotoList();
+            for (MbPhoto p : photoList) {
+                mbPost.setHeadPhotoLink(p.getLink());
+                break;
+            }
+        }
+        return mbPost;
     }
 
     /**

@@ -6,6 +6,7 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.experimental.Accessors;
 
+import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 import java.util.Date;
 
@@ -29,16 +30,19 @@ public class MbReply implements Serializable {
      * 回复类型，在哪里回复，TR表示在文章（帖子）下回复他们的评论
      */
     @ApiModelProperty(notes = "回复类型，在哪里回复，TR表示在文章（帖子）下回复他们的评论")
+    @NotNull(message = "type不能为空")
     private String type;
     /**
      * 回复谁，填写UID
      */
     @ApiModelProperty(notes = "回复谁，填写UID")
+    @NotNull(message = "replyWho不能为空")
     private Long replyWho;
     /**
      * 回复内容
      */
     @ApiModelProperty(notes = "回复内容")
+    @NotNull(message = "replyContent不能为空")
     private String replyContent;
     /**
      * 回复时间
@@ -50,6 +54,7 @@ public class MbReply implements Serializable {
      * 谁发表的回复
      */
     @ApiModelProperty(notes = "谁发表的回复")
+    @NotNull(message = "replyUid不能为空")
     private Long replyUid;
     /**
      * 在哪篇文章（帖子）下的回复
@@ -66,6 +71,7 @@ public class MbReply implements Serializable {
      * 回复了哪一条评论
      */
     @ApiModelProperty(notes = "回复了哪一条评论")
+    @NotNull(message = "replyInComment不能为空")
     private Long replyInComment;
 
     @ApiModelProperty(notes = "回复人的信息")

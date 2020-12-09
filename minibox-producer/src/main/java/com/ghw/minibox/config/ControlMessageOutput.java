@@ -53,10 +53,9 @@ public class ControlMessageOutput implements ApplicationRunner {
      * Callback used to run the bean.
      *
      * @param args incoming application arguments
-     * @throws Exception on error
      */
     @Override
-    public void run(ApplicationArguments args) throws Exception {
+    public void run(ApplicationArguments args) {
         log.info("MINIBOX-PRODUCER 启动完毕 配置信息如下：{}", toString());
     }
 }

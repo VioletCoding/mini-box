@@ -31,22 +31,6 @@
         where cid = #{cid}
     </select>
 
-    <!--查询指定行数据-->
-    <select id="queryAllByLimit" resultMap="MbCommentMap">
-        select cid,
-               state,
-               content,
-               type,
-               tid,
-               uid,
-               gid,
-               score,
-               create_date,
-               update_date
-        from minibox.mb_comment
-        limit #{offset}, #{limit}
-    </select>
-
     <!--通过实体作为筛选条件查询-->
     <select id="queryAll" resultMap="MbCommentMap">
         select
@@ -90,6 +74,12 @@
     <insert id="insert" keyProperty="cid" useGeneratedKeys="true">
         insert into minibox.mb_comment(content, type, tid, uid, gid, score)
         values (#{content}, #{type}, #{tid}, #{uid}, #{gid}, #{score})
+    </insert>
+
+    <!--新增数据到mb_reply表-->
+    <insert id="insertToMbReply" keyProperty="rid" useGeneratedKeys="true">
+        insert into mb_reply(type, reply_who, reply_content, reply_uid, reply_in_post, reply_in_comment, reply_in_game)
+        VALUES (#{type}, #{replyWho}, #{replyContent}, #{replyUid}, #{replyInPost}, #{replyInComment}, #{replyInGame})
     </insert>
 
     <insert id="insertBatch" keyProperty="cid" useGeneratedKeys="true">

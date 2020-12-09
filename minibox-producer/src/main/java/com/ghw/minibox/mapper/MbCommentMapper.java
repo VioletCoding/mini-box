@@ -1,6 +1,7 @@
 package com.ghw.minibox.mapper;
 
 import com.ghw.minibox.entity.MbComment;
+import com.ghw.minibox.entity.MbReply;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
@@ -21,6 +22,15 @@ public interface MbCommentMapper {
      */
     int insert(MbComment mbComment);
 
+
+    /**
+     * 新增数据到mb_reply表
+     *
+     * @param mbReply 实体
+     * @return 影响行数
+     */
+    int insertToMbReply(MbReply mbReply);
+
     /**
      * 通过ID查询单条数据
      *
@@ -28,16 +38,6 @@ public interface MbCommentMapper {
      * @return 实例对象
      */
     MbComment queryById(Long cid);
-
-    /**
-     * 查询指定行数据
-     *
-     * @param offset 查询起始位置
-     * @param limit  查询条数
-     * @return 对象列表
-     */
-    List<MbComment> queryAllByLimit(@Param("offset") int offset, @Param("limit") int limit);
-
 
     /**
      * 通过实体作为筛选条件查询

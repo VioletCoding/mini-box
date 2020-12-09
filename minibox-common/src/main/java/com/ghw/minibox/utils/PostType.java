@@ -22,6 +22,14 @@ public enum PostType {
      */
     COMMENT_IN_GAME("GC"),
     /**
+     * 帖子下的回复
+     */
+    REPLY_IN_POST("TR"),
+    /**
+     * 游戏下的回复
+     */
+    REPLY_IN_GAME("GR"),
+    /**
      * 用户头像
      */
     PHOTO_USER("UP"),
