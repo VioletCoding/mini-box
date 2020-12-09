@@ -12,6 +12,7 @@ import com.ghw.minibox.validatedgroup.LoginGroup;
 import com.ghw.minibox.validatedgroup.RegisterGroup;
 import com.ghw.minibox.validatedgroup.SingleGroup;
 import com.nimbusds.jose.JOSEException;
+import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.mail.EmailException;
@@ -30,7 +31,7 @@ import javax.annotation.Resource;
 @RestController
 @RequestMapping("user")
 @Slf4j
-@ApiOperation("用户控制层")
+@Api("用户控制层")
 public class MbUserController {
     @Resource
     private MbUserService mbUserService;

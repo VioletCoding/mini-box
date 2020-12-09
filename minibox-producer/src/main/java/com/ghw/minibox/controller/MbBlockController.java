@@ -5,6 +5,7 @@ import com.ghw.minibox.dto.ReturnDto;
 import com.ghw.minibox.entity.MbBlock;
 import com.ghw.minibox.service.MbBlockService;
 import com.ghw.minibox.utils.AOPLog;
+import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -21,6 +22,7 @@ import java.util.List;
  */
 @RestController
 @RequestMapping("block")
+@Api("版块控制层")
 public class MbBlockController {
 
     @Resource

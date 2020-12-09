@@ -79,22 +79,27 @@ public class LogAspect {
     @Async
     public void printLog(ProceedingJoinPoint joinPoint) throws JsonProcessingException {
         long begin = System.currentTimeMillis();
+        //方法签名，获取方法的所有信息
         MethodSignature signature = (MethodSignature) joinPoint.getSignature();
+        //获取这个方法
         Method method = signature.getMethod();
-
-        log.info("开始执行{}方法", joinPoint.getTarget().getClass().getName() + "." + signature.getName());
-
-        AOPBean aopBean = new AOPBean();
-        AOPLog annotation = method.getAnnotation(AOPLog.class);
-
-        if (annotation != null) aopBean.setOperation(annotation.value());
-
-        String className = joinPoint.getTarget().getClass().getName();
+        //获取方法名字
         String methodName = signature.getName();
 
+        log.info("开始执行{}方法", methodName);
+        //自定义Bean，保存操作信息
+        AOPBean aopBean = new AOPBean();
+        //获取注解，AOPLog为自定义注解
+        AOPLog annotation = method.getAnnotation(AOPLog.class);
+        //获取默认值
+        if (annotation != null) aopBean.setOperation(annotation.value());
+        //获取类名
+        String className = joinPoint.getTarget().getClass().getName();
+        //将方法的全类名保存
         aopBean.setMethod(className + "." + methodName + "()");
-
+        //获取连接点入参
         Object[] args = joinPoint.getArgs();
+        //获取方法入参列表
         LocalVariableTableParameterNameDiscoverer u = new LocalVariableTableParameterNameDiscoverer();
         String[] paramNames = u.getParameterNames(method);
 
@@ -113,8 +118,9 @@ public class LogAspect {
         String json = objectMapper.writeValueAsString(aopBean);
         log.info("本次使用的线程==>{}", Thread.currentThread().getName());
         log.info("本次操作结果==>{}", json);
+        //操作日志写入redis
         redisUtil.set(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()), json);
         log.info("已将操作记录写入到Redis");
-        log.info("结束执行{}方法", joinPoint.getTarget().getClass().getName() + "." + signature.getName());
+        log.info("结束执行{}方法", methodName);
     }
 }

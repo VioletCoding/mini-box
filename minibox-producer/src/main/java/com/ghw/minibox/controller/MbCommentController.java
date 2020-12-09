@@ -9,6 +9,7 @@ import com.ghw.minibox.utils.AOPLog;
 import com.ghw.minibox.utils.ResultCode;
 import com.ghw.minibox.validatedgroup.CommentInGameGroup;
 import com.ghw.minibox.validatedgroup.CommentInPostGroup;
+import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -26,6 +27,7 @@ import javax.annotation.Resource;
  */
 @RestController
 @RequestMapping("comment")
+@Api("评论控制层")
 public class MbCommentController {
     @Resource
     private MbCommentService mbCommentService;

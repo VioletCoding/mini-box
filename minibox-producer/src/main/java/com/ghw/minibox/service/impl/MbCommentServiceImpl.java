@@ -61,10 +61,12 @@ public class MbCommentServiceImpl implements MbCommentService {
         if (mbReply.getType().equals(PostType.REPLY_IN_POST.getType())) {
             if (mbReply.getReplyInPost() == null)
                 return ResultCode.REPLY_IN_POST_IS_NULL;
+            mbReply.setReplyInGame(null);
         }
         if (mbReply.getType().equals(PostType.REPLY_IN_GAME.getType())) {
             if (mbReply.getReplyInGame() == null)
                 return ResultCode.REPLY_IN_GAME_IS_NULL;
+            mbReply.setReplyInPost(null);
         }
 
         int result = mbCommentMapper.insertToMbReply(mbReply);

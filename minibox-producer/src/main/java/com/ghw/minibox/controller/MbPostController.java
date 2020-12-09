@@ -6,6 +6,7 @@ import com.ghw.minibox.entity.MbPost;
 import com.ghw.minibox.service.MbPostService;
 import com.ghw.minibox.utils.AOPLog;
 import com.ghw.minibox.utils.ResultCode;
+import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiModelProperty;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
@@ -25,6 +26,7 @@ import java.util.List;
 @RestController
 @RequestMapping("post")
 @Slf4j
+@Api("帖子控制层")
 public class MbPostController {
     /**
      * 服务对象
