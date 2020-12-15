@@ -59,8 +59,12 @@ public class RedisUtil {
      * @throws NullPointerException 空指针异常
      */
     public void expire(String key, Long expire) throws NullPointerException {
-        if (key == null || key.equals("")) return;
-        if (expire == null) return;
+        if (key == null || key.equals("")) {
+            return;
+        }
+        if (expire == null) {
+            return;
+        }
         srt.expire(key, expire, TimeUnit.SECONDS);
     }
 

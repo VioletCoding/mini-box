@@ -13,44 +13,18 @@ import java.util.List;
 public interface MbGameService {
 
     /**
-     * 通过ID查询单条数据
+     * 游戏库 -> 游戏列表
      *
-     * @param gid 主键
-     * @return 实例对象
+     * @return 游戏列表
      */
-    MbGame queryById(Long gid);
+    List<MbGame> showGameList();
 
     /**
-     * 查询多条数据
+     * 游戏库 -> 游戏详情
      *
-     * @param offset 查询起始位置
-     * @param limit  查询条数
-     * @return 对象列表
+     * @param gid 游戏gid
+     * @return 游戏详情
      */
-    List<MbGame> queryAllByLimit(int offset, int limit);
-
-    /**
-     * 新增数据
-     *
-     * @param mbGame 实例对象
-     * @return 实例对象
-     */
-    MbGame insert(MbGame mbGame);
-
-    /**
-     * 修改数据
-     *
-     * @param mbGame 实例对象
-     * @return 实例对象
-     */
-    MbGame update(MbGame mbGame);
-
-    /**
-     * 通过主键删除数据
-     *
-     * @param gid 主键
-     * @return 是否成功
-     */
-    boolean deleteById(Long gid);
+    MbGame showGameDetail(Long gid);
 
 }

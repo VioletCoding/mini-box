@@ -41,10 +41,12 @@ public class MbPostController {
     @PostMapping("publish")
     public ReturnDto<String> publishPost(@RequestBody MbPost mbPost) {
         ReturnDto<ResultCode> returnDto = mbPostService.publish(mbPost);
-        if (returnDto.getCode() == ResultCode.OK.getCode())
+        if (returnDto.getCode() == ResultCode.OK.getCode()) {
             return gr.success();
-        if (returnDto.getCode() == ResultCode.NOT_FOUND.getCode())
+        }
+        if (returnDto.getCode() == ResultCode.NOT_FOUND.getCode()) {
             return gr.custom(ResultCode.NOT_FOUND.getCode(), "该用户不存在");
+        }
         return gr.fail();
     }
 
@@ -54,7 +56,9 @@ public class MbPostController {
     public ReturnDto<String> addPictureInPost(@RequestParam(value = "multipartFiles") MultipartFile[] multipartFiles,
                                               @RequestParam(value = "tid") Long tid) throws IOException {
         boolean result = mbPostService.addPictureInPost(multipartFiles, tid);
-        if (result) return gr.success();
+        if (result) {
+            return gr.success();
+        }
         return gr.fail();
     }
 

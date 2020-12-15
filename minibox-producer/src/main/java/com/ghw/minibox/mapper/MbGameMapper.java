@@ -21,23 +21,13 @@ public interface MbGameMapper {
      */
     MbGame queryById(Long gid);
 
-    /**
-     * 查询指定行数据
-     *
-     * @param offset 查询起始位置
-     * @param limit  查询条数
-     * @return 对象列表
-     */
-    List<MbGame> queryAllByLimit(@Param("offset") int offset, @Param("limit") int limit);
-
 
     /**
-     * 通过实体作为筛选条件查询
+     * 全查
      *
-     * @param mbGame 实例对象
      * @return 对象列表
      */
-    List<MbGame> queryAll(MbGame mbGame);
+    List<MbGame> queryAll();
 
     /**
      * 新增数据

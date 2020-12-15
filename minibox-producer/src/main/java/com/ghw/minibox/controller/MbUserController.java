@@ -56,7 +56,9 @@ public class MbUserController {
     @PostMapping("beforeRegister")
     public ReturnDto<String> beforeRegister(@Validated(SingleGroup.class) @RequestBody MbUser mbUser) throws EmailException {
         boolean queryByUsername = mbUserService.queryByUsername(mbUser.getUsername());
-        if (queryByUsername) return gr.success();
+        if (queryByUsername) {
+            return gr.success();
+        }
         return gr.custom(ResultCode.USER_EXIST.getCode(), ResultCode.USER_EXIST.getMessage());
     }
 
@@ -75,9 +77,13 @@ public class MbUserController {
         boolean result = mbUserService.authRegCode(mbUser.getUsername(), mbUser.getCode());
         if (result) {
             boolean register = mbUserService.register(mbUser);
-            if (register) return gr.success();
+            if (register) {
+                return gr.success();
+            }
         }
-        if (!result) return gr.custom(ResultCode.BAD_REQUEST.getCode(), "验证码无效");
+        if (!result) {
+            return gr.custom(ResultCode.BAD_REQUEST.getCode(), "验证码无效");
+        }
         return gr.fail();
     }
 
@@ -95,11 +101,12 @@ public class MbUserController {
     public ReturnDto<String> login(@Validated({LoginGroup.class}) @RequestBody MbUser mbUser) throws JsonProcessingException, JOSEException {
         String login = mbUserService.login(mbUser);
 
-        if (login.equals(ResultCode.USER_AUTH_FAIL.getMessage()))
+        if (login.equals(ResultCode.USER_AUTH_FAIL.getMessage())) {
             return gr.custom(ResultCode.USER_AUTH_FAIL.getCode(), ResultCode.USER_AUTH_FAIL.getMessage());
-        if (login.equals(ResultCode.NOT_FOUND.getMessage()))
+        }
+        if (login.equals(ResultCode.NOT_FOUND.getMessage())) {
             return gr.custom(ResultCode.NOT_FOUND.getCode(), "用户不存在");
-
+        }
         return gr.success(login);
     }
 
@@ -107,7 +114,9 @@ public class MbUserController {
     @GetMapping("logout/{token}")
     public ReturnDto<String> logout(@PathVariable String token) throws Exception {
         boolean login = mbUserService.logout(token);
-        if (login) return gr.success();
+        if (login) {
+            return gr.success();
+        }
         return gr.fail();
     }
 
@@ -115,7 +124,9 @@ public class MbUserController {
     @PostMapping("forget")
     public ReturnDto<String> forgetPassword(@Validated(SingleGroup.class) @RequestBody MbUser mbUser) throws EmailException {
         boolean result = mbUserService.forgetPassword(mbUser);
-        if (result) return gr.success().setData(null);
+        if (result) {
+            return gr.success().setData(null);
+        }
         return gr.fail();
     }
 
@@ -125,7 +136,9 @@ public class MbUserController {
         boolean authRegCode = mbUserService.authRegCode(mbUser.getUsername(), mbUser.getCode());
         if (authRegCode) {
             boolean result = mbUserService.doResetPassword(mbUser);
-            if (result) return gr.success();
+            if (result) {
+                return gr.success();
+            }
             return gr.fail();
         }
         return gr.fail();

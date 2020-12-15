@@ -103,10 +103,13 @@ public class MbPostServiceImpl implements MbPostService {
     @Override
     public ReturnDto<ResultCode> publish(MbPost mbPost) {
         MbUser mbUser = mbUserMapper.queryById(mbPost.getUid());
-        if (mbUser == null) return gr.custom(ResultCode.NOT_FOUND.getCode(), ResultCode.NOT_FOUND.getMessage());
+        if (mbUser == null) {
+            return gr.custom(ResultCode.NOT_FOUND.getCode(), ResultCode.NOT_FOUND.getMessage());
+        }
         int result = mbPostMapper.insert(mbPost);
-        if (result > 0)
+        if (result > 0) {
             return gr.success();
+        }
         return gr.fail();
     }
 

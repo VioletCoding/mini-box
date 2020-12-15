@@ -44,8 +44,6 @@ public class MbUserServiceImpl implements MbUserService {
     private RedisUtil redisUtil;
     @Resource
     private NimbusJoseJwt jwt;
-    //    @Resource
-//    private QiNiuUtil qiNiuUtil;
     @Value("${qiNiu.defaultPhoto}")
     private String defaultLink;
 
@@ -168,7 +166,9 @@ public class MbUserServiceImpl implements MbUserService {
     @Override
     public String login(MbUser mbUser) throws JsonProcessingException, JOSEException {
         MbUser fromMySQL = mbUserMapper.queryByUsername(mbUser.getUsername());
-        if (fromMySQL == null) return ResultCode.NOT_FOUND.getMessage();
+        if (fromMySQL == null) {
+            return ResultCode.NOT_FOUND.getMessage();
+        }
         MD5 md5 = new MD5();
         String hex16 = md5.digestHex16(mbUser.getPassword());
         if (fromMySQL.getPassword().equals(hex16)) {
@@ -188,7 +188,9 @@ public class MbUserServiceImpl implements MbUserService {
      */
     @Override
     public boolean logout(String token) throws Exception {
-        if (token == null || token.equals("")) return false;
+        if (token == null || token.equals("")) {
+            return false;
+        }
         PayloadDto payloadDto = jwt.verifyTokenByHMAC(token);
         log.info("payloadDto==>{}", payloadDto);
         Boolean exist = redisUtil.exist(RedisPrefix.USER_TOKEN.getPrefix() + payloadDto.getUsername());
@@ -207,7 +209,9 @@ public class MbUserServiceImpl implements MbUserService {
     @Override
     public boolean forgetPassword(MbUser mbUser) throws EmailException {
         MbUser queryByUsername = mbUserMapper.queryByUsername(mbUser.getUsername());
-        if (queryByUsername == null) return false;
+        if (queryByUsername == null) {
+            return false;
+        }
         String subject = "您正在重置迷你盒的密码";
         String msg = "您正在重置迷你盒的密码，有效期5分钟，验证码为：";
         sendEmail(mbUser.getUsername(), subject, msg);

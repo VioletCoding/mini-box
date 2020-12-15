@@ -65,6 +65,7 @@ public class MbGame implements Serializable {
      */
     @ApiModelProperty(notes = "发布时间")
     @NotNull(message = "发布时间releaseTime不能为空")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     private Date releaseTime;
     /**
      * 开发商
@@ -93,6 +94,7 @@ public class MbGame implements Serializable {
      * 更新时间
      */
     @ApiModelProperty(notes = "更新时间")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     private Date updateDate;
 
     @ApiModelProperty(notes = "一个游戏对应一个版块")
@@ -100,6 +102,9 @@ public class MbGame implements Serializable {
 
     @ApiModelProperty(notes = "一个游戏多图")
     private List<MbPhoto> photoList;
+
+    @ApiModelProperty(notes = "用户头像")
+    private MbPhoto userPhoto;
 
     @ApiModelProperty(notes = "一个游戏多标签")
     private List<MbTag> tagList;

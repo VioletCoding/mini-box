@@ -30,14 +30,17 @@ public class MbCommentServiceImpl implements MbCommentService {
      */
     @Override
     public ResultCode postComment(MbComment mbComment) {
-        if (mbComment.getType().equals(PostType.COMMENT_IN_POST.getType()) && mbComment.getTid() == null)
+        if (mbComment.getType().equals(PostType.COMMENT_IN_POST.getType()) && mbComment.getTid() == null) {
             return ResultCode.TID_IS_NULL;
+        }
 
         if (mbComment.getType().equals(PostType.COMMENT_IN_GAME.getType())) {
-            if (mbComment.getGid() == null)
+            if (mbComment.getGid() == null) {
                 return ResultCode.GID_IS_NULL;
-            if (mbComment.getScore() == null)
+            }
+            if (mbComment.getScore() == null) {
                 return ResultCode.SCORE_IS_NULL;
+            }
         }
 
         if (mbCommentMapper.insert(mbComment) > 0) {
@@ -59,13 +62,15 @@ public class MbCommentServiceImpl implements MbCommentService {
     public ResultCode postReply(MbReply mbReply) {
 
         if (mbReply.getType().equals(PostType.REPLY_IN_POST.getType())) {
-            if (mbReply.getReplyInPost() == null)
+            if (mbReply.getReplyInPost() == null) {
                 return ResultCode.REPLY_IN_POST_IS_NULL;
+            }
             mbReply.setReplyInGame(null);
         }
         if (mbReply.getType().equals(PostType.REPLY_IN_GAME.getType())) {
-            if (mbReply.getReplyInGame() == null)
+            if (mbReply.getReplyInGame() == null) {
                 return ResultCode.REPLY_IN_GAME_IS_NULL;
+            }
             mbReply.setReplyInPost(null);
         }
 

@@ -20,60 +20,23 @@ public class MbGameServiceImpl implements MbGameService {
     private MbGameMapper mbGameMapper;
 
     /**
-     * 通过ID查询单条数据
+     * 游戏库 -> 游戏列表
      *
-     * @param gid 主键
-     * @return 实例对象
+     * @return 游戏列表
      */
     @Override
-    public MbGame queryById(Long gid) {
-        return this.mbGameMapper.queryById(gid);
+    public List<MbGame> showGameList() {
+        return mbGameMapper.queryAll();
     }
 
     /**
-     * 查询多条数据
+     * 游戏库 -> 游戏详情
      *
-     * @param offset 查询起始位置
-     * @param limit  查询条数
-     * @return 对象列表
+     * @param gid 游戏gid
+     * @return 游戏详情
      */
     @Override
-    public List<MbGame> queryAllByLimit(int offset, int limit) {
-        return this.mbGameMapper.queryAllByLimit(offset, limit);
-    }
-
-    /**
-     * 新增数据
-     *
-     * @param mbGame 实例对象
-     * @return 实例对象
-     */
-    @Override
-    public MbGame insert(MbGame mbGame) {
-        this.mbGameMapper.insert(mbGame);
-        return mbGame;
-    }
-
-    /**
-     * 修改数据
-     *
-     * @param mbGame 实例对象
-     * @return 实例对象
-     */
-    @Override
-    public MbGame update(MbGame mbGame) {
-        this.mbGameMapper.update(mbGame);
-        return this.queryById(mbGame.getGid());
-    }
-
-    /**
-     * 通过主键删除数据
-     *
-     * @param gid 主键
-     * @return 是否成功
-     */
-    @Override
-    public boolean deleteById(Long gid) {
-        return this.mbGameMapper.deleteById(gid) > 0;
+    public MbGame showGameDetail(Long gid) {
+        return mbGameMapper.queryById(gid);
     }
 }

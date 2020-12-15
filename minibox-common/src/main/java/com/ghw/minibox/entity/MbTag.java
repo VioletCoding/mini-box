@@ -1,5 +1,6 @@
 package com.ghw.minibox.entity;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.ghw.minibox.validatedgroup.SearchGroup;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -18,6 +19,7 @@ import java.util.Date;
  */
 @Data
 @Accessors(chain = true)
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class MbTag implements Serializable {
     private static final long serialVersionUID = -76639098783076019L;
     /**
