@@ -16,12 +16,12 @@
             <result property="name" column="name" jdbcType="VARCHAR"/>
         </association>
         <!--首页展示的帖子大图-->
-        <collection property="photoList" ofType="com.ghw.minibox.entity.MbPhoto">
-            <id property="pid" column="pid" jdbcType="INTEGER"/>
-            <result property="photoLink" column="link" jdbcType="VARCHAR"/>
-        </collection>
+        <!--<collection property="photoList" ofType="com.ghw.minibox.entity.MbPhoto">-->
+        <!--    <id property="pid" column="pid" jdbcType="INTEGER"/>-->
+        <!--    <result property="photoLink" column="link" jdbcType="VARCHAR"/>-->
+        <!--</collection>-->
     </resultMap>
-
+    <!--TODO-->
     <select id="showPostList" resultMap="showPostListMap">
         SELECT mp.tid,
                mp.bid,
@@ -29,15 +29,10 @@
                mp.title,
                mp.uid,
                mb.`name`,
-               mpt.pid,
-               mpt.link,
                (SELECT count(1) FROM mb_comment mc WHERE mc.tid = mp.tid AND mc.state = 0) AS countComment
         FROM mb_post mp
-                 LEFT JOIN mb_block mb ON (mp.bid = mb.bid)
-                 LEFT JOIN mb_photo mpt ON (mpt.tid = mp.tid)
-        WHERE mpt.type = 'TP'
-          AND mpt.state = 0
-          AND mb.state = 0
+                 LEFT JOIN mb_block AS mb ON (mp.bid = mb.bid)
+        WHERE mb.state = 0
           AND mp.state = 0
           AND mp.post_state = 0
         ORDER BY mp.create_date DESC;

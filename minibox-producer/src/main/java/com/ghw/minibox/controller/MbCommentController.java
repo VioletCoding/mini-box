@@ -5,7 +5,6 @@ import com.ghw.minibox.dto.ReturnDto;
 import com.ghw.minibox.entity.MbComment;
 import com.ghw.minibox.entity.MbReply;
 import com.ghw.minibox.service.MbCommentService;
-import com.ghw.minibox.utils.AOPLog;
 import com.ghw.minibox.utils.ResultCode;
 import com.ghw.minibox.validatedgroup.CommentInGameGroup;
 import com.ghw.minibox.validatedgroup.CommentInPostGroup;
@@ -36,7 +35,6 @@ public class MbCommentController {
 
 
     @ApiOperation("发表评论")
-    @AOPLog("发表评论")
     @PostMapping("post")
     public ReturnDto<ResultCode> postComment(@RequestBody
                                              @Validated({CommentInPostGroup.class, CommentInGameGroup.class})
@@ -45,7 +43,6 @@ public class MbCommentController {
     }
 
     @ApiOperation("发表回复")
-    @AOPLog("发表回复")
     @PostMapping("reply")
     public ReturnDto<ResultCode> postReply(@RequestBody @Validated MbReply mbReply) {
         return gr.fromService(mbCommentService.postReply(mbReply));

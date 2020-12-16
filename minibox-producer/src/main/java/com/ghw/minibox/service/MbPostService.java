@@ -50,8 +50,7 @@ public interface MbPostService {
      * 上传文件，可以批量上传，异步接口
      *
      * @param multipartFiles 文件
-     * @param tid            帖子ID
      */
-    List<String> addPictureInPost(MultipartFile[] multipartFiles, Long tid) throws IOException;
+    List<String> addPictureInPost(MultipartFile[] multipartFiles) throws IOException;
 
 }

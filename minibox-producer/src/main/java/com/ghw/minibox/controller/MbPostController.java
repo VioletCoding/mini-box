@@ -50,9 +50,8 @@ public class MbPostController {
 
     @ApiOperation("帖子图片上传")
     @PostMapping("upload")
-    public ReturnDto<List<String>> addPictureInPost(@RequestParam(value = "multipartFiles") MultipartFile[] multipartFiles,
-                                                    @RequestParam(value = "tid") Long tid) throws IOException {
-        List<String> img = mbPostService.addPictureInPost(multipartFiles, tid);
+    public ReturnDto<List<String>> addPictureInPost(@RequestParam(value = "multipartFiles") MultipartFile[] multipartFiles) throws IOException {
+        List<String> img = mbPostService.addPictureInPost(multipartFiles);
         return new GenerateResult<List<String>>().success(img);
     }
 

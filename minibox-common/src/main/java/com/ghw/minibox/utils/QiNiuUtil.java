@@ -47,6 +47,14 @@ public class QiNiuUtil {
         um.asyncPut(bytes, key, uploadToken, null, null, false, new UpCompletionHandlerImpl());
     }
 
+    public void asyncUpload(String ak, String sk, String bucket, String key, InputStream inputStream) throws IOException {
+        Auth auth = Auth.create(ak, sk);
+        String uploadToken = auth.uploadToken(bucket);
+        Configuration cfg = new Configuration(Region.huanan());
+        UploadManager um = new UploadManager(cfg);
+        um.put(inputStream, key, uploadToken, null, null);
+    }
+
     /**
      * 同步流式上传文件
      *
@@ -60,7 +68,6 @@ public class QiNiuUtil {
     public void syncUpload(String ak, String sk, String bucket, String key, InputStream inputStream) throws IOException {
         Auth auth = Auth.create(ak, sk);
         String uploadToken = auth.uploadToken(bucket);
-        log.info("uploadToken为==>{}", uploadToken);
         Configuration cfg = new Configuration(Region.huanan());
         UploadManager um = new UploadManager(cfg);
         um.put(inputStream, key, uploadToken, null, null);

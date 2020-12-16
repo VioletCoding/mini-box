@@ -63,14 +63,14 @@ public class MbPostServiceImpl implements MbPostService {
     @AOPLog("首页帖子列表")
     @Override
     public List<MbPost> showPostList() {
-        List<MbPost> showPostList = mbPostMapper.showPostList();
-        for (MbPost m : showPostList) {
-            List<MbPhoto> photoList = m.getPhotoList();
-            for (MbPhoto p : photoList) {
-                m.setHeadPhotoLink(p.getPhotoLink());
-            }
-        }
-        return showPostList;
+        //TODO
+        //for (MbPost m : showPostList) {
+        //    List<MbPhoto> photoList = m.getPhotoList();
+        //    for (MbPhoto p : photoList) {
+        //        m.setHeadPhotoLink(p.getPhotoLink());
+        //    }
+        //}
+        return mbPostMapper.showPostList();
     }
 
 
@@ -108,6 +108,7 @@ public class MbPostServiceImpl implements MbPostService {
             return gr.custom(ResultCode.NOT_FOUND.getCode(), ResultCode.NOT_FOUND.getMessage());
         }
         int result = mbPostMapper.insert(mbPost);
+
         if (result > 0) {
             return gr.success();
         }
@@ -122,28 +123,28 @@ public class MbPostServiceImpl implements MbPostService {
      * mbPhoto:把图片的key（文件名）和图片地址持久化
      *
      * @param multipartFiles 文件，支持多个
-     * @param tid            帖子ID
      */
     @AOPLog("图片上传至七牛云")
     @Override
-    public List<String> addPictureInPost(MultipartFile[] multipartFiles, Long tid) throws IOException {
-        if (multipartFiles == null || multipartFiles.length <= 0) {
+    public List<String> addPictureInPost(MultipartFile[] multipartFiles) throws IOException {
+        if (multipartFiles.length <= 0) {
             return null;
         }
 
+        //用于批量返回图片的链接
         List<String> img = new ArrayList<>();
+        //用于批量插入数据库
         List<MbPhoto> photoList = new ArrayList<>();
 
         for (MultipartFile multipartFile : multipartFiles) {
             String simpleUUID = IdUtil.fastSimpleUUID();
-            qn.asyncUpload(this.ak, this.sk, this.bucket, simpleUUID, multipartFile.getBytes());
+            qn.asyncUpload(this.ak, this.sk, this.bucket, simpleUUID, multipartFile.getInputStream());
+            log.info("检查手机文件上传，尝试获取文件名==>{}", multipartFile.getOriginalFilename());
             MbPhoto mbPhoto = new MbPhoto()
                     .setPhotoLink(this.link + simpleUUID)
-                    .setType(PostType.PHOTO_POST.getType())
-                    .setTid(tid);
-            //用于批量插入数据库
+                    .setType(PostType.PHOTO_POST.getType());
+
             photoList.add(mbPhoto);
-            //用于批量返回图片的链接
             img.add(this.link + simpleUUID);
         }
         //批量插入
@@ -164,6 +165,7 @@ public class MbPostServiceImpl implements MbPostService {
      */
     @Override
     public MbPost queryById(Long tid) {
+        //TODO
         return null;
     }
 

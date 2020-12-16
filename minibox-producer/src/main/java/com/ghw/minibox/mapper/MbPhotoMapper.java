@@ -52,11 +52,11 @@ public interface MbPhotoMapper {
     /**
      * 批量新增数据（MyBatis原生foreach方法）
      *
-     * @param entities List<MbPhoto> 实例对象列表
+     * @param list List<MbPhoto> 实例对象列表
      * @return 影响行数
      */
     @Transactional
-    int insertBatch(@Param("entities") List<MbPhoto> entities);
+    int insertBatch(@Param("list") List<MbPhoto> list);
 
     /**
      * 批量新增或按主键更新数据（MyBatis原生foreach方法）
@@ -64,6 +64,7 @@ public interface MbPhotoMapper {
      * @param entities List<MbPhoto> 实例对象列表
      * @return 影响行数
      */
+    @Transactional
     int insertOrUpdateBatch(@Param("entities") List<MbPhoto> entities);
 
     /**
@@ -72,6 +73,7 @@ public interface MbPhotoMapper {
      * @param mbPhoto 实例对象
      * @return 影响行数
      */
+    @Transactional
     int update(MbPhoto mbPhoto);
 
     /**
@@ -80,6 +82,7 @@ public interface MbPhotoMapper {
      * @param pid 主键
      * @return 影响行数
      */
+    @Transactional
     int deleteById(Long pid);
 
 }
