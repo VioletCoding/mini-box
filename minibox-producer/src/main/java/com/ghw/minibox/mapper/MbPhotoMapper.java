@@ -55,6 +55,7 @@ public interface MbPhotoMapper {
      * @param entities List<MbPhoto> 实例对象列表
      * @return 影响行数
      */
+    @Transactional
     int insertBatch(@Param("entities") List<MbPhoto> entities);
 
     /**

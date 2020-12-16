@@ -21,9 +21,8 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
 import java.io.IOException;
-import java.util.HashMap;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 /**
  * (MbPost)表服务实现类
@@ -116,33 +115,45 @@ public class MbPostServiceImpl implements MbPostService {
     }
 
     /**
-     * 上传文件，可以批量上传，异步接口
-     * <p>
+     * 上传文件，可以批量上传，但是七牛云本身是不支持批量上传的，所以只能在循环中遍历上传接口，该上传接口是异步接口asyncUpload()
      * m:遍历文件
-     * <p>
+     * img:文件的名称和链接，用于返回前端作为图片回显
+     * photoList:用于mybatis批量插入
      * mbPhoto:把图片的key（文件名）和图片地址持久化
      *
-     * @param multipartFiles 文件
+     * @param multipartFiles 文件，支持多个
      * @param tid            帖子ID
      */
     @AOPLog("图片上传至七牛云")
     @Override
-    public Map<String, String> addPictureInPost(MultipartFile[] multipartFiles, Long tid) throws IOException {
-        Map<String, String> img = null;
+    public List<String> addPictureInPost(MultipartFile[] multipartFiles, Long tid) throws IOException {
+        if (multipartFiles == null || multipartFiles.length <= 0) {
+            return null;
+        }
 
-        for (MultipartFile m : multipartFiles) {
+        List<String> img = new ArrayList<>();
+        List<MbPhoto> photoList = new ArrayList<>();
+
+        for (MultipartFile multipartFile : multipartFiles) {
             String simpleUUID = IdUtil.fastSimpleUUID();
-            qn.asyncUpload(this.ak, this.sk, this.bucket, simpleUUID, m.getBytes());
+            qn.asyncUpload(this.ak, this.sk, this.bucket, simpleUUID, multipartFile.getBytes());
             MbPhoto mbPhoto = new MbPhoto()
                     .setPhotoLink(this.link + simpleUUID)
                     .setType(PostType.PHOTO_POST.getType())
                     .setTid(tid);
-            mbPhotoMapper.insert(mbPhoto);
-
-            img = new HashMap<>();
-            img.put(simpleUUID, this.link + simpleUUID);
+            //用于批量插入数据库
+            photoList.add(mbPhoto);
+            //用于批量返回图片的链接
+            img.add(this.link + simpleUUID);
         }
-        return img;
+        //批量插入
+        int insertBatch = mbPhotoMapper.insertBatch(photoList);
+
+        if (insertBatch > 0) {
+            return img;
+        }
+
+        return null;
     }
 
     /**

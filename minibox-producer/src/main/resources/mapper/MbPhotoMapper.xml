@@ -93,11 +93,10 @@
     </insert>
 
     <insert id="insertBatch" keyProperty="pid" useGeneratedKeys="true">
-        insert into minibox.mb_photo(type, link, uid, tid, cid, gid, state, create_date, update_date)
+        insert into minibox.mb_photo(type, link, uid, tid, cid, gid)
         values
         <foreach collection="entities" item="entity" separator=",">
-            (#{entity.type}, #{entity.link}, #{entity.uid}, #{entity.tid}, #{entity.cid}, #{entity.gid},
-            #{entity.state}, #{entity.createDate}, #{entity.updateDate})
+            (#{entity.type}, #{entity.photoLink}, #{entity.uid}, #{entity.tid}, #{entity.cid}, #{entity.gid})
         </foreach>
     </insert>
 

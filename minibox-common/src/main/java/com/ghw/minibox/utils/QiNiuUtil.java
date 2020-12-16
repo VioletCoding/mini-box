@@ -42,7 +42,6 @@ public class QiNiuUtil {
     public void asyncUpload(String ak, String sk, String bucket, String key, byte[] bytes) throws IOException {
         Auth auth = Auth.create(ak, sk);
         String uploadToken = auth.uploadToken(bucket);
-        log.info("uploadToken为==>{}", uploadToken);
         Configuration cfg = new Configuration(Region.huanan());
         UploadManager um = new UploadManager(cfg);
         um.asyncPut(bytes, key, uploadToken, null, null, false, new UpCompletionHandlerImpl());
