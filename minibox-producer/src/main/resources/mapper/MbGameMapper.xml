@@ -31,12 +31,12 @@
 
         <!--评论的用户的头像列表-->
         <association property="userPhoto" javaType="com.ghw.minibox.entity.MbPhoto">
-            <result property="link" column="user_photo_link"/>
+            <result property="photoLink" column="user_photo_link"/>
         </association>
 
         <!--游戏图片列表-->
         <collection property="photoList" ofType="com.ghw.minibox.entity.MbPhoto">
-            <result property="link" column="game_photo_link"/>
+            <result property="photoLink" column="game_photo_link"/>
         </collection>
         <!--游戏标签列表-->
         <collection property="tagList" ofType="com.ghw.minibox.entity.MbTag">
@@ -96,7 +96,7 @@
         <result property="price" column="price"/>
         <result property="score" column="score"/>
         <collection property="photoList" column="link" ofType="com.ghw.minibox.entity.MbPhoto">
-            <result property="link" column="link"/>
+            <result property="photoLink" column="link"/>
         </collection>
     </resultMap>
 

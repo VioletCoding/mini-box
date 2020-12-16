@@ -8,6 +8,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Map;
 
 /**
  * (MbPost)表服务接口
@@ -52,6 +53,6 @@ public interface MbPostService {
      * @param multipartFiles 文件
      * @param tid            帖子ID
      */
-    boolean addPictureInPost(MultipartFile[] multipartFiles, Long tid) throws IOException;
+    Map<String,String> addPictureInPost(MultipartFile[] multipartFiles, Long tid) throws IOException;
 
 }

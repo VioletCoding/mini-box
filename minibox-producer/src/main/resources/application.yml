@@ -1,0 +1,51 @@
+#端口号
+server:
+  port: 20002
+  #应用名
+spring:
+  datasource:
+    druid:
+      url: jdbc:mysql://localhost:3306/minibox?useUnicode=true
+      username: root
+      password: 123456789
+  servlet:
+    multipart:
+      max-file-size: 3MB
+      max-request-size: 30MB
+  application:
+    name: MINIBOX-PRODUCER
+    #激活的配置中心的配置文件
+#  profiles:
+#    active: DEV
+#  cloud:
+    #nacos注册中心
+#    nacos:
+#      discovery:
+#        namespace: 55fbbffc-f66a-4226-96a7-fb1c2245651d
+#        group: MINIBOX
+#        server-addr: localhost:8848
+      #naocs配置中心
+#      config:
+#        file-extension: yaml
+#        server-addr: localhost:8848
+#        group: MINIBOX-PRODUCER-DEV
+#        namespace: 55fbbffc-f66a-4226-96a7-fb1c2245651d
+
+#mybatis config
+mybatis:
+  mapper-locations:
+    - classpath:mapper/*.xml
+    - classpath*:com/**/mapper/*.xml
+
+#print log
+logging:
+  level:
+    com.ghw.minibox.mapper: debug
+
+#qi niu cloud
+qiNiu:
+  accessKey: OeZ3mKc0cwT2RVq-i6tmtmPj55xOp1NdT_6U4NHU
+  secretKey: NG3slWtnHU_lFhI7FimGzfF_hke9LTq9yHDn7OFV
+  bucket: minibox-bucket
+  defaultPhoto: http://qk8mtetqy.hn-bkt.clouddn.com/default.jpg
+  link: http://qk8mtetqy.hn-bkt.clouddn.com/

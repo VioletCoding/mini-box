@@ -58,7 +58,7 @@ public class QiNiuUtil {
      * @param inputStream 输入流
      * @throws IOException -
      */
-    public void sycnUpload(String ak, String sk, String bucket, String key, InputStream inputStream) throws IOException {
+    public void syncUpload(String ak, String sk, String bucket, String key, InputStream inputStream) throws IOException {
         Auth auth = Auth.create(ak, sk);
         String uploadToken = auth.uploadToken(bucket);
         log.info("uploadToken为==>{}", uploadToken);

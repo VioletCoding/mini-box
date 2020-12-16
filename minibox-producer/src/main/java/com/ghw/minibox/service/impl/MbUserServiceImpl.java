@@ -147,7 +147,7 @@ public class MbUserServiceImpl implements MbUserService {
         String digestHex16 = md5.digestHex16(mbUser.getPassword());
         mbUser.setPassword(digestHex16);
         int result = mbUserMapper.insert(mbUser);
-        mbPhotoMapper.insert(new MbPhoto().setType(PostType.PHOTO_USER.getType()).setLink(defaultLink).setUid(mbUser.getUid()));
+        mbPhotoMapper.insert(new MbPhoto().setType(PostType.PHOTO_USER.getType()).setPhotoLink(defaultLink).setUid(mbUser.getUid()));
         if (result > 0) {
             redisUtil.remove(RedisPrefix.USER_TEMP.getPrefix() + mbUser.getUsername());
             return true;

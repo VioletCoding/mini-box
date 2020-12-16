@@ -16,6 +16,7 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.annotation.Resource;
 import java.io.IOException;
 import java.util.List;
+import java.util.Map;
 
 /**
  * (MbPost)表控制层
@@ -53,13 +54,10 @@ public class MbPostController {
     @ApiOperation("帖子图片上传")
     @AOPLog("帖子图片上传")
     @PostMapping("upload")
-    public ReturnDto<String> addPictureInPost(@RequestParam(value = "multipartFiles") MultipartFile[] multipartFiles,
-                                              @RequestParam(value = "tid") Long tid) throws IOException {
-        boolean result = mbPostService.addPictureInPost(multipartFiles, tid);
-        if (result) {
-            return gr.success();
-        }
-        return gr.fail();
+    public ReturnDto<Map<String, String>> addPictureInPost(@RequestParam(value = "multipartFiles") MultipartFile[] multipartFiles,
+                                                           @RequestParam(value = "tid") Long tid) throws IOException {
+        Map<String, String> imgMap = mbPostService.addPictureInPost(multipartFiles, tid);
+        return new GenerateResult<Map<String, String>>().success(imgMap);
     }
 
     @ApiOperation("帖子列表显示")

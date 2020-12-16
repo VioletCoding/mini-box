@@ -37,7 +37,7 @@ public class MbPhoto implements Serializable {
      */
     @ApiModelProperty(notes = "图片链接")
     @NotNull(message = "图片链接link不能为空")
-    private String link;
+    private String photoLink;
     /**
      * 如果type=UP，该字段必填
      */

@@ -1,7 +1,6 @@
 package com.ghw.minibox.utils;
 
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ghw.minibox.component.RedisUtil;
 import lombok.extern.slf4j.Slf4j;
@@ -16,8 +15,6 @@ import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
 import java.lang.reflect.Method;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 
 /**
  * @author Violet
@@ -77,7 +74,7 @@ public class LogAspect {
      * @param joinPoint AOP切入点
      */
     @Async
-    public void printLog(ProceedingJoinPoint joinPoint) throws JsonProcessingException {
+    public void printLog(ProceedingJoinPoint joinPoint) {
         long begin = System.currentTimeMillis();
         //方法签名，获取方法的所有信息
         MethodSignature signature = (MethodSignature) joinPoint.getSignature();
@@ -117,12 +114,13 @@ public class LogAspect {
 
         aopBean.setTime(end - begin);
 
-        String json = objectMapper.writeValueAsString(aopBean);
+        //String json = objectMapper.writeValueAsString(aopBean);
         log.info("本次使用的线程==>{}", Thread.currentThread().getName());
-        log.info("本次操作结果==>{}", json);
+        //log.info("本次操作结果==>{}", json);
+        log.info("本次操作结果==>{}", aopBean);
         //操作日志写入redis
-        redisUtil.set(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()), json);
-        log.info("已将操作记录写入到Redis");
+        //redisUtil.set(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()), json);
+        //log.info("已将操作记录写入到Redis");
         log.info("结束执行{}方法", methodName);
     }
 }

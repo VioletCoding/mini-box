@@ -21,7 +21,9 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * (MbPost)表服务实现类
@@ -65,9 +67,9 @@ public class MbPostServiceImpl implements MbPostService {
         List<MbPost> showPostList = mbPostMapper.showPostList();
         for (MbPost m : showPostList) {
             List<MbPhoto> photoList = m.getPhotoList();
-            MbPhoto photo = photoList.get(0);
-            m.setHeadPhotoLink(photo.getLink());
-            break;
+            for (MbPhoto p : photoList) {
+                m.setHeadPhotoLink(p.getPhotoLink());
+            }
         }
         return showPostList;
     }
@@ -86,7 +88,7 @@ public class MbPostServiceImpl implements MbPostService {
         if (mbPost.getPhotoList() != null) {
             List<MbPhoto> photoList = mbPost.getPhotoList();
             for (MbPhoto p : photoList) {
-                mbPost.setHeadPhotoLink(p.getLink());
+                mbPost.setHeadPhotoLink(p.getPhotoLink());
                 break;
             }
         }
@@ -125,18 +127,22 @@ public class MbPostServiceImpl implements MbPostService {
      */
     @AOPLog("图片上传至七牛云")
     @Override
-    public boolean addPictureInPost(MultipartFile[] multipartFiles, Long tid) throws IOException {
-        int result = 0;
+    public Map<String, String> addPictureInPost(MultipartFile[] multipartFiles, Long tid) throws IOException {
+        Map<String, String> img = null;
+
         for (MultipartFile m : multipartFiles) {
             String simpleUUID = IdUtil.fastSimpleUUID();
             qn.asyncUpload(this.ak, this.sk, this.bucket, simpleUUID, m.getBytes());
             MbPhoto mbPhoto = new MbPhoto()
-                    .setLink(this.link + simpleUUID)
+                    .setPhotoLink(this.link + simpleUUID)
                     .setType(PostType.PHOTO_POST.getType())
                     .setTid(tid);
-            result = mbPhotoMapper.insert(mbPhoto);
+            mbPhotoMapper.insert(mbPhoto);
+
+            img = new HashMap<>();
+            img.put(simpleUUID, this.link + simpleUUID);
         }
-        return result > 0;
+        return img;
     }
 
     /**

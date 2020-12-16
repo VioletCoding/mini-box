@@ -5,7 +5,7 @@
     <resultMap type="com.ghw.minibox.entity.MbPhoto" id="MbPhotoMap">
         <result property="pid" column="pid" jdbcType="INTEGER"/>
         <result property="type" column="type" jdbcType="VARCHAR"/>
-        <result property="link" column="link" jdbcType="VARCHAR"/>
+        <result property="photoLink" column="link" jdbcType="VARCHAR"/>
         <result property="uid" column="uid" jdbcType="INTEGER"/>
         <result property="tid" column="tid" jdbcType="INTEGER"/>
         <result property="cid" column="cid" jdbcType="INTEGER"/>
@@ -89,7 +89,7 @@
     <!--新增所有列-->
     <insert id="insert" keyProperty="pid" useGeneratedKeys="true">
         insert into minibox.mb_photo(type, link, uid, tid, cid, gid)
-        values (#{type}, #{link}, #{uid}, #{tid}, #{cid}, #{gid})
+        values (#{type}, #{photoLink}, #{uid}, #{tid}, #{cid}, #{gid})
     </insert>
 
     <insert id="insertBatch" keyProperty="pid" useGeneratedKeys="true">

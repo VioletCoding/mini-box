@@ -18,7 +18,7 @@
         <!--首页展示的帖子大图-->
         <collection property="photoList" ofType="com.ghw.minibox.entity.MbPhoto">
             <id property="pid" column="pid" jdbcType="INTEGER"/>
-            <result property="link" column="link" jdbcType="VARCHAR"/>
+            <result property="photoLink" column="link" jdbcType="VARCHAR"/>
         </collection>
     </resultMap>
 
@@ -59,12 +59,12 @@
             <result property="level" column="level" jdbcType="VARCHAR"/>
             <!--作者的头像链接-->
             <association property="mbPhoto" javaType="com.ghw.minibox.entity.MbPhoto">
-                <result property="link" column="author_photo_link" jdbcType="VARCHAR"/>
+                <result property="photoLink" column="author_photo_link" jdbcType="VARCHAR"/>
             </association>
         </association>
         <!--帖子正文里所有的图片链接-->
         <collection property="photoList" ofType="com.ghw.minibox.entity.MbPhoto">
-            <result property="link" column="post_photo_list_link" jdbcType="VARCHAR"/>
+            <result property="photoLink" column="post_photo_list_link" jdbcType="VARCHAR"/>
         </collection>
         <!--帖子里的所有评论，包括评论ID、评论内容、评论时间-->
         <collection property="commentList" ofType="com.ghw.minibox.entity.MbComment">
@@ -78,7 +78,7 @@
                 <result property="level" column="comment_user_level" jdbcType="VARCHAR"/>
                 <!--评论人的头像的链接-->
                 <association property="mbPhoto" javaType="com.ghw.minibox.entity.MbPhoto">
-                    <result property="link" column="comment_user_photo_link" jdbcType="VARCHAR"/>
+                    <result property="photoLink" column="comment_user_photo_link" jdbcType="VARCHAR"/>
                 </association>
             </association>
             <!--每条评论里的回复，包括回复ID、回复日期、回复内容、回复人的UID、回复了谁-->
