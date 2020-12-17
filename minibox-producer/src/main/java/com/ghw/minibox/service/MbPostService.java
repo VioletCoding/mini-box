@@ -1,6 +1,7 @@
 package com.ghw.minibox.service;
 
 import com.ghw.minibox.dto.ReturnDto;
+import com.ghw.minibox.dto.ReturnImgDto;
 import com.ghw.minibox.entity.MbPost;
 import com.ghw.minibox.utils.ResultCode;
 import org.springframework.transaction.annotation.Transactional;
@@ -47,10 +48,11 @@ public interface MbPostService {
     ReturnDto<ResultCode> publish(MbPost mbPost);
 
     /**
-     * 上传文件，可以批量上传，异步接口
+     * 上传文件，可以批量上传，文件上传异步
      *
      * @param multipartFiles 文件
      */
-    List<String> addPictureInPost(MultipartFile[] multipartFiles) throws IOException;
+    ReturnImgDto addPictureInPost(MultipartFile[] multipartFiles) throws IOException;
+
 
 }

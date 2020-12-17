@@ -8,18 +8,14 @@
         <result property="uid" column="uid" jdbcType="INTEGER"/>
         <result property="bid" column="bid" jdbcType="INTEGER"/>
         <result property="title" column="title" jdbcType="VARCHAR"/>
+        <result property="coverImg" column="cover_img" jdbcType="VARCHAR"/>
         <result property="createDate" column="create_date" jdbcType="TIMESTAMP"/>
         <result property="countComment" column="countComment" jdbcType="INTEGER"/>
         <!--每个帖子，属于哪一个版块-->
         <association property="mbBlock" javaType="com.ghw.minibox.entity.MbBlock">
-            <id property="bid" column="bid" jdbcType="INTEGER"/>
-            <result property="name" column="name" jdbcType="VARCHAR"/>
+            <id property="bid" column="block_id" jdbcType="INTEGER"/>
+            <result property="name" column="in_which_block" jdbcType="VARCHAR"/>
         </association>
-        <!--首页展示的帖子大图-->
-        <!--<collection property="photoList" ofType="com.ghw.minibox.entity.MbPhoto">-->
-        <!--    <id property="pid" column="pid" jdbcType="INTEGER"/>-->
-        <!--    <result property="photoLink" column="link" jdbcType="VARCHAR"/>-->
-        <!--</collection>-->
     </resultMap>
     <!--TODO-->
     <select id="showPostList" resultMap="showPostListMap">
@@ -28,13 +24,12 @@
                mp.create_date,
                mp.title,
                mp.uid,
-               mb.`name`,
+               mp.cover_img,
+               mb.bid                                                                      AS block_id,
+               mb.`name`                                                                   AS in_which_block,
                (SELECT count(1) FROM mb_comment mc WHERE mc.tid = mp.tid AND mc.state = 0) AS countComment
         FROM mb_post mp
                  LEFT JOIN mb_block AS mb ON (mp.bid = mb.bid)
-        WHERE mb.state = 0
-          AND mp.state = 0
-          AND mp.post_state = 0
         ORDER BY mp.create_date DESC;
     </select>
     <!-- 1.end -->
@@ -46,6 +41,7 @@
         <id property="tid" column="tid" jdbcType="INTEGER"/>
         <result property="title" column="title" jdbcType="VARCHAR"/>
         <result property="content" column="post_content" jdbcType="VARCHAR"/>
+        <result property="coverImg" column="cover_img" jdbcType="VARCHAR"/>
         <result property="createDate" column="create_date" jdbcType="TIMESTAMP"/>
         <!--是谁发的帖子，作者ID、作者昵称、作者等级-->
         <association property="mbUser" javaType="com.ghw.minibox.entity.MbUser">
@@ -57,10 +53,6 @@
                 <result property="photoLink" column="author_photo_link" jdbcType="VARCHAR"/>
             </association>
         </association>
-        <!--帖子正文里所有的图片链接-->
-        <collection property="photoList" ofType="com.ghw.minibox.entity.MbPhoto">
-            <result property="photoLink" column="post_photo_list_link" jdbcType="VARCHAR"/>
-        </collection>
         <!--帖子里的所有评论，包括评论ID、评论内容、评论时间-->
         <collection property="commentList" ofType="com.ghw.minibox.entity.MbComment">
             <id property="cid" column="comment_cid" jdbcType="INTEGER"/>
@@ -94,36 +86,50 @@
 
     <select id="showPostDetail" resultMap="MbPostMap">
         SELECT mp.tid,
+               -- 帖子标题
                mp.title,
-               mp.content              AS post_content,
+               -- 帖子内容
+               mp.content      AS post_content,
+               -- 创建时间
                mp.create_date,
-
-               mu.uid                  AS author_id,
+               -- 帖子封面大图
+               mp.cover_img,
+               -- 作者uid
+               mu.uid          AS author_id,
+               -- 作者昵称
                mu.nickname,
-
-               author_photo_link.link  AS author_photo_link,
-
-               mc.cid                  AS comment_cid,
-               mc.content              AS comment_content,
-               mc.create_date          AS comment_date,
-
+               -- 作者头像
+               author_photo_link.link AS author_photo_link,
+               -- 评论id
+               mc.cid AS comment_cid,
+               -- 评论内容
+               mc.content      AS comment_content,
+               -- 评论时间
+               mc.create_date  AS comment_date,
+               -- 评论用户头像
                comment_user_photo.link AS comment_user_photo_link,
-
-               mulist.uid              AS comment_user_id,
-               mulist.nickname         AS comment_user_nickname,
-               mulist.level            AS comment_user_level,
-
-               mr.rid,
+               -- 评论用户id
+               mulist.uid      AS comment_user_id,
+               -- 评论用户昵称
+               mulist.nickname AS comment_user_nickname,
+               -- 评论用户等级
+               mulist.`level`   AS comment_user_level,
+               -- 回复id
+               mr.rid ,
+               -- 回复日期
                mr.reply_date,
+               -- 回复内容
                mr.reply_content,
-               mr.reply_uid            AS who_post_this_reply,
-               mr.reply_who            AS this_reply_to_who,
-
-               reply_user.uid          AS reply_user_uid,
-               reply_user.nickname     AS reply_user_nickname,
-
-               post_photo_list.link    AS post_photo_list_link
-
+               -- 回复的人uid
+               mr.reply_uid AS who_post_this_reply,
+               -- 回复的对象的uid
+               mr.reply_who AS this_reply_to_who,
+               -- 回复的用户uid
+               reply_user.uid AS reply_user_uid,
+               -- 回复的用户昵称
+               reply_user.nickname AS reply_user_nickname,
+               -- 帖子详情顶部封面图
+               post_detail_cover_img.link AS post_detail_cover_img_link
         FROM mb_post mp
                  LEFT JOIN mb_user AS mu ON (mp.uid = mu.uid)
                  LEFT JOIN mb_photo AS author_photo_link ON (author_photo_link.uid = mu.uid)
@@ -132,12 +138,11 @@
                  LEFT JOIN mb_user AS mulist ON (mc.uid = mulist.uid)
                  LEFT JOIN mb_reply AS mr ON (mr.reply_in_comment = mc.cid)
                  LEFT JOIN mb_user AS reply_user ON (reply_user.uid = mr.reply_uid)
-                 LEFT JOIN mb_photo AS post_photo_list ON (post_photo_list.tid = mp.tid)
+                 LEFT JOIN mb_photo AS post_detail_cover_img ON (post_detail_cover_img.tid = mp.tid)
         WHERE mp.tid = #{tid}
           AND mp.state = 0
           AND mp.post_state = 0
           AND author_photo_link.type = 'UP'
-          AND post_photo_list.type = 'TP'
         ORDER BY mc.create_date DESC;
     </select>
     <!--2. end-->
@@ -155,33 +160,33 @@
         from minibox.mb_post
     </select>
 
-    <!--新增所有列-->
+    <!--新增所有列，并且返回自增主键-->
     <insert id="insert" keyProperty="tid" useGeneratedKeys="true">
-        insert into minibox.mb_post(uid, bid, title, content)
-        values (#{uid}, #{bid}, #{title}, #{content})
+        insert into minibox.mb_post(uid, bid, title, content, cover_img)
+        values (#{uid}, #{bid}, #{title}, #{content}, #{coverImg})
     </insert>
 
-    <insert id="insertBatch" keyProperty="tid" useGeneratedKeys="true">
-        insert into minibox.mb_post(uid, bid, title, content, post_state, create_date, update_date, state)
-        values
-        <foreach collection="entities" item="entity" separator=",">
-            (#{entity.uid}, #{entity.bid}, #{entity.title}, #{entity.content}, #{entity.postState},
-            #{entity.createDate}, #{entity.updateDate}, #{entity.state})
-        </foreach>
-    </insert>
+    <!--<insert id="insertBatch" keyProperty="tid" useGeneratedKeys="true">-->
+    <!--    insert into minibox.mb_post(uid, bid, title, content, post_state, create_date, update_date, state)-->
+    <!--    values-->
+    <!--    <foreach collection="entities" item="entity" separator=",">-->
+    <!--        (#{entity.uid}, #{entity.bid}, #{entity.title}, #{entity.content}, #{entity.postState},-->
+    <!--        #{entity.createDate}, #{entity.updateDate}, #{entity.state})-->
+    <!--    </foreach>-->
+    <!--</insert>-->
 
-    <insert id="insertOrUpdateBatch" keyProperty="tid" useGeneratedKeys="true">
-        insert into minibox.mb_post(uid, bid, title, content, post_state, create_date, update_date, state)
-        values
-        <foreach collection="entities" item="entity" separator=",">
-            (#{entity.uid}, #{entity.bid}, #{entity.title}, #{entity.content}, #{entity.postState},
-            #{entity.createDate}, #{entity.updateDate}, #{entity.state})
-        </foreach>
-        on duplicate key update
-        uid = values(uid) , bid = values(bid) , title = values(title) , content = values(content) , post_state =
-        values(post_state) , create_date = values(create_date) , update_date = values(update_date) , state =
-        values(state)
-    </insert>
+    <!--<insert id="insertOrUpdateBatch" keyProperty="tid" useGeneratedKeys="true">-->
+    <!--    insert into minibox.mb_post(uid, bid, title, content, post_state, create_date, update_date, state)-->
+    <!--    values-->
+    <!--    <foreach collection="entities" item="entity" separator=",">-->
+    <!--        (#{entity.uid}, #{entity.bid}, #{entity.title}, #{entity.content}, #{entity.postState},-->
+    <!--        #{entity.createDate}, #{entity.updateDate}, #{entity.state})-->
+    <!--    </foreach>-->
+    <!--    on duplicate key update-->
+    <!--    uid = values(uid) , bid = values(bid) , title = values(title) , content = values(content) , post_state =-->
+    <!--    values(post_state) , create_date = values(create_date) , update_date = values(update_date) , state =-->
+    <!--    values(state)-->
+    <!--</insert>-->
 
     <!--通过主键修改数据-->
     <update id="update">

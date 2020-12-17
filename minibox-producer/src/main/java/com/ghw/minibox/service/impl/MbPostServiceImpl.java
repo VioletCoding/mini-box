@@ -3,9 +3,9 @@ package com.ghw.minibox.service.impl;
 import cn.hutool.core.util.IdUtil;
 import com.ghw.minibox.component.GenerateResult;
 import com.ghw.minibox.dto.ReturnDto;
+import com.ghw.minibox.dto.ReturnImgDto;
 import com.ghw.minibox.entity.MbPhoto;
 import com.ghw.minibox.entity.MbPost;
-import com.ghw.minibox.entity.MbUser;
 import com.ghw.minibox.mapper.MbPhotoMapper;
 import com.ghw.minibox.mapper.MbPostMapper;
 import com.ghw.minibox.mapper.MbUserMapper;
@@ -103,59 +103,81 @@ public class MbPostServiceImpl implements MbPostService {
     @AOPLog("发布帖子")
     @Override
     public ReturnDto<ResultCode> publish(MbPost mbPost) {
-        MbUser mbUser = mbUserMapper.queryById(mbPost.getUid());
-        if (mbUser == null) {
-            return gr.custom(ResultCode.NOT_FOUND.getCode(), ResultCode.NOT_FOUND.getMessage());
-        }
-        int result = mbPostMapper.insert(mbPost);
+        log.info("打印一下前端传的什么鸡儿东西过来=>{}",mbPost);
+        //帖子封面图
+        String coverImg;
+        Long pid = null;
+        if (mbPost != null) {
+            coverImg = mbPost.getCoverImg();
+            int insert = mbPostMapper.insert(mbPost);
+            //帖子封面图判空
+            if (mbPost.getCoverImg() != null && !mbPost.getCoverImg().equals("")) {
+                if (mbPost.getMbPhoto().getPid() != null) {
+                    //获取封面图的图片ID，用于关联帖子，知道是哪个帖子的封面图
+                    pid = mbPost.getMbPhoto().getPid();
+                }
+            }
+            //把封面图和帖子关联起来
+            int update = mbPhotoMapper.update(new MbPhoto().setPid(pid).setTid(mbPost.getTid()));
 
-        if (result > 0) {
-            return gr.success();
+            if (insert > 0) {
+                return gr.success();
+            }
+            return gr.fail();
         }
-        return gr.fail();
+        return null;
     }
 
     /**
      * 上传文件，可以批量上传，但是七牛云本身是不支持批量上传的，所以只能在循环中遍历上传接口，该上传接口是异步接口asyncUpload()
-     * m:遍历文件
-     * img:文件的名称和链接，用于返回前端作为图片回显
-     * photoList:用于mybatis批量插入
-     * mbPhoto:把图片的key（文件名）和图片地址持久化
      *
      * @param multipartFiles 文件，支持多个
      */
     @AOPLog("图片上传至七牛云")
     @Override
-    public List<String> addPictureInPost(MultipartFile[] multipartFiles) throws IOException {
-        if (multipartFiles.length <= 0) {
+    public ReturnImgDto addPictureInPost(MultipartFile[] multipartFiles) throws IOException {
+        if (multipartFiles.length < 1) {
             return null;
         }
-
-        //用于批量返回图片的链接
-        List<String> img = new ArrayList<>();
-        //用于批量插入数据库
-        List<MbPhoto> photoList = new ArrayList<>();
-
-        for (MultipartFile multipartFile : multipartFiles) {
-            String simpleUUID = IdUtil.fastSimpleUUID();
-            qn.asyncUpload(this.ak, this.sk, this.bucket, simpleUUID, multipartFile.getInputStream());
-            log.info("检查手机文件上传，尝试获取文件名==>{}", multipartFile.getOriginalFilename());
-            MbPhoto mbPhoto = new MbPhoto()
+        //用于返回自增ID和图片的完整外链
+        ReturnImgDto dto = new ReturnImgDto();
+        //文件名
+        String simpleUUID = null;
+        MbPhoto mbPhoto = null;
+        int insert = 0;
+        List<Long> photoIdList = new ArrayList<>();
+        List<String> photoImgList = new ArrayList<>();
+        //遍历文件
+        for (MultipartFile m : multipartFiles) {
+            simpleUUID = IdUtil.fastSimpleUUID();
+            //使用字节数组上传，可以获取上传进度
+            qn.asyncUpload(this.ak, this.sk, this.bucket, simpleUUID, m.getInputStream());
+            //保存图片信息到数据库
+            mbPhoto = new MbPhoto()
                     .setPhotoLink(this.link + simpleUUID)
                     .setType(PostType.PHOTO_POST.getType());
+            insert = mbPhotoMapper.insert(mbPhoto);
 
-            photoList.add(mbPhoto);
-            img.add(this.link + simpleUUID);
+            //单个文件
+            if (multipartFiles.length == 1) {
+                dto.setPhotoId(mbPhoto.getPid());
+                dto.setPhotoImg(this.link + simpleUUID);
+            } else {
+                //多个文件
+                photoIdList.add(mbPhoto.getPid());
+                dto.setPhotoIdList(photoIdList);
+                photoImgList.add(this.link + simpleUUID);
+                dto.setPhotoImgList(photoImgList);
+            }
         }
-        //批量插入
-        int insertBatch = mbPhotoMapper.insertBatch(photoList);
 
-        if (insertBatch > 0) {
-            return img;
+        if (insert > 0) {
+            log.info("打印一下dto=>{}", dto);
+            return dto;
         }
-
         return null;
     }
+
 
     /**
      * 通过ID查询单条数据

@@ -119,8 +119,8 @@
             <if test="type != null and type != ''">
                 type = #{type},
             </if>
-            <if test="link != null and link != ''">
-                link = #{link},
+            <if test="photoLink != null and photoLink != ''">
+                link = #{photoLink},
             </if>
             <if test="uid != null">
                 uid = #{uid},
@@ -133,15 +133,6 @@
             </if>
             <if test="gid != null">
                 gid = #{gid},
-            </if>
-            <if test="state != null">
-                state = #{state},
-            </if>
-            <if test="createDate != null">
-                create_date = #{createDate},
-            </if>
-            <if test="updateDate != null">
-                update_date = #{updateDate},
             </if>
         </set>
         where pid = #{pid}

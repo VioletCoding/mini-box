@@ -65,6 +65,10 @@ public class MbPost implements Serializable {
     @ApiModelProperty(notes = "帖子头图")
     private String headPhotoLink;
 
+    @ApiModelProperty(notes = "帖子封面图")
+    @NotNull(message = "帖子封面图不能为空")
+    private String coverImg;
+
     /**
      * 这个字段不存数据库，只是为了方便首页列表展示评论数
      */
@@ -93,6 +97,9 @@ public class MbPost implements Serializable {
 
     @ApiModelProperty(notes = "一篇帖子多张图片")
     private List<MbPhoto> photoList;
+
+    @ApiModelProperty(notes = "作者头像")
+    private MbPhoto mbPhoto;
 
     @ApiModelProperty(notes = "一个帖子对应一个版块")
     private MbBlock mbBlock;

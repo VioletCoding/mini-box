@@ -29,8 +29,6 @@ public class QiNiuUtil {
      * <p>
      * Response 解析上传成功的结果
      * <p>
-     * Callable<DefaultPutRet> 实现Callable，为了拿异步回调
-     * FutureTask<DefaultPutRet> 获取异步回调
      *
      * @param ak     公钥
      * @param sk     私钥
@@ -72,4 +70,5 @@ public class QiNiuUtil {
         UploadManager um = new UploadManager(cfg);
         um.put(inputStream, key, uploadToken, null, null);
     }
+
 }

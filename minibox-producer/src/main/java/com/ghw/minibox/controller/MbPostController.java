@@ -2,6 +2,7 @@ package com.ghw.minibox.controller;
 
 import com.ghw.minibox.component.GenerateResult;
 import com.ghw.minibox.dto.ReturnDto;
+import com.ghw.minibox.dto.ReturnImgDto;
 import com.ghw.minibox.entity.MbPost;
 import com.ghw.minibox.service.MbPostService;
 import com.ghw.minibox.utils.ResultCode;
@@ -50,9 +51,9 @@ public class MbPostController {
 
     @ApiOperation("帖子图片上传")
     @PostMapping("upload")
-    public ReturnDto<List<String>> addPictureInPost(@RequestParam(value = "multipartFiles") MultipartFile[] multipartFiles) throws IOException {
-        List<String> img = mbPostService.addPictureInPost(multipartFiles);
-        return new GenerateResult<List<String>>().success(img);
+    public ReturnDto<ReturnImgDto> addPictureInPost(@RequestParam(value = "multipartFiles") MultipartFile[] multipartFiles) throws IOException {
+        ReturnImgDto dto = mbPostService.addPictureInPost(multipartFiles);
+        return new GenerateResult<ReturnImgDto>().success(dto);
     }
 
     @ApiOperation("帖子列表显示")
