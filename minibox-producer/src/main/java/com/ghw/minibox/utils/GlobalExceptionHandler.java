@@ -42,7 +42,7 @@ public class GlobalExceptionHandler {
         log.error("出现异常 {} , 原因如下 {} , 栈信息如下==> \n ", e.getMessage(), e.getCause());
         e.printStackTrace();
         ObjectError objectError = e.getBindingResult().getAllErrors().get(0);
-        return gr.custom(ResultCode.BAD_REQUEST.getCode(), "参数校验失败", objectError.getDefaultMessage());
+        return gr.custom(ResultCode.BAD_REQUEST.getCode(), objectError.getDefaultMessage());
     }
 
     @ExceptionHandler(EmailException.class)

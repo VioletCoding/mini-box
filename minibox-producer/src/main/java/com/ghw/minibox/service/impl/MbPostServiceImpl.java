@@ -8,7 +8,6 @@ import com.ghw.minibox.entity.MbPhoto;
 import com.ghw.minibox.entity.MbPost;
 import com.ghw.minibox.mapper.MbPhotoMapper;
 import com.ghw.minibox.mapper.MbPostMapper;
-import com.ghw.minibox.mapper.MbUserMapper;
 import com.ghw.minibox.service.MbPostService;
 import com.ghw.minibox.utils.AOPLog;
 import com.ghw.minibox.utils.PostType;
@@ -36,8 +35,6 @@ public class MbPostServiceImpl implements MbPostService {
     @Resource
     private MbPostMapper mbPostMapper;
     @Resource
-    private MbUserMapper mbUserMapper;
-    @Resource
     private MbPhotoMapper mbPhotoMapper;
     @Resource
     private GenerateResult<ResultCode> gr;
@@ -60,16 +57,9 @@ public class MbPostServiceImpl implements MbPostService {
      *
      * @return 分页过后的帖子列表
      */
-    @AOPLog("首页帖子列表")
+    @AOPLog("展示首页帖子列表")
     @Override
     public List<MbPost> showPostList() {
-        //TODO
-        //for (MbPost m : showPostList) {
-        //    List<MbPhoto> photoList = m.getPhotoList();
-        //    for (MbPhoto p : photoList) {
-        //        m.setHeadPhotoLink(p.getPhotoLink());
-        //    }
-        //}
         return mbPostMapper.showPostList();
     }
 
@@ -81,17 +71,10 @@ public class MbPostServiceImpl implements MbPostService {
      * @param tid 主键
      * @return 帖子详情，帖子作者，评论列表，评论谁发的
      */
+    @AOPLog("展示帖子详情")
     @Override
     public MbPost showPostDetail(Long tid) {
-        MbPost mbPost = mbPostMapper.showPostDetail(tid);
-        if (mbPost.getPhotoList() != null) {
-            List<MbPhoto> photoList = mbPost.getPhotoList();
-            for (MbPhoto p : photoList) {
-                mbPost.setHeadPhotoLink(p.getPhotoLink());
-                break;
-            }
-        }
-        return mbPost;
+        return mbPostMapper.showPostDetail(tid);
     }
 
     /**
@@ -103,7 +86,6 @@ public class MbPostServiceImpl implements MbPostService {
     @AOPLog("发布帖子")
     @Override
     public ReturnDto<ResultCode> publish(MbPost mbPost) {
-        log.info("打印一下前端传的什么鸡儿东西过来=>{}",mbPost);
         //帖子封面图
         String coverImg;
         Long pid = null;
@@ -142,8 +124,8 @@ public class MbPostServiceImpl implements MbPostService {
         //用于返回自增ID和图片的完整外链
         ReturnImgDto dto = new ReturnImgDto();
         //文件名
-        String simpleUUID = null;
-        MbPhoto mbPhoto = null;
+        String simpleUUID;
+        MbPhoto mbPhoto;
         int insert = 0;
         List<Long> photoIdList = new ArrayList<>();
         List<String> photoImgList = new ArrayList<>();
@@ -172,7 +154,6 @@ public class MbPostServiceImpl implements MbPostService {
         }
 
         if (insert > 0) {
-            log.info("打印一下dto=>{}", dto);
             return dto;
         }
         return null;

@@ -10,6 +10,7 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiModelProperty;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -28,9 +29,7 @@ import java.util.List;
 @Slf4j
 @Api("帖子控制层")
 public class MbPostController {
-    /**
-     * 服务对象
-     */
+
     @Resource
     private MbPostService mbPostService;
     @Resource
@@ -38,7 +37,7 @@ public class MbPostController {
 
     @ApiOperation("发布帖子")
     @PostMapping("publish")
-    public ReturnDto<String> publishPost(@RequestBody MbPost mbPost) {
+    public ReturnDto<String> publishPost(@RequestBody @Validated MbPost mbPost) {
         ReturnDto<ResultCode> returnDto = mbPostService.publish(mbPost);
         if (returnDto.getCode() == ResultCode.OK.getCode()) {
             return gr.success();

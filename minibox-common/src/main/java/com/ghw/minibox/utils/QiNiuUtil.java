@@ -45,6 +45,9 @@ public class QiNiuUtil {
         um.asyncPut(bytes, key, uploadToken, null, null, false, new UpCompletionHandlerImpl());
     }
 
+    /**
+     * 重载，流式上传
+     */
     public void asyncUpload(String ak, String sk, String bucket, String key, InputStream inputStream) throws IOException {
         Auth auth = Auth.create(ak, sk);
         String uploadToken = auth.uploadToken(bucket);
@@ -61,7 +64,6 @@ public class QiNiuUtil {
      * @param bucket      对象空间
      * @param key         文件名
      * @param inputStream 输入流
-     * @throws IOException -
      */
     public void syncUpload(String ak, String sk, String bucket, String key, InputStream inputStream) throws IOException {
         Auth auth = Auth.create(ak, sk);
