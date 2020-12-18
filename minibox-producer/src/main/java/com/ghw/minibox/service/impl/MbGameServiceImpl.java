@@ -3,6 +3,7 @@ package com.ghw.minibox.service.impl;
 import com.ghw.minibox.entity.MbGame;
 import com.ghw.minibox.mapper.MbGameMapper;
 import com.ghw.minibox.service.MbGameService;
+import com.ghw.minibox.utils.AOPLog;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -24,6 +25,7 @@ public class MbGameServiceImpl implements MbGameService {
      *
      * @return 游戏列表
      */
+    @AOPLog("游戏列表")
     @Override
     public List<MbGame> showGameList() {
         return mbGameMapper.queryAll();
@@ -35,8 +37,11 @@ public class MbGameServiceImpl implements MbGameService {
      * @param gid 游戏gid
      * @return 游戏详情
      */
+    @AOPLog("游戏详情")
     @Override
     public MbGame showGameDetail(Long gid) {
-        return mbGameMapper.queryById(gid);
+        //TODO
+        //return mbGameMapper.queryById(gid);
+        return null;
     }
 }

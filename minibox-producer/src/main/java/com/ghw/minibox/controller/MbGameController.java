@@ -4,7 +4,6 @@ import com.ghw.minibox.component.GenerateResult;
 import com.ghw.minibox.dto.ReturnDto;
 import com.ghw.minibox.entity.MbGame;
 import com.ghw.minibox.service.MbGameService;
-import com.ghw.minibox.utils.AOPLog;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -28,13 +27,13 @@ public class MbGameController {
     @Resource
     private MbGameService mbGameService;
 
-    @AOPLog("游戏详情")
+
     @GetMapping("all")
     public ReturnDto<List<MbGame>> showGameList() {
         return new GenerateResult<List<MbGame>>().success(mbGameService.showGameList());
     }
 
-    @AOPLog("游戏详情")
+
     @GetMapping("detail")
     public ReturnDto<MbGame> showGameDetail(@RequestParam("gid") Long gid) {
         return new GenerateResult<MbGame>().success(mbGameService.showGameDetail(gid));

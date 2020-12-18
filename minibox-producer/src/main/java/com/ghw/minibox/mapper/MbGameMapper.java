@@ -1,7 +1,6 @@
 package com.ghw.minibox.mapper;
 
 import com.ghw.minibox.entity.MbGame;
-import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 
@@ -19,7 +18,8 @@ public interface MbGameMapper {
      * @param gid 主键
      * @return 实例对象
      */
-    MbGame queryById(Long gid);
+    //TODO
+    //MbGame queryById(Long gid);
 
 
     /**
@@ -35,7 +35,7 @@ public interface MbGameMapper {
      * @param mbGame 实例对象
      * @return 影响行数
      */
-    int insert(MbGame mbGame);
+    //int insert(MbGame mbGame);
 
     /**
      * 批量新增数据（MyBatis原生foreach方法）
@@ -43,7 +43,7 @@ public interface MbGameMapper {
      * @param entities List<MbGame> 实例对象列表
      * @return 影响行数
      */
-    int insertBatch(@Param("entities") List<MbGame> entities);
+    //int insertBatch(@Param("entities") List<MbGame> entities);
 
     /**
      * 批量新增或按主键更新数据（MyBatis原生foreach方法）
@@ -51,7 +51,7 @@ public interface MbGameMapper {
      * @param entities List<MbGame> 实例对象列表
      * @return 影响行数
      */
-    int insertOrUpdateBatch(@Param("entities") List<MbGame> entities);
+    //int insertOrUpdateBatch(@Param("entities") List<MbGame> entities);
 
     /**
      * 修改数据

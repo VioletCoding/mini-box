@@ -8,6 +8,7 @@ import lombok.Data;
 import lombok.experimental.Accessors;
 
 import javax.validation.constraints.Email;
+import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import java.io.Serializable;
@@ -33,13 +34,13 @@ public class MbUser implements Serializable {
     private Long uid;
 
     @ApiModelProperty(notes = "验证码")
-    @NotNull(message = "验证码code不能为空", groups = {AuthGroup.class})
+    @NotEmpty(message = "验证码code不能为空", groups = {AuthGroup.class})
     private String code;
     /**
      * 昵称
      */
     @ApiModelProperty(notes = "昵称")
-    @NotNull(message = "用户nickname不能为空")
+    @NotEmpty(message = "用户nickname不能为空")
     @Size(max = 12)
     private String nickname;
     /**
@@ -47,14 +48,14 @@ public class MbUser implements Serializable {
      */
     @ApiModelProperty(notes = "用户名，本系统是邮箱，需要程序校验")
     @Email(message = "邮箱格式不正确", groups = {LoginGroup.class, RegisterGroup.class, SingleGroup.class})
-    @NotNull(message = "用户username不能为空", groups = {LoginGroup.class, RegisterGroup.class, SingleGroup.class})
+    @NotEmpty(message = "用户username不能为空", groups = {LoginGroup.class, RegisterGroup.class, SingleGroup.class})
     @Size(max = 50, groups = {LoginGroup.class, RegisterGroup.class, SingleGroup.class})
     private String username;
     /**
      * 密码，MD5加密
      */
     @ApiModelProperty(notes = "密码，MD5加密")
-    @NotNull(message = "密码不能为空", groups = {LoginGroup.class, RegisterGroup.class})
+    @NotEmpty(message = "密码不能为空", groups = {LoginGroup.class, RegisterGroup.class})
     @Size(min = 8, max = 16, groups = {LoginGroup.class, RegisterGroup.class})
     private String password;
     /**

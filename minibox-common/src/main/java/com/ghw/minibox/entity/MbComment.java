@@ -8,6 +8,7 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.experimental.Accessors;
 
+import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 import java.util.Date;
@@ -39,13 +40,13 @@ public class MbComment implements Serializable {
      * 评论内容
      */
     @ApiModelProperty(notes = "评论内容")
-    @NotNull(message = "评论内容content不能为空",groups = {CommentInPostGroup.class, CommentInGameGroup.class})
+    @NotEmpty(message = "评论内容content不能为空",groups = {CommentInPostGroup.class, CommentInGameGroup.class})
     private String content;
     /**
      * 评论类型，TC为正常帖子下的评论，RC是回复其他用户的评论，GC是游戏下的评论
      */
     @ApiModelProperty(notes = "评论类型，TC为正常帖子下的评论，RC是回复其他用户的评论，GC是游戏下的评论")
-    @NotNull(message = "评论类型type不能为空", groups = {CommentInPostGroup.class, CommentInGameGroup.class})
+    @NotEmpty(message = "评论类型type不能为空", groups = {CommentInPostGroup.class, CommentInGameGroup.class})
     private String type;
     /**
      * 帖子ID，如果type=TC，该字段必填

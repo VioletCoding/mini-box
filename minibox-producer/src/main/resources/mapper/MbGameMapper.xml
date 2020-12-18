@@ -19,134 +19,165 @@
     </resultMap>
 
     <!--1.游戏详情-->
-    <resultMap id="gameDetail" type="com.ghw.minibox.entity.MbGame">
-        <id property="gid" column="gid" jdbcType="INTEGER"/>
-        <result property="name" column="name" jdbcType="VARCHAR"/>
-        <result property="price" column="price" jdbcType="NUMERIC"/>
-        <result property="score" column="score" jdbcType="NUMERIC"/>
-        <result property="description" column="description" jdbcType="VARCHAR"/>
-        <result property="releaseTime" column="release_time" jdbcType="TIMESTAMP"/>
-        <result property="developer" column="developer" jdbcType="VARCHAR"/>
-        <result property="publisher" column="publisher" jdbcType="VARCHAR"/>
+    <!--<resultMap id="gameDetail" type="com.ghw.minibox.entity.MbGame">-->
+    <!--    <id property="gid" column="gid" jdbcType="INTEGER"/>-->
+    <!--    <result property="name" column="name" jdbcType="VARCHAR"/>-->
+    <!--    <result property="price" column="price" jdbcType="NUMERIC"/>-->
+    <!--    <result property="score" column="score" jdbcType="NUMERIC"/>-->
+    <!--    <result property="description" column="description" jdbcType="VARCHAR"/>-->
+    <!--    <result property="releaseTime" column="release_time" jdbcType="TIMESTAMP"/>-->
+    <!--    <result property="developer" column="developer" jdbcType="VARCHAR"/>-->
+    <!--    <result property="publisher" column="publisher" jdbcType="VARCHAR"/>-->
 
-        <!--评论的用户的头像列表-->
-        <association property="userPhoto" javaType="com.ghw.minibox.entity.MbPhoto">
-            <result property="photoLink" column="user_photo_link"/>
-        </association>
+    <!--    &lt;!&ndash;评论的用户的头像列表&ndash;&gt;-->
+    <!--    <association property="userPhoto" javaType="com.ghw.minibox.entity.MbPhoto">-->
+    <!--        <result property="photoLink" column="user_photo_link"/>-->
+    <!--    </association>-->
 
-        <!--游戏图片列表-->
-        <collection property="photoList" ofType="com.ghw.minibox.entity.MbPhoto">
-            <result property="photoLink" column="game_photo_link"/>
-        </collection>
-        <!--游戏标签列表-->
-        <collection property="tagList" ofType="com.ghw.minibox.entity.MbTag">
-            <id property="tid" column="tag_id"/>
-            <result property="tagName" column="tag_name"/>
-        </collection>
-        <!--评论列表-->
-        <collection property="commentList" ofType="com.ghw.minibox.entity.MbComment">
-            <id property="cid" column="comment_id"/>
-            <result property="content" column="comment_content"/>
-        </collection>
-        <!--评论的用户列表-->
-        <collection property="userList" ofType="com.ghw.minibox.entity.MbUser">
-            <id property="uid" column="comment_user_id"/>
-            <result property="nickname" column="comment_user_nickname"/>
-        </collection>
-    </resultMap>
-    <select id="queryById" resultMap="gameDetail">
-        SELECT mg.gid,
-               mg.`name`,
-               mg.description,
-               mg.developer,
-               mg.price,
-               mg.publisher,
-               mg.release_time,
-               mg.score,
+    <!--    &lt;!&ndash;游戏图片列表&ndash;&gt;-->
+    <!--    <collection property="photoList" ofType="com.ghw.minibox.entity.MbPhoto">-->
+    <!--        <result property="photoLink" column="game_photo_link"/>-->
+    <!--    </collection>-->
+    <!--    &lt;!&ndash;游戏标签列表&ndash;&gt;-->
+    <!--    <collection property="tagList" ofType="com.ghw.minibox.entity.MbTag">-->
+    <!--        <id property="tid" column="tag_id"/>-->
+    <!--        <result property="tagName" column="tag_name"/>-->
+    <!--    </collection>-->
+    <!--    &lt;!&ndash;评论列表&ndash;&gt;-->
+    <!--    <collection property="commentList" ofType="com.ghw.minibox.entity.MbComment">-->
+    <!--        <id property="cid" column="comment_id"/>-->
+    <!--        <result property="content" column="comment_content"/>-->
+    <!--    </collection>-->
+    <!--    &lt;!&ndash;评论的用户列表&ndash;&gt;-->
+    <!--    <collection property="userList" ofType="com.ghw.minibox.entity.MbUser">-->
+    <!--        <id property="uid" column="comment_user_id"/>-->
+    <!--        <result property="nickname" column="comment_user_nickname"/>-->
+    <!--    </collection>-->
+    <!--</resultMap>-->
+    <!--TODO-->
+    <!--<select id="queryById" resultMap="gameDetail">-->
+    <!--    SELECT mg.gid,-->
+    <!--           mg.`name`,-->
+    <!--           mg.description,-->
+    <!--           mg.developer,-->
+    <!--           mg.price,-->
+    <!--           mg.publisher,-->
+    <!--           mg.release_time,-->
+    <!--           mg.score,-->
 
-               game_photo_list.link  AS game_photo_link,
+    <!--           game_photo_list.link  AS game_photo_link,-->
 
-               mt.tid                AS tag_id,
-               mt.tag_name,
+    <!--           mt.tid                AS tag_id,-->
+    <!--           mt.tag_name,-->
 
-               mc.cid                AS comment_id,
-               mc.content            AS comment_content,
+    <!--           mc.cid                AS comment_id,-->
+    <!--           mc.content            AS comment_content,-->
 
-               comment_user.uid      AS comment_user_id,
-               comment_user.nickname AS comment_user_nickname,
-               user_photo.link       AS user_photo_link
+    <!--           comment_user.uid      AS comment_user_id,-->
+    <!--           comment_user.nickname AS comment_user_nickname,-->
+    <!--           user_photo.link       AS user_photo_link-->
 
-        FROM mb_game AS mg
-                 LEFT JOIN mb_photo AS game_photo_list ON (game_photo_list.gid = mg.gid)
-                 LEFT JOIN mb_tag AS mt ON (mt.gid = mg.gid)
-                 LEFT JOIN mb_comment AS mc ON (mc.gid = mg.gid)
-                 LEFT JOIN mb_user AS comment_user ON (comment_user.uid = mc.uid)
-                 LEFT JOIN mb_photo AS user_photo ON (user_photo.uid = comment_user.uid)
-        WHERE mg.gid = #{gid}
-          AND mc.type = 'GC'
-          AND game_photo_list.type = 'GP'
-        ORDER BY mc.create_date DESC;
-    </select>
+    <!--    FROM mb_game AS mg-->
+    <!--             LEFT JOIN mb_photo AS game_photo_list ON (game_photo_list.gid = mg.gid)-->
+    <!--             LEFT JOIN mb_tag AS mt ON (mt.gid = mg.gid)-->
+    <!--             LEFT JOIN mb_comment AS mc ON (mc.gid = mg.gid)-->
+    <!--             LEFT JOIN mb_user AS comment_user ON (comment_user.uid = mc.uid)-->
+    <!--             LEFT JOIN mb_photo AS user_photo ON (user_photo.uid = comment_user.uid)-->
+    <!--    WHERE mg.gid = #{gid}-->
+    <!--      AND mc.type = 'GC'-->
+    <!--      AND game_photo_list.type = 'GP'-->
+    <!--    ORDER BY mc.create_date DESC;-->
+    <!--</select>-->
 
 
     <!--2.游戏列表全查-->
     <resultMap id="gameListMap" type="com.ghw.minibox.entity.MbGame">
+        <!--游戏列表显示元素-->
         <id property="gid" column="gid"/>
         <result property="name" column="name"/>
         <result property="price" column="price"/>
-        <result property="score" column="score"/>
-        <collection property="photoList" column="link" ofType="com.ghw.minibox.entity.MbPhoto">
-            <result property="photoLink" column="link"/>
-        </collection>
+        <result property="score" column="overall_score_of_game"/>
+        <result property="description" column="description"/>
+        <result property="originPrice" column="origin_price"/>
+        <result property="coverImg" column="cover_img"/>
+        <!--安利墙评论-->
+        <association property="mbComment" javaType="com.ghw.minibox.entity.MbComment">
+            <id property="cid" column="cid"/>
+            <result property="content" column="content"/>
+            <result property="score" column="user_score_for_game"/>
+            <result property="createDate" column="create_date"/>
+            <!--评论用户-->
+            <association property="mbUser" javaType="com.ghw.minibox.entity.MbUser">
+                <id property="uid" column="uid"/>
+                <result property="nickname" column="nickname"/>
+                <!--用户头像-->
+                <association property="mbPhoto" javaType="com.ghw.minibox.entity.MbPhoto">
+                    <result property="photoLink" column="user_photo"/>
+                </association>
+            </association>
+        </association>
     </resultMap>
 
     <select id="queryAll" resultMap="gameListMap">
+
         SELECT mg.gid,
                mg.`name`,
                mg.price,
-               mg.score,
-               mp.link
+               mg.score       AS overall_score_of_game,
+               mg.description,
+               mg.origin_price,
+               mg.cover_img,
+
+               mc.cid,
+               mc.content,
+               mc.score       AS user_score_for_game,
+               mc.create_date,
+               mu.uid,
+               mu.nickname,
+               user_info.link AS user_photo
+
         FROM mb_game AS mg
-                 LEFT JOIN mb_photo AS mp ON (mp.gid = mg.gid)
-        WHERE mg.gid != 10000
-        ORDER BY mg.score DESC;
+                 LEFT JOIN mb_comment AS mc ON (mc.gid = mg.gid)
+                 LEFT JOIN mb_user AS mu ON (mu.uid = mc.uid)
+                 LEFT JOIN mb_photo AS user_info ON (user_info.uid = mc.uid)
+        ORDER BY mc.create_date DESC;
     </select>
     <!--2. end-->
 
     <!--新增所有列-->
-    <insert id="insert" keyProperty="gid" useGeneratedKeys="true">
-        insert into minibox.mb_game(name, price, state, game_state, score, description, release_time, developer,
-                                    publisher, score_count, create_date, update_date)
-        values (#{name}, #{price}, #{state}, #{gameState}, #{score}, #{description}, #{releaseTime}, #{developer},
-                #{publisher}, #{scoreCount}, #{createDate}, #{updateDate})
-    </insert>
+    <!--<insert id="insert" keyProperty="gid" useGeneratedKeys="true">-->
+    <!--    insert into minibox.mb_game(name, price, state, game_state, score, description, release_time, developer,-->
+    <!--                                publisher, score_count, create_date, update_date)-->
+    <!--    values (#{name}, #{price}, #{state}, #{gameState}, #{score}, #{description}, #{releaseTime}, #{developer},-->
+    <!--            #{publisher}, #{scoreCount}, #{createDate}, #{updateDate})-->
+    <!--</insert>-->
 
-    <insert id="insertBatch" keyProperty="gid" useGeneratedKeys="true">
-        insert into minibox.mb_game(name, price, state, game_state, score, description, release_time, developer,
-        publisher, score_count, create_date, update_date)
-        values
-        <foreach collection="entities" item="entity" separator=",">
-            (#{entity.name}, #{entity.price}, #{entity.state}, #{entity.gameState}, #{entity.score},
-            #{entity.description}, #{entity.releaseTime}, #{entity.developer}, #{entity.publisher},
-            #{entity.scoreCount}, #{entity.createDate}, #{entity.updateDate})
-        </foreach>
-    </insert>
+    <!--<insert id="insertBatch" keyProperty="gid" useGeneratedKeys="true">-->
+    <!--    insert into minibox.mb_game(name, price, state, game_state, score, description, release_time, developer,-->
+    <!--    publisher, score_count, create_date, update_date)-->
+    <!--    values-->
+    <!--    <foreach collection="entities" item="entity" separator=",">-->
+    <!--        (#{entity.name}, #{entity.price}, #{entity.state}, #{entity.gameState}, #{entity.score},-->
+    <!--        #{entity.description}, #{entity.releaseTime}, #{entity.developer}, #{entity.publisher},-->
+    <!--        #{entity.scoreCount}, #{entity.createDate}, #{entity.updateDate})-->
+    <!--    </foreach>-->
+    <!--</insert>-->
 
-    <insert id="insertOrUpdateBatch" keyProperty="gid" useGeneratedKeys="true">
-        insert into minibox.mb_game(name, price, state, game_state, score, description, release_time, developer,
-        publisher, score_count, create_date, update_date)
-        values
-        <foreach collection="entities" item="entity" separator=",">
-            (#{entity.name}, #{entity.price}, #{entity.state}, #{entity.gameState}, #{entity.score},
-            #{entity.description}, #{entity.releaseTime}, #{entity.developer}, #{entity.publisher},
-            #{entity.scoreCount}, #{entity.createDate}, #{entity.updateDate})
-        </foreach>
-        on duplicate key update
-        name = values(name) , price = values(price) , state = values(state) , game_state = values(game_state) , score =
-        values(score) , description = values(description) , release_time = values(release_time) , developer =
-        values(developer) , publisher = values(publisher) , score_count = values(score_count) , create_date =
-        values(create_date) , update_date = values(update_date)
-    </insert>
+    <!--<insert id="insertOrUpdateBatch" keyProperty="gid" useGeneratedKeys="true">-->
+    <!--    insert into minibox.mb_game(name, price, state, game_state, score, description, release_time, developer,-->
+    <!--    publisher, score_count, create_date, update_date)-->
+    <!--    values-->
+    <!--    <foreach collection="entities" item="entity" separator=",">-->
+    <!--        (#{entity.name}, #{entity.price}, #{entity.state}, #{entity.gameState}, #{entity.score},-->
+    <!--        #{entity.description}, #{entity.releaseTime}, #{entity.developer}, #{entity.publisher},-->
+    <!--        #{entity.scoreCount}, #{entity.createDate}, #{entity.updateDate})-->
+    <!--    </foreach>-->
+    <!--    on duplicate key update-->
+    <!--    name = values(name) , price = values(price) , state = values(state) , game_state = values(game_state) , score =-->
+    <!--    values(score) , description = values(description) , release_time = values(release_time) , developer =-->
+    <!--    values(developer) , publisher = values(publisher) , score_count = values(score_count) , create_date =-->
+    <!--    values(create_date) , update_date = values(update_date)-->
+    <!--</insert>-->
 
     <!--通过主键修改数据-->
     <update id="update">

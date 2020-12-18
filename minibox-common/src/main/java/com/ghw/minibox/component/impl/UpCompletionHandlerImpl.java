@@ -10,11 +10,17 @@ import java.util.Date;
 
 /**
  * @author Violet
- * @description 实现七牛云异步上传接口，上传完成后，SDK会回调这个类的complete方法
+ * @description 实现七牛云异步上传接口，上传完成后，SDK会回调这个接口的complete方法
  * @date 2020/11/28
  */
 @Slf4j
 public class UpCompletionHandlerImpl implements UpCompletionHandler {
+    /**
+     * 七牛云上传异步回调函数
+     *
+     * @param key 文件key
+     * @param r   响应类
+     */
     @Override
     public void complete(String key, Response r) {
         try {
