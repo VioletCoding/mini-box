@@ -58,6 +58,7 @@ public class MbPostServiceImpl implements MbPostService {
      * @return 分页过后的帖子列表
      */
     @AOPLog("展示首页帖子列表")
+    //@Cacheable(value = RedisConfig.REDIS_KEY_DATABASE)
     @Override
     public List<MbPost> showPostList() {
         return mbPostMapper.showPostList();
@@ -72,6 +73,7 @@ public class MbPostServiceImpl implements MbPostService {
      * @return 帖子详情，帖子作者，评论列表，评论谁发的
      */
     @AOPLog("展示帖子详情")
+    //@Cacheable(value = RedisConfig.REDIS_KEY_DATABASE, key = "redisConfig.REDIS_KEY_POST_PREFIX + #tid")
     @Override
     public MbPost showPostDetail(Long tid) {
         return mbPostMapper.showPostDetail(tid);
@@ -84,6 +86,7 @@ public class MbPostServiceImpl implements MbPostService {
      * @return 统一结果
      */
     @AOPLog("发布帖子")
+    //@CachePut(RedisConfig.REDIS_KEY_DATABASE)
     @Override
     public ReturnDto<ResultCode> publish(MbPost mbPost) {
         //帖子封面图

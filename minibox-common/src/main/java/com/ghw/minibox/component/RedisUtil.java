@@ -1,7 +1,5 @@
 package com.ghw.minibox.component;
 
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.redis.connection.lettuce.LettuceConnectionFactory;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Component;
 
@@ -14,34 +12,10 @@ import java.util.concurrent.TimeUnit;
  * @date 2020/11/22
  */
 @Component
-@Slf4j
 public class RedisUtil {
 
     @Resource
     private StringRedisTemplate srt;
-
-    /**
-     * 切换Redis数据库
-     * <p>
-     * 只允许输入0-16的数
-     * <p>
-     * LettuceConnectionFactory  获取连接
-     * <p>
-     * 如果输入的库索引已经是现在连接的库，不允许切换
-     *
-     * @param dbNum 数据库索引 0-16
-     */
-    public synchronized void setDB(int dbNum) {
-        if (dbNum >= 0 && dbNum <= 16) {
-            LettuceConnectionFactory connectionFactory = (LettuceConnectionFactory) srt.getConnectionFactory();
-            if (connectionFactory != null && dbNum != connectionFactory.getDatabase()) {
-                connectionFactory.setDatabase(dbNum);
-                this.srt.setConnectionFactory(connectionFactory);
-                connectionFactory.resetConnection();
-                log.info("Redis当前库为{}号库", connectionFactory.getDatabase());
-            }
-        }
-    }
 
     public void set(String key, String value) {
         srt.opsForValue().set(key, value);

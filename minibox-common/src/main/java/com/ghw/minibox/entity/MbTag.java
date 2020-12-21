@@ -1,13 +1,10 @@
 package com.ghw.minibox.entity;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.ghw.minibox.validatedgroup.SearchGroup;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.experimental.Accessors;
 
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
 import java.io.Serializable;
 import java.util.Date;
 
@@ -26,14 +23,11 @@ public class MbTag implements Serializable {
      * 主键
      */
     @ApiModelProperty(notes = "主键")
-    @NotNull(message = "标签tid不能为空", groups = {SearchGroup.class})
     private Long tid;
     /**
      * 标签名称
      */
     @ApiModelProperty(notes = "标签名称")
-    @NotNull(message = "标签tagName不能为空")
-    @Size(max = 10, min = 1)
     private String tagName;
     /**
      * 关联的游戏ID

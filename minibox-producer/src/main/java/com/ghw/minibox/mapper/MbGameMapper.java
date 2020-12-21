@@ -19,7 +19,7 @@ public interface MbGameMapper {
      * @return 实例对象
      */
     //TODO
-    //MbGame queryById(Long gid);
+    MbGame queryById(Long gid);
 
 
     /**

@@ -58,7 +58,7 @@ public class MbGame implements Serializable {
 
     @ApiModelProperty(notes = "发布时间")
     @NotNull(message = "发布时间releaseTime不能为空")
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
+    @JsonFormat(pattern = "yyyy-MM-dd", timezone = "GMT+8")
     private Date releaseTime;
 
     @ApiModelProperty(notes = "开发商")
@@ -73,11 +73,11 @@ public class MbGame implements Serializable {
     private Integer scoreCount;
 
     @ApiModelProperty(notes = "创建时间")
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
+    @JsonFormat(pattern = "yyyy-MM-dd", timezone = "GMT+8")
     private Date createDate;
 
     @ApiModelProperty(notes = "更新时间")
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
+    @JsonFormat(pattern = "yyyy-MM-dd", timezone = "GMT+8")
     private Date updateDate;
 
     @ApiModelProperty(notes = "一个游戏对应一个版块")

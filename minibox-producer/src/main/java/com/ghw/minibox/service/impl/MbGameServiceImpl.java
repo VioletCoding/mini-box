@@ -40,8 +40,6 @@ public class MbGameServiceImpl implements MbGameService {
     @AOPLog("游戏详情")
     @Override
     public MbGame showGameDetail(Long gid) {
-        //TODO
-        //return mbGameMapper.queryById(gid);
-        return null;
+        return mbGameMapper.queryById(gid);
     }
 }

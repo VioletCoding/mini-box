@@ -1,8 +1,6 @@
 package com.ghw.minibox.utils;
 
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.ghw.minibox.component.RedisUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
@@ -13,7 +11,6 @@ import org.springframework.core.LocalVariableTableParameterNameDiscoverer;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 
-import javax.annotation.Resource;
 import java.lang.reflect.Method;
 
 /**
@@ -25,10 +22,6 @@ import java.lang.reflect.Method;
 @Component
 @Slf4j
 public class LogAspect {
-    @Resource
-    private ObjectMapper objectMapper;
-    @Resource
-    private RedisUtil redisUtil;
 
     /**
      * AOP切入点的集合

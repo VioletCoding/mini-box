@@ -2,9 +2,9 @@ spring:
   cache:
     type: redis
   redis:
-    host: localhost
+    host: 127.0.0.1
     port: 6379
-    jedis:
+    lettuce:
       pool:
         #最大连接数
         max-active: 8
@@ -14,5 +14,4 @@ spring:
         max-idle: 8
         #最小空闲连接
         min-idle: 0
-    lettuce:
       shutdown-timeout: 3000ms
