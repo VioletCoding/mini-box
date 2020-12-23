@@ -89,7 +89,6 @@
                  LEFT JOIN mb_user AS comment_user ON (comment_user.uid = mc.uid)
                  LEFT JOIN mb_photo AS user_photo ON (user_photo.uid = comment_user.uid)
         WHERE mg.gid = #{gid}
-          AND mc.type = 'GC'
           AND game_photo_list.type = 'GP'
         ORDER BY mc.create_date DESC;
     </select>

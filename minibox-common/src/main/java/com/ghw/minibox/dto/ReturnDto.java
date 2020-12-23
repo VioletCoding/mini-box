@@ -1,14 +1,11 @@
 package com.ghw.minibox.dto;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.ghw.minibox.utils.ResultCode;
 import lombok.Data;
 import lombok.experimental.Accessors;
 import org.springframework.stereotype.Component;
 
 import javax.validation.constraints.NotNull;
-import java.util.List;
-import java.util.Map;
 
 /**
  * @author Violet
@@ -32,22 +29,6 @@ public class ReturnDto<T> {
     /**
      * 数据
      */
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     private T data;
-
-    /**
-     * 多组数据，类型是map
-     */
-    private Map<String, T> mapData;
-
-    /**
-     * 多组数据，类型是list
-     */
-    private List<T> listData;
-
-    /**
-     * 简单返回，直接取对应的枚举，没必要每次都setCode、setMessage、但不适用于带数据的返回
-     */
-    private ResultCode simple;
-
-
 }

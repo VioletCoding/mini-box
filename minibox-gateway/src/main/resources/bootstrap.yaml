@@ -2,9 +2,6 @@
 server:
   port: 20001
 
-producer:
-  address: http://localhost:20002
-
 #激活的配置中心的配置文件
 spring:
   profiles:
@@ -29,10 +26,3 @@ spring:
         server-addr: localhost:8848
         #配置文件后缀名
         file-extension: yaml
-    gateway:
-      routes:
-        - id: producer-user-beforeRegister
-          uri: ${producer.address}/user/beforeRegister
-          predicates:
-            - Path=/user/beforeRegister
-

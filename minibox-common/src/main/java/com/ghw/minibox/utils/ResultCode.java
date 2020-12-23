@@ -15,7 +15,7 @@ public enum ResultCode {
     ACCEPTED(202, "已接收你的请求"),
 
     BAD_REQUEST(400, "错误的请求"),
-    UNAUTHORIZED(401, "未认证"),
+    UNAUTHORIZED(401, "用户未登录"),
     FORBIDDEN(403, "禁止访问"),
     NOT_FOUND(404, "请求的资源未找到"),
     METHOD_NOT_ALLOWED(405, "请求方式不正确"),

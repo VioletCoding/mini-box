@@ -3,34 +3,40 @@
 <mapper namespace="com.ghw.minibox.mapper.MbUserMapper">
 
     <resultMap type="com.ghw.minibox.entity.MbUser" id="MbUserMap">
-        <result property="uid" column="uid" jdbcType="INTEGER"/>
+        <!--用户的非敏感信息-->
+        <id property="uid" column="uid" jdbcType="INTEGER"/>
         <result property="nickname" column="nickname" jdbcType="VARCHAR"/>
-        <result property="username" column="username" jdbcType="VARCHAR"/>
         <result property="description" column="description" jdbcType="VARCHAR"/>
         <result property="level" column="level" jdbcType="VARCHAR"/>
         <result property="walletBalance" column="wallet_balance" jdbcType="NUMERIC"/>
-        <result property="userState" column="user_state" jdbcType="VARCHAR"/>
-        <result property="createDate" column="create_date" jdbcType="TIMESTAMP"/>
-        <result property="exp" column="exp" jdbcType="INTEGER"/>
-        <result property="updateDate" column="update_date" jdbcType="TIMESTAMP"/>
-        <result property="state" column="state" jdbcType="INTEGER"/>
+        <result property="gameNumber" column="game_num" jdbcType="INTEGER"/>
+        <!--拥有的游戏-->
+        <collection property="gameList" ofType="com.ghw.minibox.entity.MbGame">
+            <result property="gid" column="gid"/>
+            <result property="name" column="name"/>
+            <result property="cover_img" column="coverImg"/>
+            <result property="description" column="game_desc"/>
+        </collection>
     </resultMap>
 
     <!--查询单个-->
     <select id="queryById" resultMap="MbUserMap">
-        select uid,
-               nickname,
-               username,
-               description,
-               level,
-               wallet_balance,
-               user_state,
-               create_date,
-               exp,
-               update_date,
-               state
-        from minibox.mb_user
-        where uid = #{uid}
+        SELECT u.uid,
+               u.nickname,
+               u.description                                         AS user_desc,
+               u.`level`,
+               u.wallet_balance,
+               g.gid,
+               g.`name`,
+               g.cover_img,
+               g.description                                         AS game_desc,
+               (SELECT COUNT(*) FROM mb_user_game WHERE u.uid = uid) AS game_num
+
+        FROM mb_user AS u
+                 LEFT JOIN mb_user_game AS ug ON (u.uid = ug.uid)
+                 LEFT JOIN mb_game AS g ON (ug.gid = g.gid)
+
+        WHERE u.uid = #{uid}
     </select>
 
     <!--查询单个通过username-->
@@ -48,22 +54,6 @@
           AND user_state = 'NORMAL';
     </update>
 
-    <!--查询指定行数据-->
-    <select id="queryAllByLimit" resultMap="MbUserMap">
-        select uid,
-               nickname,
-               username,
-               description,
-               level,
-               wallet_balance,
-               user_state,
-               create_date,
-               exp,
-               update_date,
-               state
-        from minibox.mb_user
-        limit #{offset}, #{limit}
-    </select>
 
     <!--通过实体作为筛选条件查询-->
     <select id="queryAll" resultMap="MbUserMap">

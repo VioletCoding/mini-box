@@ -28,17 +28,6 @@
             <artifactId>lombok</artifactId>
             <optional>true</optional>
         </dependency>
-        <!--热部署-->
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-devtools</artifactId>
-            <optional>true</optional>
-        </dependency>
-        <!--自定义封装模块-->
-        <dependency>
-            <groupId>com.ghw</groupId>
-            <artifactId>minibox-common</artifactId>
-        </dependency>
         <!--Nacos注册中心和配置中心-->
         <dependency>
             <groupId>com.alibaba.cloud</groupId>

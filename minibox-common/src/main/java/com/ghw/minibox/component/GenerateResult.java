@@ -4,9 +4,6 @@ import com.ghw.minibox.dto.ReturnDto;
 import com.ghw.minibox.utils.ResultCode;
 import org.springframework.stereotype.Component;
 
-import java.util.List;
-import java.util.Map;
-
 /**
  * @author Violet
  * @description 生成返回的统一结果集
@@ -45,31 +42,6 @@ public class GenerateResult<T> {
                 .setData(data);
     }
 
-    /**
-     * 成功，并返回多组数据，类型是map
-     *
-     * @param data map
-     * @return ReturnDto
-     */
-    public ReturnDto<T> success(Map<String, T> data) {
-        return new ReturnDto<T>()
-                .setCode(ResultCode.OK.getCode())
-                .setMessage(ResultCode.OK.getMessage())
-                .setMapData(data);
-    }
-
-    /**
-     * 成功，并返回多组数据，类型是list
-     *
-     * @param data list
-     * @return ReturnDto
-     */
-    public ReturnDto<T> success(List<T> data) {
-        return new ReturnDto<T>()
-                .setCode(ResultCode.OK.getCode())
-                .setMessage(ResultCode.OK.getMessage())
-                .setListData(data);
-    }
 
     /**
      * 失败，响应失败信息，不带数据
