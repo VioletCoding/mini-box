@@ -54,6 +54,19 @@ public class GenerateResult<T> {
                 .setMessage(ResultCode.BAD_REQUEST.getMessage());
     }
 
+    public ReturnDto<T> fail(ResultCode r) {
+        return new ReturnDto<T>()
+                .setCode(r.getCode())
+                .setMessage(r.getMessage());
+    }
+
+    public ReturnDto<T> fail(ResultCode r, T data) {
+        return new ReturnDto<T>()
+                .setCode(r.getCode())
+                .setMessage(r.getMessage())
+                .setData(data);
+    }
+
     /**
      * 自定义返回信息，不带数据
      *

@@ -20,7 +20,14 @@ public interface MbUserService {
      * @param username 邮箱
      * @return 是否存在
      */
-    boolean exist(String username) throws Exception;
+    boolean exist(String username) throws JsonProcessingException;
+
+    /**
+     * 主要业务逻辑
+     *
+     * @param username 邮箱
+     */
+    void service(String username) throws EmailException, JsonProcessingException;
 
     /**
      * 发送邮件
@@ -40,16 +47,18 @@ public interface MbUserService {
      * @param value V
      * @return 校验是否通过
      */
-    boolean authRegCode(String key, String value);
+    boolean authRegCode(String key, String value) throws JsonProcessingException;
 
 
     /**
-     * 登陆
+     * 主要逻辑方法
+     * 这其实是一个复合接口，如果用户存在，执行登陆，如果用户不存在，执行自动注册方法
      *
-     * @param mbUser 用户实体
-     * @return ReturnDto
+     * @param username 邮箱
+     * @param authCode 验证码
+     * @return 用户非敏感信息
      */
-    String login(MbUser mbUser) throws JsonProcessingException, JOSEException;
+    Object doService(String username, String authCode) throws JsonProcessingException, JOSEException;
 
 
     /**

@@ -16,25 +16,36 @@ public enum ResultCode {
 
     BAD_REQUEST(400, "错误的请求"),
     UNAUTHORIZED(401, "用户未登录"),
+    AUTH_CODE_ERROR(402, "验证码错误"),
+
     FORBIDDEN(403, "禁止访问"),
+
     NOT_FOUND(404, "请求的资源未找到"),
+
     METHOD_NOT_ALLOWED(405, "请求方式不正确"),
 
     INTERNAL_SERVER_ERROR(500, "服务器内部错误"),
 
     HAS_BEEN_SENT(900, "邮件已发送"),
+
     USER_EXIST(901, "用户已存在"),
+
     USER_BANNED(902, "用户被封禁"),
+
     USER_AUTH_FAIL(903, "用户名或密码不正确"),
+
     USER_ILLEGAL(904, "用户非法"),
 
     RECORD_DISABLE(905, "该条记录不可用"),
 
     TID_IS_NULL(906, "当type=TC时，tid不能为空"),
+
     GID_IS_NULL(907, "当type=GC时，gid不能为空"),
+
     SCORE_IS_NULL(908, "当type=GC时，score不能为空"),
 
     REPLY_IN_POST_IS_NULL(909, "当type=TR时，replyInPost不能为空"),
+
     REPLY_IN_GAME_IS_NULL(910, "当type=GR时，replyInGame不能为空");
 
 

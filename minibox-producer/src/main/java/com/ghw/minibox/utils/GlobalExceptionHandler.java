@@ -49,7 +49,7 @@ public class GlobalExceptionHandler {
     public ReturnDto<String> emailException(EmailException e) {
         log.error("出现异常 {} , 原因如下 {} , 栈信息如下==> \n ", e.getMessage(), e.getCause());
         e.printStackTrace();
-        return gr.custom(ResultCode.BAD_REQUEST.getCode(), "邮件发送失败");
+        return gr.custom(ResultCode.BAD_REQUEST.getCode(), "没有找到此邮箱");
     }
 
     @ExceptionHandler(InterruptedException.class)

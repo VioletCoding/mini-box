@@ -4,6 +4,7 @@ import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -14,44 +15,53 @@ import java.util.concurrent.TimeUnit;
 @Component
 public class RedisUtil {
 
+    public static final String AUTH_PREFIX = "auth_code:";
+
+    public static final String TOKEN_PREFIX = "auth_token:";
+
+    public static final String LOGIN_FLAG = "login:";
+
     @Resource
-    private StringRedisTemplate srt;
+    private StringRedisTemplate rt;
 
     public void set(String key, String value) {
-        srt.opsForValue().set(key, value);
-    }
-
-    public String get(String key) {
-        return srt.opsForValue().get(key);
+        rt.opsForValue().set(key, value);
     }
 
     /**
-     * 失效时间
-     *
-     * @param key    redis的key
-     * @param expire 过期时间，单位是秒
-     * @throws NullPointerException 空指针异常
+     * 单位是秒
      */
-    public void expire(String key, Long expire) throws NullPointerException {
-        if (key == null || key.equals("")) {
-            return;
-        }
-        if (expire == null) {
-            return;
-        }
-        srt.expire(key, expire, TimeUnit.SECONDS);
+    public void set(String key, String value, long expire) {
+        rt.opsForValue().set(key, value, expire, TimeUnit.SECONDS);
     }
 
+    public String get(String key) {
+        return rt.opsForValue().get(key);
+    }
+
+
+    /**
+     * 失效时间
+     */
+    public void expire(String key, Long expire) throws NullPointerException {
+        rt.expire(key, expire, TimeUnit.SECONDS);
+    }
+
+
     public void remove(String key) {
-        srt.delete(key);
+        rt.delete(key);
+    }
+
+    public void remove(List<String> key) {
+        rt.delete(key);
     }
 
     public Long increment(String key, Long delta) {
-        return srt.opsForValue().increment(key, delta);
+        return rt.opsForValue().increment(key, delta);
     }
 
     public Boolean exist(String key) {
-        return srt.hasKey(key);
+        return rt.hasKey(key);
     }
 
 }

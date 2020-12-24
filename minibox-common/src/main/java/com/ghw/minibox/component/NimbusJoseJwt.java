@@ -6,7 +6,6 @@ import cn.hutool.core.util.IdUtil;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ghw.minibox.dto.PayloadDto;
-import com.ghw.minibox.utils.RedisPrefix;
 import com.nimbusds.jose.*;
 import com.nimbusds.jose.crypto.MACSigner;
 import com.nimbusds.jose.crypto.MACVerifier;
@@ -34,7 +33,7 @@ public class NimbusJoseJwt {
     @Resource
     private ObjectMapper objectMapper;
 
-    private static final String SECRET = "This JWT Sign By VioletEverGarden,this is a SpringCloud web project";
+    private static final String SECRET = "This JWT Sign By VioletEverGarden,this is a SpringCloud Web Project";
 
     /**
      * 通过HMAC算法生成token
@@ -46,7 +45,7 @@ public class NimbusJoseJwt {
      * 最后 签名并序列化
      *
      * @param payloadParam 载荷
-     * @return token
+     * @return token 返回token
      * @throws JOSEException 抛出此异常时，生成token失败
      */
     public String generateTokenByHMAC(@NotNull PayloadDto payloadParam) throws JOSEException, JsonProcessingException {
@@ -61,9 +60,7 @@ public class NimbusJoseJwt {
         JWSSigner jwsSigner = new MACSigner(SECRET);
         jwsObject.sign(jwsSigner);
         String serialize = jwsObject.serialize();
-
-        redisUtil.set(RedisPrefix.USER_TOKEN.getPrefix() + payloadParam.getUsername(), serialize);
-        redisUtil.expire(RedisPrefix.USER_TOKEN.getPrefix() + payloadParam.getUsername(), payloadParam.getExp());
+        redisUtil.set(RedisUtil.TOKEN_PREFIX + payloadParam.getUsername(), serialize, payloadParam.getExp());
         return serialize;
     }
 

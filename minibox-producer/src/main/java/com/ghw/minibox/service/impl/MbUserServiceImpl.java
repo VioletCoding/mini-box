@@ -1,18 +1,18 @@
 package com.ghw.minibox.service.impl;
 
-import cn.hutool.crypto.digest.MD5;
+import cn.hutool.core.util.IdUtil;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.ghw.minibox.component.GenerateResult;
 import com.ghw.minibox.component.NimbusJoseJwt;
 import com.ghw.minibox.component.RedisUtil;
 import com.ghw.minibox.dto.PayloadDto;
+import com.ghw.minibox.entity.MbPhoto;
 import com.ghw.minibox.entity.MbUser;
 import com.ghw.minibox.mapper.MbPhotoMapper;
 import com.ghw.minibox.mapper.MbUserMapper;
 import com.ghw.minibox.service.MbUserService;
-import com.ghw.minibox.utils.RedisPrefix;
-import com.ghw.minibox.utils.ResultCode;
-import com.ghw.minibox.utils.SendEmail;
-import com.ghw.minibox.utils.UserRole;
+import com.ghw.minibox.utils.*;
 import com.nimbusds.jose.JOSEException;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.mail.EmailException;
@@ -50,13 +50,9 @@ public class MbUserServiceImpl implements MbUserService {
     /**
      * 生成验证码
      *
-     * @param num 验证码个数
      * @return 验证码
      */
-    private String generateAuthCode(int num) throws Exception {
-        if (num <= 0) {
-            throw new Exception("验证码个数小于等于0");
-        }
+    private String generateAuthCode() {
         StringBuilder sb = new StringBuilder();
         Random random = new Random();
         int randomNum;
@@ -68,93 +64,153 @@ public class MbUserServiceImpl implements MbUserService {
     }
 
     /**
-     * 异步方法
-     * 发送邮件，并写入Redis
-     * <p>
-     * 如果queryByUsername校验通过，那么可以往下执行这个方法
-     * <p>
-     * 该方法会生成一个6位数的随机验证码，并且放到邮件内容发送给注册的用户
-     * <p>
-     * 验证码会放进Redis里保存300秒钟，300秒后自动失效
+     * 发送邮件，异步方法
      *
      * @param username 邮箱
+     * @param subject  邮件主题
+     * @param msg      邮件内容
+     * @param code     验证码
      */
     @Async
     @Override
     public void sendEmail(String username, String subject, String msg, String code) throws EmailException {
         String lowerCase = username.toLowerCase();
+        log.info("发送邮件=>{}", lowerCase);
         sendEmail.createEmail(lowerCase, subject, msg + code);
     }
 
+
     /**
-     * 如果返回的对象不为空，就证明邮箱username已经被占用，此时可以直接登陆，返回的验证码则用于登陆
-     * <p>
-     * 从Redis检查是否已经有该用户，看看是否已发送过验证码，如果发送过了，300秒后才能再次请求
-     * <p>
-     * 如果用户已经持久化，也就是注册成功了，直接返回用户已存在
+     * 通过username（邮箱）进行校验用户是否存在
      *
      * @param username 邮箱
-     * @return 实体
      */
     @Override
-    public boolean exist(String username) throws Exception {
+    public boolean exist(String username) throws JsonProcessingException {
+        //把传进来的邮箱格式化一下，统一小写
         String lowerCase = username.toLowerCase();
+        log.info("小写=>{}", lowerCase);
         MbUser mbUser = mbUserMapper.queryByUsername(lowerCase);
-        String authCode = generateAuthCode(6);
-
-        if (mbUser == null) {
-            sendEmail(lowerCase, SendEmail.SUBJECT, SendEmail.REGISTER_MESSAGE, authCode);
+        log.info("打印一下mbUser=>{}", mbUser);
+        if (mbUser != null) {
+            ObjectMapper om = new ObjectMapper();
+            String json = om.writeValueAsString(mbUser);
+            log.info("用户存在，存到Redis=>{}", json);
+            redisUtil.set(RedisUtil.LOGIN_FLAG + username, json, 300L);
+            return true;
         } else {
-            sendEmail(lowerCase, SendEmail.SUBJECT, SendEmail.LOGIN_MESSAGE, authCode);
+            return false;
         }
-        redisUtil.set(RedisPrefix.USER_TEMP.getPrefix() + lowerCase, authCode);
-        redisUtil.expire(RedisPrefix.USER_TEMP.getPrefix() + lowerCase, 300L);
-        return true;
     }
 
+    /**
+     * 主要业务逻辑，如果用户存在，执行登陆，如果用户不存在，执行注册，本质是发送两封内容不一样的邮件
+     * 验证码一定要存进redis
+     */
+    @Override
+    public void service(String username) throws EmailException, JsonProcessingException {
+        String authCode = generateAuthCode();
+        log.info("验证码是=>{}", authCode);
+        String lowerCaseUsername = username.toLowerCase();
+        log.info("小写后的username是=>{}", lowerCaseUsername);
+        DataDto build = new DataDto().setData(authCode);
+        log.info("组装后的DataDto=>{}", build.toString());
+        try {
+            //如果用户存在，执行登陆逻辑，否则执行注册逻辑
+            if (exist(username)) {
+                log.info("用户存在，发送「登陆」验证码短信");
+                sendEmail.createEmail(lowerCaseUsername, SendEmail.SUBJECT, SendEmail.LOGIN_MESSAGE + authCode);
+            } else {
+                log.info("用户不存在，发送「注册」验证码短信");
+                sendEmail.createEmail(lowerCaseUsername, SendEmail.SUBJECT, SendEmail.REGISTER_MESSAGE + authCode);
+            }
+        } finally {
+            ObjectMapper om = new ObjectMapper();
+            String json = om.writeValueAsString(build);
+            log.info("无论如何，把验证码存到redis里=>{}", json);
+            redisUtil.set(RedisUtil.AUTH_PREFIX + lowerCaseUsername, json, 300L);
+        }
+    }
 
     /**
      * 校验 验证码
      * <p>
      * 校验传入的验证码是否跟在Redis保存的验证码一致
      *
-     * @param key   邮箱
-     * @param value 验证码
+     * @param key      邮箱
+     * @param authCode 验证码
      * @return true or false
      */
     @Override
-    public boolean authRegCode(String key, String value) {
-        String valueFromRedis = redisUtil.get(RedisPrefix.USER_TEMP.getPrefix() + key.toLowerCase());
-        return value.equals(valueFromRedis);
+    public boolean authRegCode(String key, String authCode) throws JsonProcessingException {
+        log.info("打印一下key=>{}和authCode=>{}", key, authCode);
+        String valueFromRedis = redisUtil.get(RedisUtil.AUTH_PREFIX + key.toLowerCase());
+        log.info("校验验证码,从Redis获取的值=>{}", valueFromRedis);
+        DataDto dataDto;
+        if (valueFromRedis != null && !valueFromRedis.equals("")) {
+            dataDto = new ObjectMapper().readValue(valueFromRedis, DataDto.class);
+            log.info("校验验证码=>{}", dataDto);
+            return authCode.equals(dataDto.getData());
+        }
+        return false;
     }
 
 
     /**
-     * 登陆-查MySQL
-     * <p>
-     * 逻辑跟redis2login差不多，不过这是保底的方法了，再不行的话，用户就是查无此人
+     * 主要逻辑方法
+     * 这其实是一个复合接口，如果用户存在，执行登陆，如果用户不存在，执行自动注册方法
      *
-     * @param mbUser 用户实体
-     * @return ReturnDto
+     * @param username 邮箱
+     * @param authCode 验证码
+     * @return 用户非敏感信息
      */
     @Override
-    public String login(MbUser mbUser) throws JsonProcessingException, JOSEException {
-        //TODO
-        //token放在网关校验
-        //登录逻辑要重新想
-        MbUser fromMySQL = mbUserMapper.queryByUsername(mbUser.getUsername());
-        if (fromMySQL == null) {
-            return ResultCode.NOT_FOUND.getMessage();
+    public Object doService(String username, String authCode) throws JsonProcessingException, JOSEException {
+        String lowerCaseUsername = username.toLowerCase();
+        //先校验验证码
+        boolean auth = authRegCode(lowerCaseUsername, authCode);
+
+        if (auth) {
+            //权限
+            //TODO 权限列表记得要加上，现在这里是写死
+            List<String> authorities = new ArrayList<>();
+            authorities.add(UserRole.USER.getRole());
+            //token的有效载荷，过期时间是一周
+            PayloadDto payloadDto = jwt.buildToken(username, 604800L, authorities);
+            //生成token
+            String token = jwt.generateTokenByHMAC(payloadDto);
+            try {
+                //如果是已经存在的用户，则返回token和非敏感信息
+                if (exist(username)) {
+                    String json = redisUtil.get(RedisUtil.LOGIN_FLAG + username);
+                    ObjectMapper om = new ObjectMapper();
+                    MbUser mbUser = om.readValue(json, MbUser.class);
+                    mbUser.setToken(token);
+                    return new GenerateResult<>().success(mbUser);
+                }
+                //如果不存在，则自动注册，并且注册成功后也返回token和非敏感信息
+                MbUser mbUser = new MbUser();
+                mbUser.setUsername(username)
+                        .setNickname(DefaultUserInfoEnum.NICKNAME.getMessage())
+                        .setPassword(IdUtil.fastSimpleUUID());
+                mbUserMapper.insert(mbUser);
+                mbPhotoMapper.insert(new MbPhoto().setPhotoLink(this.defaultLink).setType("UP"));
+                //用于返回
+                mbUser.setMbPhoto(new MbPhoto().setPhotoLink(this.defaultLink).setType("UP"));
+                return new DataDto()
+                        .setCode(ResultCode.OK.getCode())
+                        .setMessage(ResultCode.OK.getMessage()).setData(mbUser);
+            } finally {
+                redisUtil.set(RedisUtil.TOKEN_PREFIX + username, token, payloadDto.getExp());
+                List<String> remove = new ArrayList<>();
+                remove.add(RedisUtil.AUTH_PREFIX + lowerCaseUsername);
+                remove.add(RedisUtil.LOGIN_FLAG + lowerCaseUsername);
+                redisUtil.remove(remove);
+            }
         }
-        MD5 md5 = new MD5();
-        String hex16 = md5.digestHex16(mbUser.getPassword());
-        if (fromMySQL.getPassword().equals(hex16)) {
-            List<String> roleList = new ArrayList<>();
-            roleList.add(UserRole.USER.getRole());
-            PayloadDto payloadDto = jwt.buildToken(mbUser.getUsername(), 604800000L, roleList);
-            return jwt.generateTokenByHMAC(payloadDto);
-        }
-        return ResultCode.USER_AUTH_FAIL.getMessage();
+        return new DataDto()
+                .setCode(ResultCode.AUTH_CODE_ERROR.getCode())
+                .setMessage(ResultCode.AUTH_CODE_ERROR.getMessage());
     }
 
 

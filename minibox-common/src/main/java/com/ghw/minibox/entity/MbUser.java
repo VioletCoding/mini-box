@@ -62,6 +62,9 @@ public class MbUser implements Serializable {
     @ApiModelProperty(notes = "个人等级")
     private String level;
 
+    @ApiModelProperty(notes = "token,只存redis")
+    private String token;
+
     @ApiModelProperty(notes = "游戏数量，不存数据库，只做统计用")
     private Integer gameNumber;
 

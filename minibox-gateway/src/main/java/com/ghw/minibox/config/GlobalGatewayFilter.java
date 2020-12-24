@@ -1,6 +1,7 @@
 package com.ghw.minibox.config;
 
 import com.ghw.minibox.component.GenerateResult;
+import com.ghw.minibox.component.NimbusJoseJwt;
 import com.ghw.minibox.dto.ReturnDto;
 import com.ghw.minibox.utils.ResultCode;
 import com.qiniu.util.Json;
@@ -19,6 +20,7 @@ import org.springframework.web.server.ServerWebExchange;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+import javax.annotation.Resource;
 import java.nio.charset.StandardCharsets;
 
 /**
@@ -30,6 +32,9 @@ import java.nio.charset.StandardCharsets;
 @AllArgsConstructor
 @Slf4j
 public class GlobalGatewayFilter implements GlobalFilter, Ordered {
+
+    @Resource
+    private final NimbusJoseJwt jwt;
 
     private final EnableAuth enableAuth;
 
@@ -46,7 +51,6 @@ public class GlobalGatewayFilter implements GlobalFilter, Ordered {
                 .map(url -> url.replace("/**", ""))
                 .anyMatch(path::startsWith);
     }
-
 
     @Override
     public Mono<Void> filter(ServerWebExchange exchange, GatewayFilterChain chain) {
@@ -67,20 +71,32 @@ public class GlobalGatewayFilter implements GlobalFilter, Ordered {
         }
         String token = request.getHeaders().getFirst("accessToken");
         //校验token
-        //TODO
         if (StringUtils.isBlank(token)) {
             log.error("token为空");
             response.setStatusCode(HttpStatus.UNAUTHORIZED);
-            return getVoidMono(response, new GenerateResult<>()
-                    .custom(ResultCode.UNAUTHORIZED
-                            .getCode(), ResultCode.UNAUTHORIZED
-                            .getMessage()));
+            return getVoidMono(response, new GenerateResult<>().fail(ResultCode.UNAUTHORIZED));
         }
+        //获取载荷，如果抛异常，那就是token校验失败或者过期
+        try {
+            jwt.verifyTokenByHMAC(token);
+        } catch (Exception e) {
+            e.printStackTrace();
+            response.setStatusCode(HttpStatus.UNAUTHORIZED);
+            log.error("token校验失败=>{}", e.getMessage());
+            return getVoidMono(response, new GenerateResult<>().fail(ResultCode.UNAUTHORIZED));
+        }
+
         //返回过滤链
         return chain.filter(exchange);
     }
 
-
+    /**
+     * 获取Mono，这个Mono是响应式编程里的内容
+     *
+     * @param serverHttpResponse 响应信息
+     * @param r                  自定义返回
+     * @return Mono
+     */
     private Mono<Void> getVoidMono(ServerHttpResponse serverHttpResponse, ReturnDto<Object> r) {
         serverHttpResponse.getHeaders().add("Content-Type", "application/json;charset=UTF-8");
         DataBuffer dataBuffer = serverHttpResponse.bufferFactory().wrap(Json.encode(r).getBytes(StandardCharsets.UTF_8));

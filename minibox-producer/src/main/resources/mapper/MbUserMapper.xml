@@ -40,10 +40,50 @@
     </select>
 
     <!--查询单个通过username-->
-    <select id="queryByUsername" resultMap="MbUserMap">
-        select uid, username, password, user_state
-        from minibox.mb_user
-        where username = #{username}
+    <resultMap id="simple" type="com.ghw.minibox.entity.MbUser">
+        <!--用户的基本信息-->
+        <id property="uid" column="uid"/>
+        <result property="username" column="username"/>
+        <result property="nickname" column="nickname"/>
+        <result property="description" column="user_desc"/>
+        <result property="level" column="level"/>
+        <result property="walletBalance" column="wallet_balance"/>
+        <result property="gameNumber" column="game_num"/>
+        <!--用户关联的头像-->
+        <association property="mbPhoto" javaType="com.ghw.minibox.entity.MbPhoto">
+            <result property="photoLink" column="user_photo_ink"/>
+        </association>
+        <!--用户拥有的游戏-->
+        <collection property="gameList" ofType="com.ghw.minibox.entity.MbGame">
+            <id property="gid" column="gid"/>
+            <result property="name" column="name"/>
+            <result property="coverImg" column="cover_img"/>
+            <result property="price" column="game_price"/>
+            <result property="description" column="game_desc"/>
+        </collection>
+    </resultMap>
+    <select id="queryByUsername" resultMap="simple">
+        SELECT u.uid,
+               u.username,
+               u.nickname,
+               u.description                                         AS user_desc,
+               u.`level`,
+               u.wallet_balance,
+               g.gid,
+               g.`name`,
+               g.cover_img,
+               g.price                                               AS game_price,
+               g.description                                         AS game_desc,
+               (SELECT COUNT(*) FROM mb_user_game WHERE u.uid = uid) AS game_num,
+               p.link                                                AS user_photo_ink
+
+        FROM mb_user AS u
+                 LEFT JOIN mb_photo AS p ON (p.uid = u.uid)
+                 LEFT JOIN mb_user_game AS ug ON (u.uid = ug.uid)
+                 LEFT JOIN mb_game AS g ON (ug.gid = g.gid)
+
+        WHERE u.username = #{username}
+          AND p.type = 'UP';
     </select>
 
     <!--重置密码-->
