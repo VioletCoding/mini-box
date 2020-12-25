@@ -4,7 +4,6 @@ import com.ghw.minibox.dto.ReturnDto;
 import com.ghw.minibox.dto.ReturnImgDto;
 import com.ghw.minibox.entity.MbPost;
 import com.ghw.minibox.utils.ResultCode;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
@@ -24,7 +23,15 @@ public interface MbPostService {
      *
      * @return 帖子列表
      */
-    List<MbPost> showPostList();
+    List<MbPost> showPostList(MbPost mbPost);
+
+    /**
+     * 显示用户的所有评论在哪些帖子
+     *
+     * @param uid 用户id
+     * @return 信息
+     */
+    List<MbPost> showPostInUser(Long uid);
 
     /**
      * 通过ID查询单条数据
@@ -32,10 +39,7 @@ public interface MbPostService {
      * @param tid 主键
      * @return 实例对象
      */
-    MbPost showPostDetail(Long tid);
-
-
-    MbPost queryById(Long tid);
+    List<MbPost> showPostDetail(Long tid);
 
 
     /**
@@ -44,7 +48,6 @@ public interface MbPostService {
      * @param mbPost 实例对象
      * @return 实例对象
      */
-    @Transactional
     ReturnDto<ResultCode> publish(MbPost mbPost);
 
     /**

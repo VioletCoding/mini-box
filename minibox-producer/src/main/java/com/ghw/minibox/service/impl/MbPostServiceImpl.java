@@ -2,6 +2,7 @@ package com.ghw.minibox.service.impl;
 
 import cn.hutool.core.util.IdUtil;
 import com.ghw.minibox.component.GenerateResult;
+import com.ghw.minibox.component.RedisUtil;
 import com.ghw.minibox.dto.ReturnDto;
 import com.ghw.minibox.dto.ReturnImgDto;
 import com.ghw.minibox.entity.MbPhoto;
@@ -15,6 +16,7 @@ import com.ghw.minibox.utils.QiNiuUtil;
 import com.ghw.minibox.utils.ResultCode;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -58,12 +60,24 @@ public class MbPostServiceImpl implements MbPostService {
      * @return 分页过后的帖子列表
      */
     @AOPLog("展示首页帖子列表")
-    //@Cacheable(value = RedisConfig.REDIS_KEY_DATABASE)
+    @Cacheable(RedisUtil.POST_CACHE)
     @Override
-    public List<MbPost> showPostList() {
-        return mbPostMapper.showPostList();
+    public List<MbPost> showPostList(MbPost mbPost) {
+        return mbPostMapper.queryAll(mbPost);
     }
 
+
+    /**
+     * 显示用户的所有评论在哪些帖子
+     *
+     * @param uid 用户id
+     * @return 信息
+     */
+    @AOPLog("展示某一用户的评论-关联帖子信息")
+    @Override
+    public List<MbPost> showPostInUser(Long uid) {
+        return mbPostMapper.queryUserAllCommentInPost(uid);
+    }
 
     /**
      * 展示帖子详情
@@ -73,10 +87,9 @@ public class MbPostServiceImpl implements MbPostService {
      * @return 帖子详情，帖子作者，评论列表，评论谁发的
      */
     @AOPLog("展示帖子详情")
-    //@Cacheable(value = RedisConfig.REDIS_KEY_DATABASE, key = "redisConfig.REDIS_KEY_POST_PREFIX + #tid")
     @Override
-    public MbPost showPostDetail(Long tid) {
-        return mbPostMapper.showPostDetail(tid);
+    public List<MbPost> showPostDetail(Long tid) {
+        return mbPostMapper.queryAll(new MbPost().setTid(tid));
     }
 
     /**
@@ -112,6 +125,7 @@ public class MbPostServiceImpl implements MbPostService {
         }
         return null;
     }
+
 
     /**
      * 上传文件，可以批量上传，但是七牛云本身是不支持批量上传的，所以只能在循环中遍历上传接口，该上传接口是异步接口asyncUpload()
@@ -159,19 +173,6 @@ public class MbPostServiceImpl implements MbPostService {
         if (insert > 0) {
             return dto;
         }
-        return null;
-    }
-
-
-    /**
-     * 通过ID查询单条数据
-     *
-     * @param tid 主键
-     * @return 实例对象
-     */
-    @Override
-    public MbPost queryById(Long tid) {
-        //TODO
         return null;
     }
 

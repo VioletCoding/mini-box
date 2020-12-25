@@ -1,7 +1,5 @@
 package com.ghw.minibox.component;
 
-import cn.hutool.core.collection.CollUtil;
-import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.util.IdUtil;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -15,9 +13,7 @@ import org.springframework.stereotype.Component;
 import javax.annotation.Resource;
 import javax.validation.constraints.NotNull;
 import java.text.ParseException;
-import java.util.Date;
 import java.util.List;
-import java.util.UUID;
 
 /**
  * @author Violet
@@ -102,13 +98,11 @@ public class NimbusJoseJwt {
         }
         String payload = jwsObject.getPayload().toString();
         log.info("payload==>{}", payload);
-        PayloadDto payloadDto = objectMapper.readValue(payload, PayloadDto.class);
-        log.info("token的过期时间为==>{}", payloadDto.getExp());
-        log.info("现在的时间为==>{}", new Date().getTime());
-        if (new Date().getTime() - payloadDto.getExp() < 0) {
-            throw new Exception("token已过期");
-        }
-        return payloadDto;
+        //log.info("token的过期时间为==>{}", payloadDto.getExp());
+        //if (new Date().getTime() - payloadDto.getExp() < 0) {
+        //    throw new Exception("token已过期");
+        //}
+        return objectMapper.readValue(payload, PayloadDto.class);
     }
 
     /**
@@ -116,17 +110,17 @@ public class NimbusJoseJwt {
      *
      * @return PayloadDto对象
      */
-    public PayloadDto getPayloadDto() throws Exception {
-        Date now = new Date();
-        Date exp = DateUtil.offsetSecond(now, 60 * 60);
-        return PayloadDto.builder()
-                .sub("violet")
-                .iat(now.getTime())
-                .exp(exp.getTime())
-                .jti(UUID.randomUUID().toString())
-                .username("violet")
-                .authorities(CollUtil.toList("ADMIN"))
-                .build();
-    }
+    //public PayloadDto getPayloadDto() throws Exception {
+    //    Date now = new Date();
+    //    Date exp = DateUtil.offsetSecond(now, 60 * 60);
+    //    return PayloadDto.builder()
+    //            .sub("violet")
+    //            .iat(now.getTime())
+    //            .exp(exp.getTime())
+    //            .jti(UUID.randomUUID().toString())
+    //            .username("violet")
+    //            .authorities(CollUtil.toList("ADMIN"))
+    //            .build();
+    //}
 
 }

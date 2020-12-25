@@ -13,32 +13,6 @@ import java.util.List;
  */
 public interface MbPostMapper {
 
-
-    /**
-     * 在首页显示帖子列表，通过PageHelper分页
-     *
-     * @return 帖子列表
-     */
-    List<MbPost> showPostList();
-
-    /**
-     * 显示帖子详情
-     *
-     * @param tid 帖子ID
-     * @return 帖子内容，包括作者的部分信息
-     */
-    MbPost showPostDetail(Long tid);
-
-
-    /**
-     * 通过ID查询单条数据
-     *
-     * @param tid 主键
-     * @return 实例对象
-     */
-    MbPost queryById(Long tid);
-
-
     /**
      * 通过实体作为筛选条件查询
      *
@@ -46,6 +20,14 @@ public interface MbPostMapper {
      * @return 对象列表
      */
     List<MbPost> queryAll(MbPost mbPost);
+
+    /**
+     * 显示用户的所有评论在哪些帖子
+     *
+     * @param uid 用户id
+     * @return 信息
+     */
+    List<MbPost> queryUserAllCommentInPost(Long uid);
 
 
     /**
@@ -57,21 +39,6 @@ public interface MbPostMapper {
     @Transactional
     int insert(MbPost mbPost);
 
-    /**
-     * 批量新增数据（MyBatis原生foreach方法）
-     *
-     * @param entities List<MbPost> 实例对象列表
-     * @return 影响行数
-     */
-    //int insertBatch(@Param("entities") List<MbPost> entities);
-
-    /**
-     * 批量新增或按主键更新数据（MyBatis原生foreach方法）
-     *
-     * @param entities List<MbPost> 实例对象列表
-     * @return 影响行数
-     */
-    //int insertOrUpdateBatch(@Param("entities") List<MbPost> entities);
 
     /**
      * 修改数据
@@ -79,6 +46,7 @@ public interface MbPostMapper {
      * @param mbPost 实例对象
      * @return 影响行数
      */
+    @Transactional
     int update(MbPost mbPost);
 
     /**
@@ -87,6 +55,7 @@ public interface MbPostMapper {
      * @param tid 主键
      * @return 影响行数
      */
+    @Transactional
     int deleteById(Long tid);
 
 }

@@ -32,42 +32,39 @@
     </select>
 
     <!--通过实体作为筛选条件查询-->
-    <select id="queryAll" resultMap="MbCommentMap">
-        select
-        cid, state, content, type, tid, uid, gid, score, create_date, update_date
-        from minibox.mb_comment
+    <resultMap type="com.ghw.minibox.entity.MbComment" id="queryAllMap">
+        <result property="cid" column="cid" jdbcType="INTEGER"/>
+        <result property="content" column="content" jdbcType="VARCHAR"/>
+        <result property="tid" column="tid" jdbcType="INTEGER"/>
+        <result property="uid" column="uid" jdbcType="INTEGER"/>
+        <result property="gid" column="gid" jdbcType="INTEGER"/>
+        <result property="score" column="score" jdbcType="NUMERIC"/>
+        <result property="createDate" column="create_date"/>
+        <association property="mbUser" javaType="com.ghw.minibox.entity.MbUser">
+            <id property="uid" column="uid"/>
+            <result property="nickname" column="nickname"/>
+        </association>
+
+    </resultMap>
+    <select id="queryAll" resultMap="queryAllMap">
+        SELECT
+        mc.cid, mc.tid, mc.uid, mc.gid, mc.score,mc.content,mc.create_date,
+        mp.title,mp.cover_img,
+        mu.nickname,mu.uid,
+        mr.reply_content,mr.reply_who
+        FROM mb_comment AS mc
+        LEFT JOIN mb_post AS mp ON(mc.tid = mp.tid)
+        LEFT JOIN mb_user AS mu ON(mu.uid = mp.uid)
+        LEFT JOIN mb_reply AS mr ON(mr.reply_uid = mc.uid)
         <where>
             <if test="cid != null">
-                and cid = #{cid}
-            </if>
-            <if test="state != null">
-                and state = #{state}
-            </if>
-            <if test="content != null and content != ''">
-                and content = #{content}
-            </if>
-            <if test="type != null and type != ''">
-                and type = #{type}
-            </if>
-            <if test="tid != null">
-                and tid = #{tid}
+                AND mc.cid = #{cid}
             </if>
             <if test="uid != null">
-                and uid = #{uid}
-            </if>
-            <if test="gid != null">
-                and gid = #{gid}
-            </if>
-            <if test="score != null">
-                and score = #{score}
-            </if>
-            <if test="createDate != null">
-                and create_date = #{createDate}
-            </if>
-            <if test="updateDate != null">
-                and update_date = #{updateDate}
+                AND mc.uid = #{uid}
             </if>
         </where>
+        ORDER BY mc.create_date DESC;
     </select>
 
     <!--新增所有列-->

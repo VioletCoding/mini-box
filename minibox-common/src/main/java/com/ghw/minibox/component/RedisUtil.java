@@ -21,6 +21,10 @@ public class RedisUtil {
 
     public static final String LOGIN_FLAG = "login:";
 
+    public static final String POST_CACHE = "post:";
+
+    public static final String GAME_CACHE = "game:";
+
     @Resource
     private StringRedisTemplate rt;
 

@@ -194,9 +194,12 @@ public class MbUserServiceImpl implements MbUserService {
                         .setNickname(DefaultUserInfoEnum.NICKNAME.getMessage())
                         .setPassword(IdUtil.fastSimpleUUID());
                 mbUserMapper.insert(mbUser);
-                mbPhotoMapper.insert(new MbPhoto().setPhotoLink(this.defaultLink).setType("UP"));
+                //默认头像
+                mbPhotoMapper.insert(new MbPhoto().setPhotoLink(this.defaultLink).setType("UP").setUid(mbUser.getUid()));
                 //用于返回
-                mbUser.setMbPhoto(new MbPhoto().setPhotoLink(this.defaultLink).setType("UP"));
+                log.info("测试一下是否能获取自增uid=>{}", mbUser.getUid());
+                mbUser.setMbPhoto(new MbPhoto().setPhotoLink(this.defaultLink).setType("UP").setUid(mbUser.getUid()));
+                mbUser.setToken(token);
                 return new DataDto()
                         .setCode(ResultCode.OK.getCode())
                         .setMessage(ResultCode.OK.getMessage()).setData(mbUser);

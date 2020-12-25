@@ -14,6 +14,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.annotation.Nullable;
 import javax.annotation.Resource;
 import java.io.IOException;
 import java.util.List;
@@ -57,16 +58,21 @@ public class MbPostController {
 
     @ApiOperation("帖子列表显示")
     @GetMapping("showAll")
-    public ReturnDto<List<MbPost>> showAllPost() {
-        List<MbPost> mbPostList = mbPostService.showPostList();
+    public ReturnDto<List<MbPost>> showAllPost(@Nullable MbPost mbPost) {
+        List<MbPost> mbPostList = mbPostService.showPostList(mbPost);
         return new GenerateResult<List<MbPost>>().success(mbPostList);
+    }
+
+    @GetMapping("userCommentShow")
+    public ReturnDto<List<MbPost>> userComment(@RequestParam("uid") Long uid) {
+        return new GenerateResult<List<MbPost>>().success(mbPostService.showPostInUser(uid));
     }
 
     @ApiModelProperty("帖子详情展示")
     @GetMapping("detail")
-    public ReturnDto<MbPost> showPostDetail(@RequestParam(value = "tid") Long tid) {
-        MbPost postDetail = mbPostService.showPostDetail(tid);
-        return new GenerateResult<MbPost>().success(postDetail);
+    public ReturnDto<List<MbPost>> showPostDetail(@RequestParam(value = "tid") Long tid) {
+        List<MbPost> postDetail = mbPostService.showPostDetail(tid);
+        return new GenerateResult<List<MbPost>>().success(postDetail);
     }
 
 }

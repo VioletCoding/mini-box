@@ -1,12 +1,11 @@
 package com.ghw.minibox.controller;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ghw.minibox.component.GenerateResult;
-import com.ghw.minibox.component.RedisUtil;
 import com.ghw.minibox.dto.ReturnDto;
 import com.ghw.minibox.entity.MbUser;
 import com.ghw.minibox.service.MbUserService;
+import com.ghw.minibox.utils.ResultCode;
 import com.nimbusds.jose.JOSEException;
 import io.swagger.annotations.Api;
 import org.springframework.web.bind.annotation.*;
@@ -30,9 +29,6 @@ public class MbUserController {
     @Resource
     private GenerateResult<String> gr;
 
-    @Resource
-    private RedisUtil r;
-
     /**
      * 登陆前的校验
      *
@@ -45,21 +41,20 @@ public class MbUserController {
         return gr.success();
     }
 
-    @GetMapping("test")
-    public void test() throws JsonProcessingException {
-        MbUser mbUser = new MbUser().setDescription("这里是中文");
-        r.set("1111", new ObjectMapper().writeValueAsString(mbUser), 300L);
-    }
-
     /**
      * 登陆或者注册（自动判断）
      *
-     * @param username 邮箱
-     * @param authCode 验证码
+     * @param params map集合，用来接收单个参数，或多个不为同一实体的参数，不用封装成对象即可接收json，而不是接收form-data
+     *               为了安全使用POST请求，由于authCode并不存在于实体中，所以这么做
      * @return 如果验证码正确，自动判断是登陆还是注册，都会返回token和用户信息（非敏感数据）
      */
     @PostMapping("after")
-    public Object doService(@RequestParam("username") String username, @RequestParam("authCode") String authCode) throws JsonProcessingException, JOSEException {
+    public Object doService(@RequestBody Map<String, Object> params) throws JsonProcessingException, JOSEException {
+        String authCode = (String) params.get("authCode");
+        String username = (String) params.get("username");
+        if (authCode.length() < 6) {
+            return new GenerateResult<>().fail(ResultCode.AUTH_CODE_ERROR);
+        }
         return mbUserService.doService(username, authCode);
     }
 

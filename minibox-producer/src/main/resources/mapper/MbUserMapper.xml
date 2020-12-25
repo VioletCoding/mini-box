@@ -2,44 +2,7 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.ghw.minibox.mapper.MbUserMapper">
 
-    <resultMap type="com.ghw.minibox.entity.MbUser" id="MbUserMap">
-        <!--用户的非敏感信息-->
-        <id property="uid" column="uid" jdbcType="INTEGER"/>
-        <result property="nickname" column="nickname" jdbcType="VARCHAR"/>
-        <result property="description" column="description" jdbcType="VARCHAR"/>
-        <result property="level" column="level" jdbcType="VARCHAR"/>
-        <result property="walletBalance" column="wallet_balance" jdbcType="NUMERIC"/>
-        <result property="gameNumber" column="game_num" jdbcType="INTEGER"/>
-        <!--拥有的游戏-->
-        <collection property="gameList" ofType="com.ghw.minibox.entity.MbGame">
-            <result property="gid" column="gid"/>
-            <result property="name" column="name"/>
-            <result property="cover_img" column="coverImg"/>
-            <result property="description" column="game_desc"/>
-        </collection>
-    </resultMap>
-
     <!--查询单个-->
-    <select id="queryById" resultMap="MbUserMap">
-        SELECT u.uid,
-               u.nickname,
-               u.description                                         AS user_desc,
-               u.`level`,
-               u.wallet_balance,
-               g.gid,
-               g.`name`,
-               g.cover_img,
-               g.description                                         AS game_desc,
-               (SELECT COUNT(*) FROM mb_user_game WHERE u.uid = uid) AS game_num
-
-        FROM mb_user AS u
-                 LEFT JOIN mb_user_game AS ug ON (u.uid = ug.uid)
-                 LEFT JOIN mb_game AS g ON (ug.gid = g.gid)
-
-        WHERE u.uid = #{uid}
-    </select>
-
-    <!--查询单个通过username-->
     <resultMap id="simple" type="com.ghw.minibox.entity.MbUser">
         <!--用户的基本信息-->
         <id property="uid" column="uid"/>
@@ -62,7 +25,9 @@
             <result property="description" column="game_desc"/>
         </collection>
     </resultMap>
-    <select id="queryByUsername" resultMap="simple">
+
+
+    <select id="queryById" resultMap="simple">
         SELECT u.uid,
                u.username,
                u.nickname,
@@ -82,60 +47,21 @@
                  LEFT JOIN mb_user_game AS ug ON (u.uid = ug.uid)
                  LEFT JOIN mb_game AS g ON (ug.gid = g.gid)
 
-        WHERE u.username = #{username}
+        WHERE u.uid = #{uid}
           AND p.type = 'UP';
     </select>
 
-    <!--重置密码-->
-    <update id="updatePassword">
-        UPDATE mb_user
-        SET password = #{password}
-        WHERE username = #{username}
-          AND user_state = 'NORMAL';
-    </update>
+    <!--查询单个通过username-->
+    <resultMap type="com.ghw.minibox.entity.MbUser" id="MbUserMap">
+        <!--用户的非敏感信息-->
+        <id property="uid" column="uid" jdbcType="INTEGER"/>
+        <result property="username" column="username" jdbcType="VARCHAR"/>
+    </resultMap>
 
-
-    <!--通过实体作为筛选条件查询-->
-    <select id="queryAll" resultMap="MbUserMap">
-        select
-        uid, nickname, username, description, level, wallet_balance, user_state, create_date, exp,
-        update_date, state
-        from minibox.mb_user
-        <where>
-            <if test="uid != null">
-                and uid = #{uid}
-            </if>
-            <if test="nickname != null and nickname != ''">
-                and nickname = #{nickname}
-            </if>
-            <if test="username != null and username != ''">
-                and username = #{username}
-            </if>
-            <if test="description != null and description != ''">
-                and description = #{description}
-            </if>
-            <if test="level != null and level != ''">
-                and level = #{level}
-            </if>
-            <if test="walletBalance != null">
-                and wallet_balance = #{walletBalance}
-            </if>
-            <if test="userState != null and userState != ''">
-                and user_state = #{userState}
-            </if>
-            <if test="createDate != null">
-                and create_date = #{createDate}
-            </if>
-            <if test="exp != null">
-                and exp = #{exp}
-            </if>
-            <if test="updateDate != null">
-                and update_date = #{updateDate}
-            </if>
-            <if test="state != null">
-                and state = #{state}
-            </if>
-        </where>
+    <select id="queryByUsername" resultMap="MbUserMap">
+        SELECT u.uid, u.username
+        FROM mb_user AS u
+        WHERE u.username = #{username}
     </select>
 
     <!--新增部分列，其余使用数据库默认值-->
@@ -144,52 +70,5 @@
         values (#{nickname}, #{username}, #{password})
     </insert>
 
-    <insert id="insertBatch" keyProperty="uid" useGeneratedKeys="true">
-        insert into minibox.mb_user(nickname, username, password, description, level, wallet_balance, user_state,
-        create_date, exp, update_date, state)
-        values
-        <foreach collection="entities" item="entity" separator=",">
-            (#{entity.nickname}, #{entity.username}, #{entity.password}, #{entity.description}, #{entity.level},
-            #{entity.walletBalance}, #{entity.userState}, #{entity.createDate}, #{entity.exp}, #{entity.updateDate},
-            #{entity.state})
-        </foreach>
-    </insert>
-
-    <insert id="insertOrUpdateBatch" keyProperty="uid" useGeneratedKeys="true">
-        insert into minibox.mb_user(nickname, username, password, description, level, wallet_balance, user_state,
-        create_date, exp, update_date, state)
-        values
-        <foreach collection="entities" item="entity" separator=",">
-            (#{entity.nickname}, #{entity.username}, #{entity.password}, #{entity.description}, #{entity.level},
-            #{entity.walletBalance}, #{entity.userState}, #{entity.createDate}, #{entity.exp}, #{entity.updateDate},
-            #{entity.state})
-        </foreach>
-        on duplicate key update
-        nickname = values(nickname) , username = values(username) , password = values(password) , description =
-        values(description) , level = values(level) , wallet_balance = values(wallet_balance) , user_state =
-        values(user_state) , create_date = values(create_date) , exp = values(exp) , update_date = values(update_date) ,
-        state = values(state)
-    </insert>
-
-    <!--通过主键修改数据-->
-    <update id="update">
-        update minibox.mb_user
-        <set>
-            <if test="nickname != null and nickname != ''">
-                nickname = #{nickname},
-            </if>
-            <if test="description != null and description != ''">
-                'description' = #{description},
-            </if>
-        </set>
-        where uid = #{uid}
-    </update>
-
-    <!--通过主键删除-->
-    <delete id="deleteById">
-        delete
-        from minibox.mb_user
-        where uid = #{uid}
-    </delete>
 
 </mapper>

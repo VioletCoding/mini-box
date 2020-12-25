@@ -4,6 +4,8 @@ import com.ghw.minibox.entity.MbComment;
 import com.ghw.minibox.entity.MbReply;
 import com.ghw.minibox.utils.ResultCode;
 
+import java.util.List;
+
 /**
  * (MbComment)表服务接口
  *
@@ -28,6 +30,15 @@ public interface MbCommentService {
      * @return 枚举响应体，成功返回OK
      */
     ResultCode postReply(MbReply mbReply);
+
+
+    /**
+     * 根据传入的参数查询
+     *
+     * @param mbComment 实体
+     * @return 实体
+     */
+    List<MbComment> queryByEntity(MbComment mbComment);
 
 
     /**

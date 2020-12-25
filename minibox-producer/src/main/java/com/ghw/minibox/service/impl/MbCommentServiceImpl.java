@@ -9,6 +9,7 @@ import com.ghw.minibox.utils.ResultCode;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+import java.util.List;
 
 /**
  * (MbComment)表服务实现类
@@ -93,6 +94,17 @@ public class MbCommentServiceImpl implements MbCommentService {
         return this.mbCommentMapper.queryById(cid);
     }
 
+
+    /**
+     * 根据传入的参数查询
+     *
+     * @param mbComment 实体
+     * @return 实体
+     */
+    @Override
+    public List<MbComment> queryByEntity(MbComment mbComment) {
+        return null;
+    }
 
     /**
      * 修改数据

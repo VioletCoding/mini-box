@@ -2,6 +2,8 @@ package com.ghw.minibox.config;
 
 import com.ghw.minibox.component.GenerateResult;
 import com.ghw.minibox.component.NimbusJoseJwt;
+import com.ghw.minibox.component.RedisUtil;
+import com.ghw.minibox.dto.PayloadDto;
 import com.ghw.minibox.dto.ReturnDto;
 import com.ghw.minibox.utils.ResultCode;
 import com.qiniu.util.Json;
@@ -35,6 +37,8 @@ public class GlobalGatewayFilter implements GlobalFilter, Ordered {
 
     @Resource
     private final NimbusJoseJwt jwt;
+    @Resource
+    private final RedisUtil redis;
 
     private final EnableAuth enableAuth;
 
@@ -78,14 +82,18 @@ public class GlobalGatewayFilter implements GlobalFilter, Ordered {
         }
         //获取载荷，如果抛异常，那就是token校验失败或者过期
         try {
-            jwt.verifyTokenByHMAC(token);
+            PayloadDto payloadDto = jwt.verifyTokenByHMAC(token);
+            String username = payloadDto.getUsername();
+            String tokenInRedis = redis.get(RedisUtil.TOKEN_PREFIX + username);
+            if (!tokenInRedis.equals(token)) {
+                response.setStatusCode(HttpStatus.UNAUTHORIZED);
+                return getVoidMono(response, new GenerateResult<>().fail(ResultCode.UNAUTHORIZED));
+            }
         } catch (Exception e) {
             e.printStackTrace();
             response.setStatusCode(HttpStatus.UNAUTHORIZED);
-            log.error("token校验失败=>{}", e.getMessage());
             return getVoidMono(response, new GenerateResult<>().fail(ResultCode.UNAUTHORIZED));
         }
-
         //返回过滤链
         return chain.filter(exchange);
     }
