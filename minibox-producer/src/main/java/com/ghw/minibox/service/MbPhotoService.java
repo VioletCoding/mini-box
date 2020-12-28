@@ -1,7 +1,9 @@
 package com.ghw.minibox.service;
 
 import com.ghw.minibox.entity.MbPhoto;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.List;
 
 /**
@@ -40,10 +42,10 @@ public interface MbPhotoService {
     /**
      * 修改数据
      *
-     * @param mbPhoto 实例对象
+     * @param file 文件对象
      * @return 实例对象
      */
-    MbPhoto update(MbPhoto mbPhoto);
+    MbPhoto update(MultipartFile file, Long uid) throws IOException;
 
     /**
      * 通过主键删除数据

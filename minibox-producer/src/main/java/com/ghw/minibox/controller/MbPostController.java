@@ -7,9 +7,7 @@ import com.ghw.minibox.entity.MbPost;
 import com.ghw.minibox.service.MbPostService;
 import com.ghw.minibox.utils.ResultCode;
 import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiModelProperty;
 import io.swagger.annotations.ApiOperation;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -27,7 +25,6 @@ import java.util.List;
  */
 @RestController
 @RequestMapping("post")
-@Slf4j
 @Api("帖子控制层")
 public class MbPostController {
 
@@ -63,12 +60,13 @@ public class MbPostController {
         return new GenerateResult<List<MbPost>>().success(mbPostList);
     }
 
+    @ApiOperation("用户-在哪个帖子的评论")
     @GetMapping("userCommentShow")
     public ReturnDto<List<MbPost>> userComment(@RequestParam("uid") Long uid) {
         return new GenerateResult<List<MbPost>>().success(mbPostService.showPostInUser(uid));
     }
 
-    @ApiModelProperty("帖子详情展示")
+    @ApiOperation("帖子详情展示")
     @GetMapping("detail")
     public ReturnDto<List<MbPost>> showPostDetail(@RequestParam(value = "tid") Long tid) {
         List<MbPost> postDetail = mbPostService.showPostDetail(tid);

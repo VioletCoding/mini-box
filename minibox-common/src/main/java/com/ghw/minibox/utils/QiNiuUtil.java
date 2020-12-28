@@ -2,11 +2,13 @@ package com.ghw.minibox.utils;
 
 import com.ghw.minibox.component.impl.UpCompletionHandlerImpl;
 import com.qiniu.common.QiniuException;
+import com.qiniu.storage.BucketManager;
 import com.qiniu.storage.Configuration;
 import com.qiniu.storage.Region;
 import com.qiniu.storage.UploadManager;
 import com.qiniu.util.Auth;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
@@ -20,57 +22,88 @@ import java.io.InputStream;
 @Component
 @Slf4j
 public class QiNiuUtil {
+
+    @Value("${qiNiu.accessKey}")
+    private String ak;
+    @Value("${qiNiu.secretKey}")
+    private String sk;
+    @Value("${qiNiu.bucket}")
+    private String bucket;
+
+
     /**
-     * 异步七牛云上传
-     * <p>
-     * Configuration 构造一个带指定 Region 对象的配置类
-     * <p>
-     * UploadManager 上传管理器
-     * <p>
-     * Response 解析上传成功的结果
-     * <p>
+     * 异步上传
      *
-     * @param ak     公钥
-     * @param sk     私钥
-     * @param bucket 对象空间
-     * @param key    文件名
-     * @param bytes  字节数组
+     * @param key   文件名
+     * @param bytes 字节数组
      * @throws QiniuException -
      */
-    public void asyncUpload(String ak, String sk, String bucket, String key, byte[] bytes) throws IOException {
-        Auth auth = Auth.create(ak, sk);
-        String uploadToken = auth.uploadToken(bucket);
-        Configuration cfg = new Configuration(Region.huanan());
-        UploadManager um = new UploadManager(cfg);
-        um.asyncPut(bytes, key, uploadToken, null, null, false, new UpCompletionHandlerImpl());
+    public void asyncUpload(String key, byte[] bytes) throws IOException {
+        getDefaultUploadManager().asyncPut(bytes, key, getDefaultAuth().uploadToken(this.bucket), null, null, false, new UpCompletionHandlerImpl());
     }
 
     /**
-     * 重载，流式上传
-     */
-    public void asyncUpload(String ak, String sk, String bucket, String key, InputStream inputStream) throws IOException {
-        Auth auth = Auth.create(ak, sk);
-        String uploadToken = auth.uploadToken(bucket);
-        Configuration cfg = new Configuration(Region.huanan());
-        UploadManager um = new UploadManager(cfg);
-        um.put(inputStream, key, uploadToken, null, null);
-    }
-
-    /**
-     * 同步流式上传文件
+     * 使用默认方式上传
      *
-     * @param ak          公钥
-     * @param sk          私钥
-     * @param bucket      对象空间
-     * @param key         文件名
-     * @param inputStream 输入流
+     * @param key   文件名
+     * @param bytes 字节数组
      */
-    public void syncUpload(String ak, String sk, String bucket, String key, InputStream inputStream) throws IOException {
-        Auth auth = Auth.create(ak, sk);
-        String uploadToken = auth.uploadToken(bucket);
-        Configuration cfg = new Configuration(Region.huanan());
-        UploadManager um = new UploadManager(cfg);
-        um.put(inputStream, key, uploadToken, null, null);
+    public void syncUpload(String key, byte[] bytes) throws IOException {
+        getDefaultUploadManager().put(bytes, key, getDefaultAuth().uploadToken(this.bucket));
+    }
+
+    /**
+     * 流上传
+     *
+     * @param key         文件名
+     * @param inputStream 文件流
+     */
+    public void syncUpload(String key, InputStream inputStream) throws IOException {
+        getDefaultUploadManager().put(inputStream, key, getDefaultAuth().uploadToken(this.bucket), null, null);
+    }
+
+    /**
+     * 删除空间中的文件
+     * @param key 文件名
+     */
+    public void delete(String key) throws QiniuException {
+        getSDefaultBucketManager().delete(this.bucket,key);
+    }
+
+    /**
+     * 获取默认认证器
+     *
+     * @return Auth
+     */
+    private Auth getDefaultAuth() {
+        return Auth.create(this.ak, this.sk);
+    }
+
+    /**
+     * 获取默认配置
+     *
+     * @return Configuration
+     */
+    private Configuration getDefaultConfiguration() {
+        return new Configuration(Region.huanan());
+    }
+
+    /**
+     * 获取空间管理器
+     *
+     * @return BucketManager
+     */
+    private BucketManager getSDefaultBucketManager() {
+        return new BucketManager(getDefaultAuth(), getDefaultConfiguration());
+    }
+
+    /**
+     * 获取上传管理器
+     *
+     * @return UploadManager
+     */
+    private UploadManager getDefaultUploadManager() {
+        return new UploadManager(getDefaultConfiguration());
     }
 
 }

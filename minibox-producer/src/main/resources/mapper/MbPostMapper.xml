@@ -122,53 +122,35 @@
         <id property="tid" column="tid" jdbcType="INTEGER"/>
         <result property="title" column="title" jdbcType="VARCHAR"/>
         <result property="coverImg" column="cover_img" jdbcType="VARCHAR"/>
+        <result property="uid" column="uid" jdbcType="INTEGER"/>
         <!--是谁发的帖子，作者ID、作者昵称、作者等级-->
         <association property="mbUser" javaType="com.ghw.minibox.entity.MbUser">
-            <id property="uid" column="uid" jdbcType="INTEGER"/>
             <result property="nickname" column="nickname" jdbcType="VARCHAR"/>
-            <collection property="gameList" ofType="com.ghw.minibox.entity.MbGame">
-                <id property="gid" column="gid"/>
-                <result property="name" column="name"/>
-            </collection>
         </association>
         <!--帖子里的所有评论，包括评论ID、评论内容、评论时间-->
         <collection property="commentList" ofType="com.ghw.minibox.entity.MbComment">
             <id property="cid" column="cid" jdbcType="INTEGER"/>
             <result property="content" column="content" jdbcType="VARCHAR"/>
             <result property="createDate" column="create_date" jdbcType="TIMESTAMP"/>
-            <result property="score" column="score"/>
-            <!--每条评论里的回复，包括回复ID、回复日期、回复内容、回复人的UID、回复了谁-->
-            <collection property="replyList" ofType="com.ghw.minibox.entity.MbReply">
-                <id property="rid" column="rid" jdbcType="INTEGER"/>
-                <result property="replyContent" column="reply_content" jdbcType="VARCHAR"/>
-                <result property="replyWho" column="reply_who" jdbcType="INTEGER"/>
-            </collection>
         </collection>
     </resultMap>
     <select id="queryUserAllCommentInPost" resultMap="commentInPostMap">
-        SELECT mc.cid,
-               mc.tid,
-               mc.uid,
-               mc.gid,
-               mc.score,
-               mc.content,
-               mc.create_date,
+        SELECT m.tid,
+               m.cover_img,
+               m.uid,
+               m.title,
 
-               mp.title,
-               mp.cover_img,
+               u.nickname,
 
-               mu.nickname,
-               mr.rid,
-               mr.reply_content,
-               mr.reply_who,
-               mg.`name`
-        FROM mb_comment AS mc
-                 LEFT JOIN mb_post AS mp ON (mc.tid = mp.tid)
-                 LEFT JOIN mb_user AS mu ON (mu.uid = mp.uid)
-                 LEFT JOIN mb_reply AS mr ON (mr.reply_uid = mc.uid)
-                 LEFT JOIN mb_game AS mg ON (mg.gid = mc.gid)
-        WHERE mc.uid = #{uid}
-        ORDER BY mc.create_date DESC;
+               c.cid,
+               c.content,
+               c.create_date
+
+        FROM mb_post AS m
+                 LEFT JOIN mb_user AS u ON u.uid = m.uid
+                 LEFT JOIN mb_comment AS c ON c.uid = m.uid AND c.type = 'TC'
+        WHERE m.uid = #{uid}
+        ORDER BY c.create_date DESC;
     </select>
 
 

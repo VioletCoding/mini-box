@@ -28,7 +28,8 @@
                create_date,
                update_date
         from minibox.mb_photo
-        where pid = #{pid}
+        where uid = #{uid}
+          AND type = 'UP'
     </select>
 
     <!--查询指定行数据-->
@@ -113,29 +114,11 @@
     </insert>
 
     <!--通过主键修改数据-->
-    <update id="update">
-        update minibox.mb_photo
-        <set>
-            <if test="type != null and type != ''">
-                type = #{type},
-            </if>
-            <if test="photoLink != null and photoLink != ''">
-                link = #{photoLink},
-            </if>
-            <if test="uid != null">
-                uid = #{uid},
-            </if>
-            <if test="tid != null">
-                tid = #{tid},
-            </if>
-            <if test="cid != null">
-                cid = #{cid},
-            </if>
-            <if test="gid != null">
-                gid = #{gid},
-            </if>
-        </set>
-        where pid = #{pid}
+    <update id="update" keyProperty="pid" useGeneratedKeys="true">
+        UPDATE minibox.mb_photo
+        SET link = #{photoLink}
+        WHERE uid = #{uid}
+          AND type = 'UP';
     </update>
 
     <!--通过主键删除-->

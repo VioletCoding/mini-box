@@ -70,4 +70,15 @@ public class MbUserController {
         return new GenerateResult<MbUser>().success(mbUser);
     }
 
+    /**
+     * 更新用户个人信息
+     *
+     * @param mbUser 实例对象
+     * @return 更新后的个人信息
+     */
+    @PostMapping("update")
+    public ReturnDto<MbUser> updateUserInfo(@RequestBody MbUser mbUser) {
+        return new GenerateResult<MbUser>().success(mbUserService.updateUserInfo(mbUser));
+    }
+
 }

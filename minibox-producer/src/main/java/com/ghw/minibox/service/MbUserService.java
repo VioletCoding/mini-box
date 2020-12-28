@@ -78,4 +78,12 @@ public interface MbUserService {
      */
     MbUser insert(MbUser mbUser);
 
+    /**
+     * 更新用户信息
+     *
+     * @param mbUser 实例对象
+     * @return 更新后的数据
+     */
+    MbUser updateUserInfo(MbUser mbUser);
+
 }

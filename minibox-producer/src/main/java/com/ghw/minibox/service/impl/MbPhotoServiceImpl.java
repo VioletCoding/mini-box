@@ -1,11 +1,17 @@
 package com.ghw.minibox.service.impl;
 
+import cn.hutool.core.util.IdUtil;
 import com.ghw.minibox.entity.MbPhoto;
 import com.ghw.minibox.mapper.MbPhotoMapper;
 import com.ghw.minibox.service.MbPhotoService;
+import com.ghw.minibox.utils.AOPLog;
+import com.ghw.minibox.utils.QiNiuUtil;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
+import java.io.IOException;
 import java.util.List;
 
 /**
@@ -18,6 +24,11 @@ import java.util.List;
 public class MbPhotoServiceImpl implements MbPhotoService {
     @Resource
     private MbPhotoMapper mbPhotoMapper;
+    @Resource
+    private QiNiuUtil qn;
+    @Value("${qiNiu.link}")
+    private String link;
+
 
     /**
      * 通过ID查询单条数据
@@ -57,13 +68,25 @@ public class MbPhotoServiceImpl implements MbPhotoService {
     /**
      * 修改数据
      *
-     * @param mbPhoto 实例对象
+     * @param file 文件对象
      * @return 实例对象
      */
+    @AOPLog("修改头像")
     @Override
-    public MbPhoto update(MbPhoto mbPhoto) {
-        this.mbPhotoMapper.update(mbPhoto);
-        return this.queryById(mbPhoto.getPid());
+    public MbPhoto update(MultipartFile file, Long uid) throws IOException {
+        MbPhoto mbPhoto = new MbPhoto().setUid(uid);
+        //生成文件key
+        String simpleUUID = IdUtil.fastSimpleUUID();
+        //同步上传
+        qn.syncUpload(simpleUUID, file.getBytes());
+        //删除七牛云对应的文件
+        MbPhoto photo = queryById(uid);
+        qn.delete(photo.getPhotoLink().split(this.link)[1]);
+
+        mbPhoto.setPhotoLink(this.link + simpleUUID);
+        //更新数据库
+        mbPhotoMapper.update(mbPhoto);
+        return queryById(uid);
     }
 
     /**

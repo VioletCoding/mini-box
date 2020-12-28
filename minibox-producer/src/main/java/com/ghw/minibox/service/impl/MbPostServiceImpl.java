@@ -7,8 +7,10 @@ import com.ghw.minibox.dto.ReturnDto;
 import com.ghw.minibox.dto.ReturnImgDto;
 import com.ghw.minibox.entity.MbPhoto;
 import com.ghw.minibox.entity.MbPost;
+import com.ghw.minibox.entity.MbUser;
 import com.ghw.minibox.mapper.MbPhotoMapper;
 import com.ghw.minibox.mapper.MbPostMapper;
+import com.ghw.minibox.mapper.MbUserMapper;
 import com.ghw.minibox.service.MbPostService;
 import com.ghw.minibox.utils.AOPLog;
 import com.ghw.minibox.utils.PostType;
@@ -39,16 +41,11 @@ public class MbPostServiceImpl implements MbPostService {
     @Resource
     private MbPhotoMapper mbPhotoMapper;
     @Resource
+    private MbUserMapper mbUserMapper;
+    @Resource
     private GenerateResult<ResultCode> gr;
     @Resource
     private QiNiuUtil qn;
-
-    @Value("${qiNiu.accessKey}")
-    private String ak;
-    @Value("${qiNiu.secretKey}")
-    private String sk;
-    @Value("${qiNiu.bucket}")
-    private String bucket;
     @Value("${qiNiu.link}")
     private String link;
 
@@ -99,15 +96,33 @@ public class MbPostServiceImpl implements MbPostService {
      * @return 统一结果
      */
     @AOPLog("发布帖子")
-    //@CachePut(RedisConfig.REDIS_KEY_DATABASE)
     @Override
     public ReturnDto<ResultCode> publish(MbPost mbPost) {
         //帖子封面图
-        String coverImg;
         Long pid = null;
         if (mbPost != null) {
-            coverImg = mbPost.getCoverImg();
             int insert = mbPostMapper.insert(mbPost);
+            //TODO
+            //发帖用户经验加1
+            MbUser mbUser = new MbUser().setUid(mbPost.getUid());
+            MbUser forUpdateExp = mbUserMapper.queryById(mbUser.getUid());
+            forUpdateExp.setExp(forUpdateExp.getExp() + 1);
+            mbUserMapper.update(forUpdateExp);
+
+
+            //如果经验到了10，那么升一级，并且经验设置为0
+            MbUser queryById = mbUserMapper.queryById(mbPost.getUid());
+            Integer exp = queryById.getExp();
+            if (exp > 9) {
+                String level = queryById.getLevel();
+                int parseInt = Integer.parseInt(level);
+                if (parseInt > 1) {
+                    Integer result = exp / parseInt;
+                    mbUser.setLevel(String.valueOf(result));
+                    mbUser.setExp(0);
+                    mbUserMapper.update(mbUser);
+                }
+            }
             //帖子封面图判空
             if (mbPost.getCoverImg() != null && !mbPost.getCoverImg().equals("")) {
                 if (mbPost.getMbPhoto().getPid() != null) {
@@ -116,7 +131,7 @@ public class MbPostServiceImpl implements MbPostService {
                 }
             }
             //把封面图和帖子关联起来
-            int update = mbPhotoMapper.update(new MbPhoto().setPid(pid).setTid(mbPost.getTid()));
+            mbPhotoMapper.update(new MbPhoto().setPid(pid).setTid(mbPost.getTid()));
 
             if (insert > 0) {
                 return gr.success();
@@ -150,7 +165,7 @@ public class MbPostServiceImpl implements MbPostService {
         for (MultipartFile m : multipartFiles) {
             simpleUUID = IdUtil.fastSimpleUUID();
             //使用字节数组上传，可以获取上传进度
-            qn.asyncUpload(this.ak, this.sk, this.bucket, simpleUUID, m.getInputStream());
+            qn.syncUpload(simpleUUID, m.getBytes());
             //保存图片信息到数据库
             mbPhoto = new MbPhoto()
                     .setPhotoLink(this.link + simpleUUID)

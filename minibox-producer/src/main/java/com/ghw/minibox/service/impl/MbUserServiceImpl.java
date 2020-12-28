@@ -52,6 +52,7 @@ public class MbUserServiceImpl implements MbUserService {
      *
      * @return 验证码
      */
+    @AOPLog("生成验证码")
     private String generateAuthCode() {
         StringBuilder sb = new StringBuilder();
         Random random = new Random();
@@ -71,6 +72,7 @@ public class MbUserServiceImpl implements MbUserService {
      * @param msg      邮件内容
      * @param code     验证码
      */
+    @AOPLog("发送邮件")
     @Async
     @Override
     public void sendEmail(String username, String subject, String msg, String code) throws EmailException {
@@ -85,6 +87,7 @@ public class MbUserServiceImpl implements MbUserService {
      *
      * @param username 邮箱
      */
+    @AOPLog("用户名查重")
     @Override
     public boolean exist(String username) throws JsonProcessingException {
         //把传进来的邮箱格式化一下，统一小写
@@ -107,6 +110,7 @@ public class MbUserServiceImpl implements MbUserService {
      * 主要业务逻辑，如果用户存在，执行登陆，如果用户不存在，执行注册，本质是发送两封内容不一样的邮件
      * 验证码一定要存进redis
      */
+    @AOPLog("对应不同业务发送不同邮件")
     @Override
     public void service(String username) throws EmailException, JsonProcessingException {
         String authCode = generateAuthCode();
@@ -141,6 +145,7 @@ public class MbUserServiceImpl implements MbUserService {
      * @param authCode 验证码
      * @return true or false
      */
+    @AOPLog("校验验证码")
     @Override
     public boolean authRegCode(String key, String authCode) throws JsonProcessingException {
         log.info("打印一下key=>{}和authCode=>{}", key, authCode);
@@ -164,6 +169,7 @@ public class MbUserServiceImpl implements MbUserService {
      * @param authCode 验证码
      * @return 用户非敏感信息
      */
+    @AOPLog("自动判断登陆或注册逻辑方法")
     @Override
     public Object doService(String username, String authCode) throws JsonProcessingException, JOSEException {
         String lowerCaseUsername = username.toLowerCase();
@@ -223,6 +229,7 @@ public class MbUserServiceImpl implements MbUserService {
      * @param uid 主键
      * @return 实例对象
      */
+    @AOPLog("通过UID查询")
     @Override
     public MbUser queryById(Long uid) {
         return this.mbUserMapper.queryById(uid);
@@ -235,9 +242,26 @@ public class MbUserServiceImpl implements MbUserService {
      * @param mbUser 实例对象
      * @return 实例对象
      */
+    @AOPLog("新增用户")
     @Override
     public MbUser insert(MbUser mbUser) {
         this.mbUserMapper.insert(mbUser);
+        return mbUser;
+    }
+
+    /**
+     * 更新用户信息
+     *
+     * @param mbUser 实例对象
+     * @return 更新后的数据
+     */
+    @AOPLog("更新用户信息")
+    @Override
+    public MbUser updateUserInfo(MbUser mbUser) {
+        int update = mbUserMapper.update(mbUser);
+        if (update > 0) {
+            return queryById(mbUser.getUid());
+        }
         return mbUser;
     }
 }

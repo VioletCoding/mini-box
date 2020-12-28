@@ -10,6 +10,7 @@
         <result property="nickname" column="nickname"/>
         <result property="description" column="user_desc"/>
         <result property="level" column="level"/>
+        <result property="exp" column="exp"/>
         <result property="walletBalance" column="wallet_balance"/>
         <result property="gameNumber" column="game_num"/>
         <!--用户关联的头像-->
@@ -33,6 +34,7 @@
                u.nickname,
                u.description                                         AS user_desc,
                u.`level`,
+               u.exp,
                u.wallet_balance,
                g.gid,
                g.`name`,
@@ -65,10 +67,27 @@
     </select>
 
     <!--新增部分列，其余使用数据库默认值-->
-    <insert id="insert" keyProperty="uid" useGeneratedKeys="true" keyColumn="uid">
+    <insert id="insert" keyProperty="uid" useGeneratedKeys="true">
         insert into minibox.mb_user(nickname, username, password)
         values (#{nickname}, #{username}, #{password})
     </insert>
+
+
+    <update id="update" useGeneratedKeys="true" keyProperty="uid">
+        UPDATE mb_user
+        <set>
+            <if test="nickname!=null and nickname!=''">
+                `nickname` = #{nickname},
+            </if>
+            <if test="description!=null and description!=''">
+                `description`=#{description},
+            </if>
+            <if test="exp!=null">
+                `exp`=#{exp}
+            </if>
+        </set>
+        WHERE uid = #{uid}
+    </update>
 
 
 </mapper>
