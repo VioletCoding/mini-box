@@ -35,10 +35,9 @@ public interface MbUserService {
      * @param username 邮箱
      * @param subject  邮件主题
      * @param msg      邮件内容
-     * @param code     验证码
      * @throws EmailException 捕获此异常，抛出异常代表邮件发送失败
      */
-    void sendEmail(String username, String subject, String msg, String code) throws EmailException;
+    void sendEmail(String username, String subject, String msg) throws EmailException, JsonProcessingException;
 
     /**
      * 校验验证码是否正确
@@ -85,5 +84,18 @@ public interface MbUserService {
      * @return 更新后的数据
      */
     MbUser updateUserInfo(MbUser mbUser);
+
+    /**
+     * 更新密码
+     *
+     * @param mbUser uid、password必传
+     * @return 更新是否成功
+     */
+    boolean updatePassword(MbUser mbUser);
+
+    /**
+     * @param key 用户名
+     */
+    void logout(String key);
 
 }

@@ -82,10 +82,14 @@ public class GlobalGatewayFilter implements GlobalFilter, Ordered {
         }
         //获取载荷，如果抛异常，那就是token校验失败或者过期
         try {
+            log.info("请求中的token=>{}", token);
             PayloadDto payloadDto = jwt.verifyTokenByHMAC(token);
             String username = payloadDto.getUsername();
+            log.info("网关 - username=> {}", username);
             String tokenInRedis = redis.get(RedisUtil.TOKEN_PREFIX + username);
+            log.info("tokenInRedis=>{}", tokenInRedis);
             if (!tokenInRedis.equals(token)) {
+                log.info("token不合法！");
                 response.setStatusCode(HttpStatus.UNAUTHORIZED);
                 return getVoidMono(response, new GenerateResult<>().fail(ResultCode.UNAUTHORIZED));
             }

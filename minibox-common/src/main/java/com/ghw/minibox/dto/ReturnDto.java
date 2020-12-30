@@ -5,8 +5,6 @@ import lombok.Data;
 import lombok.experimental.Accessors;
 import org.springframework.stereotype.Component;
 
-import javax.validation.constraints.NotNull;
-
 /**
  * @author Violet
  * @description 统一返回结果集
@@ -20,7 +18,6 @@ public class ReturnDto<T> {
     /**
      * 响应码
      */
-    @NotNull(message = "请输入响应码")
     private Integer code;
     /**
      * 响应信息

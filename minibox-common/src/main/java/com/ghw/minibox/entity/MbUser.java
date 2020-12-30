@@ -4,8 +4,8 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.ghw.minibox.validatedgroup.AuthGroup;
 import com.ghw.minibox.validatedgroup.LoginGroup;
-import com.ghw.minibox.validatedgroup.RegisterGroup;
 import com.ghw.minibox.validatedgroup.SingleGroup;
+import com.ghw.minibox.validatedgroup.UpdatePassword;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.experimental.Accessors;
@@ -32,7 +32,7 @@ public class MbUser implements Serializable {
     private static final long serialVersionUID = -71315955846878471L;
 
     @ApiModelProperty(notes = "主键")
-    @NotNull(message = "用户uid不能为空")
+    @NotNull(message = "用户uid不能为空", groups = UpdatePassword.class)
     private Long uid;
 
     @ApiModelProperty(notes = "验证码")
@@ -45,14 +45,14 @@ public class MbUser implements Serializable {
     private String nickname;
 
     @ApiModelProperty(notes = "用户名，本系统是邮箱，需要程序校验")
-    @Email(message = "邮箱格式不正确", groups = {LoginGroup.class, RegisterGroup.class, SingleGroup.class})
-    @NotEmpty(message = "用户username不能为空", groups = {LoginGroup.class, RegisterGroup.class, SingleGroup.class})
-    @Size(max = 50, groups = {LoginGroup.class, RegisterGroup.class, SingleGroup.class})
+    @Email(message = "邮箱格式不正确", groups = {LoginGroup.class, SingleGroup.class})
+    @NotEmpty(message = "用户username不能为空", groups = {LoginGroup.class, SingleGroup.class})
+    @Size(max = 50, groups = {LoginGroup.class, SingleGroup.class})
     private String username;
 
     @ApiModelProperty(notes = "密码，MD5加密")
-    @NotEmpty(message = "密码不能为空", groups = {LoginGroup.class, RegisterGroup.class})
-    @Size(min = 8, max = 16, groups = {LoginGroup.class, RegisterGroup.class})
+    @NotEmpty(message = "密码不能为空", groups = {LoginGroup.class, UpdatePassword.class})
+    @Size(min = 8, max = 16, groups = {LoginGroup.class, UpdatePassword.class})
     private String password;
 
     @ApiModelProperty(notes = "个人简介")

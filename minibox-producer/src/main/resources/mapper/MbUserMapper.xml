@@ -82,8 +82,8 @@
             <if test="description!=null and description!=''">
                 `description`=#{description},
             </if>
-            <if test="exp!=null">
-                `exp`=#{exp}
+            <if test="password!=null and password!=''">
+                `password`=#{password},
             </if>
         </set>
         WHERE uid = #{uid}

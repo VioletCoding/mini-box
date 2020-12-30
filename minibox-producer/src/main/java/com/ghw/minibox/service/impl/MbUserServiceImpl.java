@@ -1,6 +1,7 @@
 package com.ghw.minibox.service.impl;
 
 import cn.hutool.core.util.IdUtil;
+import cn.hutool.crypto.SecureUtil;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ghw.minibox.component.GenerateResult;
@@ -14,6 +15,7 @@ import com.ghw.minibox.mapper.MbUserMapper;
 import com.ghw.minibox.service.MbUserService;
 import com.ghw.minibox.utils.*;
 import com.nimbusds.jose.JOSEException;
+import com.qiniu.util.StringUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.mail.EmailException;
 import org.springframework.beans.factory.annotation.Value;
@@ -70,15 +72,16 @@ public class MbUserServiceImpl implements MbUserService {
      * @param username 邮箱
      * @param subject  邮件主题
      * @param msg      邮件内容
-     * @param code     验证码
      */
     @AOPLog("发送邮件")
     @Async
     @Override
-    public void sendEmail(String username, String subject, String msg, String code) throws EmailException {
+    public void sendEmail(String username, String subject, String msg) throws EmailException, JsonProcessingException {
         String lowerCase = username.toLowerCase();
-        log.info("发送邮件=>{}", lowerCase);
-        sendEmail.createEmail(lowerCase, subject, msg + code);
+        String authCode = generateAuthCode();
+        sendEmail.createEmail(lowerCase, subject, msg + authCode);
+        String json = new ObjectMapper().writeValueAsString(new DataDto().setData(authCode));
+        redisUtil.set(RedisUtil.AUTH_PREFIX + username, json, 300L);
     }
 
 
@@ -141,21 +144,25 @@ public class MbUserServiceImpl implements MbUserService {
      * <p>
      * 校验传入的验证码是否跟在Redis保存的验证码一致
      *
-     * @param key      邮箱
-     * @param authCode 验证码
+     * @param key  邮箱
+     * @param code 验证码
      * @return true or false
      */
     @AOPLog("校验验证码")
     @Override
-    public boolean authRegCode(String key, String authCode) throws JsonProcessingException {
-        log.info("打印一下key=>{}和authCode=>{}", key, authCode);
+    public boolean authRegCode(String key, String code) throws JsonProcessingException {
+        log.info("打印一下key=>{}和authCode=>{}", key, code);
         String valueFromRedis = redisUtil.get(RedisUtil.AUTH_PREFIX + key.toLowerCase());
         log.info("校验验证码,从Redis获取的值=>{}", valueFromRedis);
-        DataDto dataDto;
-        if (valueFromRedis != null && !valueFromRedis.equals("")) {
-            dataDto = new ObjectMapper().readValue(valueFromRedis, DataDto.class);
-            log.info("校验验证码=>{}", dataDto);
-            return authCode.equals(dataDto.getData());
+
+        if (!StringUtils.isNullOrEmpty(valueFromRedis)) {
+            //TODO 不能转成这个对象
+            DataDto dataDto = new ObjectMapper().readValue(valueFromRedis, DataDto.class);
+            boolean b = code.equals(dataDto.getData());
+            if (b) {
+                redisUtil.remove(RedisUtil.AUTH_PREFIX + key);
+                return true;
+            }
         }
         return false;
     }
@@ -263,5 +270,31 @@ public class MbUserServiceImpl implements MbUserService {
             return queryById(mbUser.getUid());
         }
         return mbUser;
+    }
+
+    /**
+     * 更新密码
+     *
+     * @param mbUser uid、password必传
+     * @return 更新是否成功
+     */
+    @Override
+    public boolean updatePassword(MbUser mbUser) {
+        String md5 = SecureUtil.md5(mbUser.getPassword());
+        mbUser.setPassword(md5);
+        int update = mbUserMapper.update(mbUser);
+        if (update > 0) {
+            redisUtil.remove(RedisUtil.TOKEN_PREFIX + this.queryById(mbUser.getUid()).getUsername());
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * @param key 用户名
+     */
+    @Override
+    public void logout(String key) {
+        redisUtil.remove(RedisUtil.TOKEN_PREFIX + key.toLowerCase());
     }
 }

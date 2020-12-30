@@ -98,10 +98,6 @@ public class NimbusJoseJwt {
         }
         String payload = jwsObject.getPayload().toString();
         log.info("payload==>{}", payload);
-        //log.info("token的过期时间为==>{}", payloadDto.getExp());
-        //if (new Date().getTime() - payloadDto.getExp() < 0) {
-        //    throw new Exception("token已过期");
-        //}
         return objectMapper.readValue(payload, PayloadDto.class);
     }
 
