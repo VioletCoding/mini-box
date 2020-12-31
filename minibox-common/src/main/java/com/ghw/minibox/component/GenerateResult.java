@@ -42,6 +42,12 @@ public class GenerateResult<T> {
                 .setData(data);
     }
 
+    public ReturnDto<ResultCode> success(ResultCode r) {
+        return new ReturnDto<ResultCode>()
+                .setCode(r.getCode())
+                .setMessage(r.getMessage());
+    }
+
 
     /**
      * 失败，响应失败信息，不带数据

@@ -28,6 +28,7 @@
         <result property="releaseTime" column="release_time" jdbcType="TIMESTAMP"/>
         <result property="developer" column="developer" jdbcType="VARCHAR"/>
         <result property="publisher" column="publisher" jdbcType="VARCHAR"/>
+        <result property="coverImg" column="cover_img" jdbcType="VARCHAR"/>
 
         <!--游戏图片列表-->
         <collection property="photoList" ofType="com.ghw.minibox.entity.MbPhoto">
@@ -66,6 +67,7 @@
                mg.publisher,
                mg.release_time,
                mg.score,
+               mg.cover_img,
 
                game_photo_list.link  AS game_photo_link,
 

@@ -6,8 +6,8 @@ import com.ghw.minibox.mapper.MbCommentMapper;
 import com.ghw.minibox.service.MbCommentService;
 import com.ghw.minibox.utils.PostType;
 import com.ghw.minibox.utils.ResultCode;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
 import java.util.List;
@@ -31,6 +31,7 @@ public class MbCommentServiceImpl implements MbCommentService {
      * @return 实例对象
      */
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public ResultCode postComment(MbComment mbComment) {
         if (mbComment.getType().equals(PostType.COMMENT_IN_POST.getType()) && mbComment.getTid() == null) {
             return ResultCode.TID_IS_NULL;
@@ -61,6 +62,7 @@ public class MbCommentServiceImpl implements MbCommentService {
      * @return 枚举响应体，成功返回OK
      */
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public ResultCode postReply(MbReply mbReply) {
         if (mbReply.getType().equals(PostType.REPLY_IN_POST.getType())) {
             if (mbReply.getReplyInPost() == null) {
@@ -114,6 +116,7 @@ public class MbCommentServiceImpl implements MbCommentService {
      * @return 实例对象
      */
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public MbComment update(MbComment mbComment) {
         this.mbCommentMapper.update(mbComment);
         return this.queryById(mbComment.getCid());
@@ -126,6 +129,7 @@ public class MbCommentServiceImpl implements MbCommentService {
      * @return 是否成功
      */
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public boolean deleteById(Long cid) {
         return this.mbCommentMapper.deleteById(cid) > 0;
     }

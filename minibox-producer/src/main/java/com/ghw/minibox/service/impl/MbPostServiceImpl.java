@@ -20,6 +20,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
@@ -97,6 +98,7 @@ public class MbPostServiceImpl implements MbPostService {
      */
     @AOPLog("发布帖子")
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public ReturnDto<ResultCode> publish(MbPost mbPost) {
         //帖子封面图
         Long pid = null;
@@ -149,6 +151,7 @@ public class MbPostServiceImpl implements MbPostService {
      */
     @AOPLog("图片上传至七牛云")
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public ReturnImgDto addPictureInPost(MultipartFile[] multipartFiles) throws IOException {
         if (multipartFiles.length < 1) {
             return null;

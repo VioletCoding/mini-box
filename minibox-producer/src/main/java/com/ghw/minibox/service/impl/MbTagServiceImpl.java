@@ -4,6 +4,7 @@ import com.ghw.minibox.entity.MbTag;
 import com.ghw.minibox.mapper.MbTagMapper;
 import com.ghw.minibox.service.MbTagService;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
 import java.util.List;
@@ -49,6 +50,7 @@ public class MbTagServiceImpl implements MbTagService {
      * @return 实例对象
      */
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public MbTag insert(MbTag mbTag) {
         this.mbTagMapper.insert(mbTag);
         return mbTag;
@@ -61,6 +63,7 @@ public class MbTagServiceImpl implements MbTagService {
      * @return 实例对象
      */
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public MbTag update(MbTag mbTag) {
         this.mbTagMapper.update(mbTag);
         return this.queryById(mbTag.getTid());
@@ -73,6 +76,7 @@ public class MbTagServiceImpl implements MbTagService {
      * @return 是否成功
      */
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public boolean deleteById(Long tid) {
         return this.mbTagMapper.deleteById(tid) > 0;
     }

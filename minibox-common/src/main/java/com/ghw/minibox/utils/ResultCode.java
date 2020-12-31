@@ -46,7 +46,15 @@ public enum ResultCode {
 
     REPLY_IN_POST_IS_NULL(909, "当type=TR时，replyInPost不能为空"),
 
-    REPLY_IN_GAME_IS_NULL(910, "当type=GR时，replyInGame不能为空");
+    REPLY_IN_GAME_IS_NULL(910, "当type=GR时，replyInGame不能为空"),
+
+    GAME_NOT_FOUND(911, "未找到该游戏"),
+
+    ORDER_GENERATE_FAIL(1001, "订单生成失败"),
+
+    ORDER_NOT_FOUND(1002, "未找到订单"),
+
+    ORDER_CANCEL(1003, "订单已被取消");
 
 
     private final int code;

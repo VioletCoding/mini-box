@@ -25,6 +25,8 @@ public class RedisUtil {
 
     public static final String GAME_CACHE = "game:";
 
+    public static final String ORDER_PREFIX = "order:";
+
     @Resource
     private StringRedisTemplate rt;
 

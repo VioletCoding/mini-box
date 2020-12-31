@@ -21,6 +21,7 @@ import org.apache.commons.mail.EmailException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
 import java.util.ArrayList;
@@ -178,6 +179,7 @@ public class MbUserServiceImpl implements MbUserService {
      */
     @AOPLog("自动判断登陆或注册逻辑方法")
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public Object doService(String username, String authCode) throws JsonProcessingException, JOSEException {
         String lowerCaseUsername = username.toLowerCase();
         //先校验验证码
@@ -251,6 +253,7 @@ public class MbUserServiceImpl implements MbUserService {
      */
     @AOPLog("新增用户")
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public MbUser insert(MbUser mbUser) {
         this.mbUserMapper.insert(mbUser);
         return mbUser;
@@ -264,6 +267,7 @@ public class MbUserServiceImpl implements MbUserService {
      */
     @AOPLog("更新用户信息")
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public MbUser updateUserInfo(MbUser mbUser) {
         int update = mbUserMapper.update(mbUser);
         if (update > 0) {
@@ -279,6 +283,7 @@ public class MbUserServiceImpl implements MbUserService {
      * @return 更新是否成功
      */
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public boolean updatePassword(MbUser mbUser) {
         String md5 = SecureUtil.md5(mbUser.getPassword());
         mbUser.setPassword(md5);

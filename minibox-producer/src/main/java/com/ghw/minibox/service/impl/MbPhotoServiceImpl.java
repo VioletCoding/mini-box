@@ -8,6 +8,7 @@ import com.ghw.minibox.utils.AOPLog;
 import com.ghw.minibox.utils.QiNiuUtil;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
@@ -60,6 +61,7 @@ public class MbPhotoServiceImpl implements MbPhotoService {
      * @return 实例对象
      */
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public MbPhoto insert(MbPhoto mbPhoto) {
         this.mbPhotoMapper.insert(mbPhoto);
         return mbPhoto;
@@ -73,6 +75,7 @@ public class MbPhotoServiceImpl implements MbPhotoService {
      */
     @AOPLog("修改头像")
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public MbPhoto update(MultipartFile file, Long uid) throws IOException {
         MbPhoto mbPhoto = new MbPhoto().setUid(uid);
         //生成文件key
@@ -96,6 +99,7 @@ public class MbPhotoServiceImpl implements MbPhotoService {
      * @return 是否成功
      */
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public boolean deleteById(Long pid) {
         return this.mbPhotoMapper.deleteById(pid) > 0;
     }

@@ -46,7 +46,6 @@ public interface MbPhotoMapper {
      * @param mbPhoto 实例对象
      * @return 影响行数
      */
-    @Transactional
     int insert(MbPhoto mbPhoto);
 
     /**
@@ -55,7 +54,6 @@ public interface MbPhotoMapper {
      * @param list List<MbPhoto> 实例对象列表
      * @return 影响行数
      */
-    @Transactional
     int insertBatch(@Param("list") List<MbPhoto> list);
 
     /**
@@ -64,7 +62,6 @@ public interface MbPhotoMapper {
      * @param entities List<MbPhoto> 实例对象列表
      * @return 影响行数
      */
-    @Transactional
     int insertOrUpdateBatch(@Param("entities") List<MbPhoto> entities);
 
     /**
@@ -73,7 +70,6 @@ public interface MbPhotoMapper {
      * @param mbPhoto 实例对象
      * @return 影响行数
      */
-    @Transactional
     int update(MbPhoto mbPhoto);
 
     /**
@@ -82,7 +78,6 @@ public interface MbPhotoMapper {
      * @param pid 主键
      * @return 影响行数
      */
-    @Transactional
     int deleteById(Long pid);
 
 }

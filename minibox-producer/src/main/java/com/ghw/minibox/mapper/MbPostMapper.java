@@ -36,7 +36,6 @@ public interface MbPostMapper {
      * @param mbPost 实例对象
      * @return 影响行数
      */
-    @Transactional
     int insert(MbPost mbPost);
 
 
@@ -46,7 +45,6 @@ public interface MbPostMapper {
      * @param mbPost 实例对象
      * @return 影响行数
      */
-    @Transactional
     int update(MbPost mbPost);
 
     /**
@@ -55,7 +53,6 @@ public interface MbPostMapper {
      * @param tid 主键
      * @return 影响行数
      */
-    @Transactional
     int deleteById(Long tid);
 
 }

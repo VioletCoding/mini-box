@@ -1,7 +1,6 @@
 package com.ghw.minibox.mapper;
 
 import com.ghw.minibox.entity.MbUser;
-import org.springframework.transaction.annotation.Transactional;
 
 /**
  * (MbUser)表数据库访问层
@@ -34,7 +33,6 @@ public interface MbUserMapper {
      * @param mbUser 实例对象
      * @return 影响行数
      */
-    @Transactional
     int insert(MbUser mbUser);
 
     /**
@@ -43,6 +41,5 @@ public interface MbUserMapper {
      * @param mbUser 实例对象
      * @return 影响行数
      */
-    @Transactional
     int update(MbUser mbUser);
 }

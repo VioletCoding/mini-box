@@ -3,7 +3,6 @@ package com.ghw.minibox.mapper;
 import com.ghw.minibox.entity.MbComment;
 import com.ghw.minibox.entity.MbReply;
 import org.apache.ibatis.annotations.Param;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -21,7 +20,6 @@ public interface MbCommentMapper {
      * @param mbComment 实例对象
      * @return 影响行数
      */
-    @Transactional
     int insert(MbComment mbComment);
 
 
@@ -31,7 +29,6 @@ public interface MbCommentMapper {
      * @param mbReply 实体
      * @return 影响行数
      */
-    @Transactional
     int insertToMbReply(MbReply mbReply);
 
     /**

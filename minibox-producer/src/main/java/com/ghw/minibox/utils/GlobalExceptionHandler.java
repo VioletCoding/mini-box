@@ -58,13 +58,6 @@ public class GlobalExceptionHandler {
         return gr.fail();
     }
 
-    //@ExceptionHandler(ExecutionException.class)
-    //public ReturnDto<String> executionException(ExecutionException e) {
-    //    log.error("异常=>", e);
-    //    e.printStackTrace();
-    //    return gr.fail();
-    //}
-
     @ExceptionHandler(JsonProcessingException.class)
     public ReturnDto<String> jsonProcessingException(JsonProcessingException e) {
         log.error("异常=>", e);
@@ -81,7 +74,7 @@ public class GlobalExceptionHandler {
 
 
     @ExceptionHandler(QiniuException.class)
-    public ReturnDto<String> qiNiuException(QiniuException e) throws QiniuException {
+    public ReturnDto<String> qiNiuException(QiniuException e) {
         log.error("异常=>", e);
         e.printStackTrace();
         return gr.custom(ResultCode.BAD_REQUEST.getCode(), "文件上传失败");
@@ -109,4 +102,12 @@ public class GlobalExceptionHandler {
         e.printStackTrace();
         return gr.custom(ResultCode.BAD_REQUEST.getCode(), "文件大小超出限制，总文件大小最大30MB");
     }
+
+    @ExceptionHandler(MyException.class)
+    public ReturnDto<String> MyException(MyException e) {
+        log.error("异常=>", e);
+        e.printStackTrace();
+        return gr.custom(ResultCode.GAME_NOT_FOUND.getCode(), e.getMessage());
+    }
+
 }

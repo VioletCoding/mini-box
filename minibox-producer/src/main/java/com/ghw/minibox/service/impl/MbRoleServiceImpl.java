@@ -4,6 +4,7 @@ import com.ghw.minibox.entity.MbRole;
 import com.ghw.minibox.mapper.MbRoleMapper;
 import com.ghw.minibox.service.MbRoleService;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
 import java.util.List;
@@ -49,6 +50,7 @@ public class MbRoleServiceImpl implements MbRoleService {
      * @return 实例对象
      */
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public MbRole insert(MbRole mbRole) {
         this.mbRoleMapper.insert(mbRole);
         return mbRole;
@@ -61,6 +63,7 @@ public class MbRoleServiceImpl implements MbRoleService {
      * @return 实例对象
      */
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public MbRole update(MbRole mbRole) {
         this.mbRoleMapper.update(mbRole);
         return this.queryById(mbRole.getRid());
@@ -73,6 +76,7 @@ public class MbRoleServiceImpl implements MbRoleService {
      * @return 是否成功
      */
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public boolean deleteById(Long rid) {
         return this.mbRoleMapper.deleteById(rid) > 0;
     }
