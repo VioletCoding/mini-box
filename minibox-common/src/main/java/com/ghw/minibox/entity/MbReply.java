@@ -6,6 +6,7 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.experimental.Accessors;
 
+import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 import java.util.Date;
@@ -30,7 +31,7 @@ public class MbReply implements Serializable {
      * 回复类型，在哪里回复，TR表示在文章（帖子）下回复他们的评论
      */
     @ApiModelProperty(notes = "回复类型，在哪里回复，TR表示在文章（帖子）下回复他们的评论")
-    @NotNull(message = "type不能为空")
+    @NotEmpty(message = "type不能为空")
     private String type;
     /**
      * 回复谁，填写UID
@@ -42,7 +43,7 @@ public class MbReply implements Serializable {
      * 回复内容
      */
     @ApiModelProperty(notes = "回复内容")
-    @NotNull(message = "replyContent不能为空")
+    @NotEmpty(message = "replyContent不能为空")
     private String replyContent;
     /**
      * 回复时间

@@ -6,6 +6,7 @@ import com.ghw.minibox.mapper.MbCommentMapper;
 import com.ghw.minibox.service.MbCommentService;
 import com.ghw.minibox.utils.PostType;
 import com.ghw.minibox.utils.ResultCode;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -61,13 +62,13 @@ public class MbCommentServiceImpl implements MbCommentService {
      */
     @Override
     public ResultCode postReply(MbReply mbReply) {
-
         if (mbReply.getType().equals(PostType.REPLY_IN_POST.getType())) {
             if (mbReply.getReplyInPost() == null) {
                 return ResultCode.REPLY_IN_POST_IS_NULL;
             }
             mbReply.setReplyInGame(null);
         }
+
         if (mbReply.getType().equals(PostType.REPLY_IN_GAME.getType())) {
             if (mbReply.getReplyInGame() == null) {
                 return ResultCode.REPLY_IN_GAME_IS_NULL;

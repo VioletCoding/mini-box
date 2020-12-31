@@ -10,6 +10,7 @@ import com.ghw.minibox.validatedgroup.CommentInGameGroup;
 import com.ghw.minibox.validatedgroup.CommentInPostGroup;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -27,6 +28,7 @@ import javax.annotation.Resource;
 @RestController
 @RequestMapping("comment")
 @Api("评论控制层")
+@Slf4j
 public class MbCommentController {
     @Resource
     private MbCommentService mbCommentService;
@@ -45,6 +47,7 @@ public class MbCommentController {
     @ApiOperation("发表回复")
     @PostMapping("reply")
     public ReturnDto<ResultCode> postReply(@RequestBody @Validated MbReply mbReply) {
+        log.info("回复=>{}",mbReply);
         return gr.fromService(mbCommentService.postReply(mbReply));
     }
 
