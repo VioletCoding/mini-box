@@ -100,23 +100,4 @@ public class NimbusJoseJwt {
         log.info("payload==>{}", payload);
         return objectMapper.readValue(payload, PayloadDto.class);
     }
-
-    /**
-     * 获取默认的PayloadDto方法，JWT过期时间为60分钟
-     *
-     * @return PayloadDto对象
-     */
-    //public PayloadDto getPayloadDto() throws Exception {
-    //    Date now = new Date();
-    //    Date exp = DateUtil.offsetSecond(now, 60 * 60);
-    //    return PayloadDto.builder()
-    //            .sub("violet")
-    //            .iat(now.getTime())
-    //            .exp(exp.getTime())
-    //            .jti(UUID.randomUUID().toString())
-    //            .username("violet")
-    //            .authorities(CollUtil.toList("ADMIN"))
-    //            .build();
-    //}
-
 }
