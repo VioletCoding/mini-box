@@ -14,10 +14,6 @@ public enum PostType {
      */
     COMMENT_IN_POST("TC"),
     /**
-     * 回复他人的评论
-     */
-    COMMENT_IN_REPLY("RC"),
-    /**
      * 在游戏详情下的评论
      */
     COMMENT_IN_GAME("GC"),
@@ -30,25 +26,9 @@ public enum PostType {
      */
     REPLY_IN_GAME("GR"),
     /**
-     * 用户头像
-     */
-    PHOTO_USER("UP"),
-    /**
      * 帖子带图
      */
-    PHOTO_POST("TP"),
-    /**
-     * 评论带图
-     */
-    PHOTO_COMMENT("CP"),
-    /**
-     * 游戏图片
-     */
-    PHOTO_GAME("GP"),
-    /**
-     * 帖子头图，在列表显示的时候用
-     */
-    POST_HEAD_PHOTO("HP");
+    PHOTO_POST("TP");
 
     private final String type;
 

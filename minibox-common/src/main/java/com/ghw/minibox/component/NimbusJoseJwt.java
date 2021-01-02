@@ -26,8 +26,6 @@ public class NimbusJoseJwt {
 
     @Resource
     private RedisUtil redisUtil;
-    @Resource
-    private ObjectMapper objectMapper;
 
     private static final String SECRET = "This JWT Sign By VioletEverGarden,this is a SpringCloud Web Project";
 
@@ -97,7 +95,7 @@ public class NimbusJoseJwt {
             throw new Exception("token签名不合法");
         }
         String payload = jwsObject.getPayload().toString();
-        log.info("payload==>{}", payload);
+        ObjectMapper objectMapper = new ObjectMapper();
         return objectMapper.readValue(payload, PayloadDto.class);
     }
 }

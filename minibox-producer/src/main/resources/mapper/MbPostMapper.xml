@@ -9,6 +9,7 @@
         <result property="content" column="post_content" jdbcType="VARCHAR"/>
         <result property="coverImg" column="cover_img" jdbcType="VARCHAR"/>
         <result property="createDate" column="create_date" jdbcType="TIMESTAMP"/>
+        <result property="countComment" column="countComment"/>
         <!--是谁发的帖子，作者ID、作者昵称、作者等级-->
         <association property="mbUser" javaType="com.ghw.minibox.entity.MbUser">
             <id property="uid" column="author_id" jdbcType="INTEGER"/>
@@ -89,7 +90,8 @@
         post_detail_cover_img.link AS post_detail_cover_img_link,
 
         post_block.bid AS block_id,
-        post_block.`name` AS block_name
+        post_block.`name` AS block_name,
+        (SELECT COUNT(*) FROM mb_comment WHERE tid = mp.tid) AS countComment
 
         FROM mb_post mp
         LEFT JOIN mb_user AS mu ON (mp.uid = mu.uid)

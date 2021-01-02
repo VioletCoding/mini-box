@@ -43,7 +43,7 @@ public class QiNiuUtil {
     }
 
     /**
-     * 使用默认方式上传
+     * 使用默认方式上传，同步
      *
      * @param key   文件名
      * @param bytes 字节数组
@@ -53,7 +53,7 @@ public class QiNiuUtil {
     }
 
     /**
-     * 流上传
+     * 流上传 同步
      *
      * @param key         文件名
      * @param inputStream 文件流
@@ -63,7 +63,7 @@ public class QiNiuUtil {
     }
 
     /**
-     * 删除空间中的文件
+     * 删除空间中的文件 同步
      * @param key 文件名
      */
     public void delete(String key) throws QiniuException {

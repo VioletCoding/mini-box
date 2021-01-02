@@ -32,22 +32,22 @@
         SELECT u.uid,
                u.username,
                u.nickname,
-               u.description                                         AS user_desc,
+               u.description                                     AS user_desc,
                u.`level`,
-               u.exp,
                u.wallet_balance,
                g.gid,
                g.`name`,
                g.cover_img,
-               g.price                                               AS game_price,
-               g.description                                         AS game_desc,
-               (SELECT COUNT(*) FROM mb_user_game WHERE u.uid = uid) AS game_num,
-               p.link                                                AS user_photo_ink
+               g.price                                           AS game_price,
+               g.description                                     AS game_desc,
+               (SELECT COUNT(*) FROM mb_order WHERE uid = u.uid) AS game_num,
+               p.link                                            AS user_photo_ink,
+               o.order_game_id
 
         FROM mb_user AS u
                  LEFT JOIN mb_photo AS p ON (p.uid = u.uid)
-                 LEFT JOIN mb_user_game AS ug ON (u.uid = ug.uid)
-                 LEFT JOIN mb_game AS g ON (ug.gid = g.gid)
+                 LEFT JOIN mb_order AS o ON (o.uid = u.uid)
+                 LEFT JOIN mb_game AS g ON (g.gid = o.order_game_id)
 
         WHERE u.uid = #{uid}
           AND p.type = 'UP';

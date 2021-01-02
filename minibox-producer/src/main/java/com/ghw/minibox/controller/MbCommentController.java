@@ -38,8 +38,7 @@ public class MbCommentController {
 
     @ApiOperation("发表评论")
     @PostMapping("post")
-    public ReturnDto<ResultCode> postComment(@RequestBody
-                                             @Validated({CommentInPostGroup.class, CommentInGameGroup.class})
+    public ReturnDto<ResultCode> postComment(@RequestBody @Validated({CommentInPostGroup.class, CommentInGameGroup.class})
                                                      MbComment mbComment) {
         return gr.fromService(mbCommentService.postComment(mbComment));
     }
@@ -47,7 +46,6 @@ public class MbCommentController {
     @ApiOperation("发表回复")
     @PostMapping("reply")
     public ReturnDto<ResultCode> postReply(@RequestBody @Validated MbReply mbReply) {
-        log.info("回复=>{}",mbReply);
         return gr.fromService(mbCommentService.postReply(mbReply));
     }
 

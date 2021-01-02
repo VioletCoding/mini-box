@@ -7,7 +7,6 @@ import com.ghw.minibox.dto.ReturnDto;
 import com.ghw.minibox.dto.ReturnImgDto;
 import com.ghw.minibox.entity.MbPhoto;
 import com.ghw.minibox.entity.MbPost;
-import com.ghw.minibox.entity.MbUser;
 import com.ghw.minibox.mapper.MbPhotoMapper;
 import com.ghw.minibox.mapper.MbPostMapper;
 import com.ghw.minibox.mapper.MbUserMapper;
@@ -104,27 +103,6 @@ public class MbPostServiceImpl implements MbPostService {
         Long pid = null;
         if (mbPost != null) {
             int insert = mbPostMapper.insert(mbPost);
-            //TODO
-            //发帖用户经验加1
-            MbUser mbUser = new MbUser().setUid(mbPost.getUid());
-            MbUser forUpdateExp = mbUserMapper.queryById(mbUser.getUid());
-            forUpdateExp.setExp(forUpdateExp.getExp() + 1);
-            mbUserMapper.update(forUpdateExp);
-
-
-            //如果经验到了10，那么升一级，并且经验设置为0
-            MbUser queryById = mbUserMapper.queryById(mbPost.getUid());
-            Integer exp = queryById.getExp();
-            if (exp > 9) {
-                String level = queryById.getLevel();
-                int parseInt = Integer.parseInt(level);
-                if (parseInt > 1) {
-                    Integer result = exp / parseInt;
-                    mbUser.setLevel(String.valueOf(result));
-                    mbUser.setExp(0);
-                    mbUserMapper.update(mbUser);
-                }
-            }
             //帖子封面图判空
             if (mbPost.getCoverImg() != null && !mbPost.getCoverImg().equals("")) {
                 if (mbPost.getMbPhoto().getPid() != null) {

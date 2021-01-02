@@ -6,8 +6,6 @@ import com.qiniu.http.Response;
 import com.qiniu.storage.UpCompletionHandler;
 import lombok.extern.slf4j.Slf4j;
 
-import java.util.Date;
-
 /**
  * @author Violet
  * @description 实现七牛云异步上传接口，上传完成后，SDK会回调这个接口的complete方法
@@ -34,9 +32,7 @@ public class UpCompletionHandlerImpl implements UpCompletionHandler {
             } catch (QiniuException qiniuException) {
                 qiniuException.printStackTrace();
                 log.error("七牛云返回的错误信息中的错误信息==>{}", qiniuException.response.getInfo());
-                log.error("异步上传文件失败，时间==>{}", new Date().toString());
             }
-            log.error("异步上传文件失败，时间==>{}", new Date().toString());
         }
     }
 }

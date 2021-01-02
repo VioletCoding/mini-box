@@ -3,7 +3,6 @@ package com.ghw.minibox.dto;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Data;
 import lombok.experimental.Accessors;
-import org.springframework.stereotype.Component;
 
 /**
  * @author Violet
@@ -13,7 +12,6 @@ import org.springframework.stereotype.Component;
 @Data
 @Accessors(chain = true)
 @JsonInclude(JsonInclude.Include.NON_NULL)
-@Component
 public class ReturnDto<T> {
     /**
      * 响应码

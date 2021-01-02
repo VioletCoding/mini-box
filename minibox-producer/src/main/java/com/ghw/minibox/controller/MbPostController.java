@@ -31,11 +31,11 @@ public class MbPostController {
     @Resource
     private MbPostService mbPostService;
     @Resource
-    private GenerateResult<String> gr;
+    private GenerateResult<Object> gr;
 
     @ApiOperation("发布帖子")
     @PostMapping("publish")
-    public ReturnDto<String> publishPost(@RequestBody @Validated MbPost mbPost) {
+    public ReturnDto<Object> publishPost(@RequestBody @Validated MbPost mbPost) {
         ReturnDto<ResultCode> returnDto = mbPostService.publish(mbPost);
         if (returnDto.getCode() == ResultCode.OK.getCode()) {
             return gr.success();
@@ -48,29 +48,29 @@ public class MbPostController {
 
     @ApiOperation("帖子图片上传")
     @PostMapping("upload")
-    public ReturnDto<ReturnImgDto> addPictureInPost(@RequestParam(value = "multipartFiles") MultipartFile[] multipartFiles) throws IOException {
+    public ReturnDto<Object> addPictureInPost(@RequestParam(value = "multipartFiles") MultipartFile[] multipartFiles) throws IOException {
         ReturnImgDto dto = mbPostService.addPictureInPost(multipartFiles);
-        return new GenerateResult<ReturnImgDto>().success(dto);
+        return gr.success(dto);
     }
 
     @ApiOperation("帖子列表显示")
     @GetMapping("showAll")
-    public ReturnDto<List<MbPost>> showAllPost(@Nullable MbPost mbPost) {
+    public ReturnDto<Object> showAllPost(@Nullable MbPost mbPost) {
         List<MbPost> mbPostList = mbPostService.showPostList(mbPost);
-        return new GenerateResult<List<MbPost>>().success(mbPostList);
+        return gr.success(mbPostList);
     }
 
     @ApiOperation("用户-在哪个帖子的评论")
     @GetMapping("userCommentShow")
-    public ReturnDto<List<MbPost>> userComment(@RequestParam("uid") Long uid) {
-        return new GenerateResult<List<MbPost>>().success(mbPostService.showPostInUser(uid));
+    public ReturnDto<Object> userComment(@RequestParam("uid") Long uid) {
+        return gr.success(mbPostService.showPostInUser(uid));
     }
 
     @ApiOperation("帖子详情展示")
     @GetMapping("detail")
-    public ReturnDto<List<MbPost>> showPostDetail(@RequestParam(value = "tid") Long tid) {
+    public ReturnDto<Object> showPostDetail(@RequestParam(value = "tid") Long tid) {
         List<MbPost> postDetail = mbPostService.showPostDetail(tid);
-        return new GenerateResult<List<MbPost>>().success(postDetail);
+        return gr.success(postDetail);
     }
 
 }
