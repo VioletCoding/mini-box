@@ -6,6 +6,10 @@
     <resultMap type="com.ghw.minibox.entity.MbBlock" id="showAllMap">
         <id property="bid" column="bid" jdbcType="INTEGER"/>
         <result property="name" column="name" jdbcType="VARCHAR"/>
+        <result property="gid" column="gid"/>
+        <result property="state" column="state"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateTime" column="update_time"/>
     </resultMap>
 
     <select id="queryAll" resultMap="showAllMap">
@@ -16,20 +20,31 @@
     <!-- 1. end-->
 
 
-
-
     <!--查询单个-->
-    <!--<select id="queryById" resultMap="MbBlockMap">-->
-    <!--    select bid,-->
-    <!--           name,-->
-    <!--           gid,-->
-    <!--           state,-->
-    <!--           create_time,-->
-    <!--           update_time-->
-    <!--    from minibox.mb_block-->
-    <!--    where bid = #{bid}-->
-    <!--</select>-->
+    <select id="queryById" resultMap="showAllMap">
+        select bid,
+               name,
+               gid,
+               state,
+               create_time,
+               update_time
+        from minibox.mb_block
+        where bid = #{bid}
+    </select>
 
+    <select id="queryInId" resultMap="showAllMap">
+        SELECT bid,
+        name,
+        gid,
+        state,
+        create_time,
+        update_time
+        from minibox.mb_block
+        where bid in
+        <foreach collection="list" item="id" index="index" open="(" close=")" separator=",">
+            #{id}
+        </foreach>
+    </select>
 
 
     <!--新增所有列-->

@@ -36,7 +36,9 @@ import java.util.Random;
  */
 @Service
 @Slf4j
-public class MbUserServiceImpl implements MbUserService {
+public class
+
+MbUserServiceImpl implements MbUserService {
     @Resource
     private MbUserMapper mbUserMapper;
     @Resource
@@ -157,7 +159,6 @@ public class MbUserServiceImpl implements MbUserService {
         log.info("校验验证码,从Redis获取的值=>{}", valueFromRedis);
 
         if (!StringUtils.isNullOrEmpty(valueFromRedis)) {
-            //TODO 不能转成这个对象
             DataDto dataDto = new ObjectMapper().readValue(valueFromRedis, DataDto.class);
             boolean b = code.equals(dataDto.getData());
             if (b) {

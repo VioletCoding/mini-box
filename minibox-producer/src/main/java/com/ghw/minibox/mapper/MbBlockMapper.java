@@ -22,6 +22,13 @@ public interface MbBlockMapper {
     MbBlock queryById(Long bid);
 
     /**
+     * 多id查询
+     * @param bidList 版块id列表
+     * @return 版块列表
+     */
+    List<MbBlock> queryInId(List<Long> bidList);
+
+    /**
      * 全部查询，需要分页用PageHelper
      *
      * @return 对象列表

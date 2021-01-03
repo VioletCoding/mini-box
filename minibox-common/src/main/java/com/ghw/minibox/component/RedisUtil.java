@@ -21,11 +21,9 @@ public class RedisUtil {
 
     public static final String LOGIN_FLAG = "login:";
 
-    public static final String POST_CACHE = "post:";
-
-    public static final String GAME_CACHE = "game:";
-
     public static final String ORDER_PREFIX = "order:";
+
+    public static final String REDIS_PREFIX = "minibox:";
 
     @Resource
     private StringRedisTemplate rt;

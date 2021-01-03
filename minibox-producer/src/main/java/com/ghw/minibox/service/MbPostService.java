@@ -17,6 +17,13 @@ import java.util.List;
  */
 public interface MbPostService {
 
+    /**
+     * @param mbPost 实例
+     * @return 列表
+     */
+    List<MbPost> showAll(MbPost mbPost);
+
+    //*******************************************************************分割线
 
     /**
      * 在首页显示帖子列表

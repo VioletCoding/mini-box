@@ -2,14 +2,14 @@ package com.ghw.minibox.service.impl;
 
 import cn.hutool.core.util.IdUtil;
 import com.ghw.minibox.component.GenerateResult;
-import com.ghw.minibox.component.RedisUtil;
+import com.ghw.minibox.dto.AllDataDto;
 import com.ghw.minibox.dto.ReturnDto;
 import com.ghw.minibox.dto.ReturnImgDto;
+import com.ghw.minibox.entity.MbBlock;
 import com.ghw.minibox.entity.MbPhoto;
 import com.ghw.minibox.entity.MbPost;
-import com.ghw.minibox.mapper.MbPhotoMapper;
-import com.ghw.minibox.mapper.MbPostMapper;
-import com.ghw.minibox.mapper.MbUserMapper;
+import com.ghw.minibox.entity.MbUser;
+import com.ghw.minibox.mapper.*;
 import com.ghw.minibox.service.MbPostService;
 import com.ghw.minibox.utils.AOPLog;
 import com.ghw.minibox.utils.PostType;
@@ -17,7 +17,6 @@ import com.ghw.minibox.utils.QiNiuUtil;
 import com.ghw.minibox.utils.ResultCode;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -41,13 +40,63 @@ public class MbPostServiceImpl implements MbPostService {
     @Resource
     private MbPhotoMapper mbPhotoMapper;
     @Resource
+    private MbBlockMapper mbBlockMapper;
+    @Resource
     private MbUserMapper mbUserMapper;
+    @Resource
+    private OtherMapper otherMapper;
     @Resource
     private GenerateResult<ResultCode> gr;
     @Resource
     private QiNiuUtil qn;
     @Value("${qiNiu.link}")
     private String link;
+
+    /**
+     * @param mbPost 实例
+     * @return 列表
+     */
+    @Override
+    public List<MbPost> showAll(MbPost mbPost) {
+        //获取帖子列表
+        List<MbPost> postList = mbPostMapper.getAll(mbPost);
+        //获取版块id集合
+        List<Long> bidList = new ArrayList<>();
+        //获取用户id集合
+        List<Long> uidList = new ArrayList<>();
+        //获取帖子id集合
+        List<Long> tidList = new ArrayList<>();
+        //把帖子列表中的bid字段加到list中
+        postList.forEach(post -> {
+            bidList.add(post.getBid());
+            uidList.add(post.getUid());
+            tidList.add(post.getTid());
+        });
+        //使用in查询，查出所有版块，顺序是固定的
+        List<MbBlock> blocks = mbBlockMapper.queryInId(bidList);
+        //使用in查询，查出所有用户，顺序是固定的
+        List<MbUser> users = mbUserMapper.queryInId(uidList);
+        //查询每个帖子的评论数，顺序是固定的
+        List<AllDataDto> countComment = otherMapper.countComment(tidList);
+
+
+        postList.forEach(post -> {
+            //把所有的版块信息组装到MbPost对象中
+            blocks.forEach(post::setMbBlock);
+            //把所有的用户信息组装到MbPost对象中
+            users.forEach(post::setMbUser);
+            //把所有帖子的评论数组装到MbPost对象中
+            //TODO 帖子内的评论数遍历次数和帖子数量不符，原因待查
+            countComment.forEach(count -> {
+                //post.setCountComment((Long) count.getData());
+                log.info("评论数->{}",count.getData());
+            });
+        });
+        return postList;
+    }
+
+
+    //***********************************************分割线******************************
 
 
     /**
@@ -57,7 +106,6 @@ public class MbPostServiceImpl implements MbPostService {
      * @return 分页过后的帖子列表
      */
     @AOPLog("展示首页帖子列表")
-    @Cacheable(RedisUtil.POST_CACHE)
     @Override
     public List<MbPost> showPostList(MbPost mbPost) {
         return mbPostMapper.queryAll(mbPost);

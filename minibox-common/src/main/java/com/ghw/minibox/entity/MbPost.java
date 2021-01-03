@@ -48,7 +48,7 @@ public class MbPost implements Serializable {
     private String coverImg;
 
     @ApiModelProperty(notes = "首页评论数,这个字段不存数据库，只是为了方便首页列表展示评论数")
-    private Integer countComment;
+    private Long countComment;
 
     @ApiModelProperty(notes = "创建时间")
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")

@@ -2,6 +2,8 @@ package com.ghw.minibox.mapper;
 
 import com.ghw.minibox.entity.MbUser;
 
+import java.util.List;
+
 /**
  * (MbUser)表数据库访问层
  *
@@ -9,6 +11,17 @@ import com.ghw.minibox.entity.MbUser;
  * @since 2020-11-19 12:20:21
  */
 public interface MbUserMapper {
+
+    /**
+     * in查询
+     *
+     * @param uid 用户id
+     * @return 用户列表
+     */
+    List<MbUser> queryInId(List<Long> uid);
+
+
+    //*******************************分割线*****************************************
 
     /**
      * 通过username来搜索
