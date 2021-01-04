@@ -1,9 +1,7 @@
 package com.ghw.minibox.service;
 
-import com.ghw.minibox.dto.ReturnDto;
-import com.ghw.minibox.dto.ReturnImgDto;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.ghw.minibox.entity.MbPost;
-import com.ghw.minibox.utils.ResultCode;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
@@ -21,17 +19,17 @@ public interface MbPostService {
      * @param mbPost 实例
      * @return 列表
      */
-    List<MbPost> showAll(MbPost mbPost);
-
-    //*******************************************************************分割线
+    List<MbPost> showAll(MbPost mbPost) throws JsonProcessingException;
 
     /**
-     * 在首页显示帖子列表
+     * 发表新帖子
      *
-     * @return 帖子列表
+     * @param mbPost 实例
+     * @return 对象
      */
-    List<MbPost> showPostList(MbPost mbPost);
+    boolean newPost(MbPost mbPost) throws JsonProcessingException;
 
+    //*********************************重构分割线**********************************
     /**
      * 显示用户的所有评论在哪些帖子
      *
@@ -48,21 +46,12 @@ public interface MbPostService {
      */
     List<MbPost> showPostDetail(Long tid);
 
-
-    /**
-     * 发表新帖子
-     *
-     * @param mbPost 实例对象
-     * @return 实例对象
-     */
-    ReturnDto<ResultCode> publish(MbPost mbPost);
-
     /**
      * 上传文件，可以批量上传，文件上传异步
      *
      * @param multipartFiles 文件
      */
-    ReturnImgDto addPictureInPost(MultipartFile[] multipartFiles) throws IOException;
+    Object addPictureInPost(MultipartFile[] multipartFiles) throws IOException;
 
 
 }

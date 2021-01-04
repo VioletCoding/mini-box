@@ -14,6 +14,17 @@ import java.util.List;
  */
 public interface MbCommentMapper {
 
+
+    List<MbComment> getAll(MbComment mbComment);
+
+    MbComment getOne(MbComment mbComment);
+
+
+
+
+
+    //**************************重构
+
     /**
      * 新增数据
      *

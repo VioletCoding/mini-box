@@ -1,9 +1,14 @@
 package com.ghw.minibox.service.impl;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.ghw.minibox.component.RedisUtil;
 import com.ghw.minibox.entity.MbComment;
+import com.ghw.minibox.entity.MbPost;
 import com.ghw.minibox.entity.MbReply;
 import com.ghw.minibox.mapper.MbCommentMapper;
 import com.ghw.minibox.service.MbCommentService;
+import com.ghw.minibox.service.MbPostService;
 import com.ghw.minibox.utils.PostType;
 import com.ghw.minibox.utils.ResultCode;
 import org.springframework.stereotype.Service;
@@ -22,6 +27,10 @@ import java.util.List;
 public class MbCommentServiceImpl implements MbCommentService {
     @Resource
     private MbCommentMapper mbCommentMapper;
+    @Resource
+    private RedisUtil redisUtil;
+    @Resource
+    private MbPostService postService;
 
 
     /**
@@ -32,7 +41,7 @@ public class MbCommentServiceImpl implements MbCommentService {
      */
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public ResultCode postComment(MbComment mbComment) {
+    public ResultCode postComment(MbComment mbComment) throws JsonProcessingException {
         if (mbComment.getType().equals(PostType.COMMENT_IN_POST.getType()) && mbComment.getTid() == null) {
             return ResultCode.TID_IS_NULL;
         }
@@ -47,6 +56,11 @@ public class MbCommentServiceImpl implements MbCommentService {
         }
 
         if (mbCommentMapper.insert(mbComment) > 0) {
+            redisUtil.remove(RedisUtil.REDIS_PREFIX + RedisUtil.POST_PREFIX);
+            //更新缓存
+            List<MbPost> posts = postService.showAll(null);
+            String json = new ObjectMapper().writeValueAsString(posts);
+            redisUtil.set(RedisUtil.REDIS_PREFIX + RedisUtil.POST_PREFIX, json, 86400L);
             return ResultCode.OK;
         }
         return ResultCode.INTERNAL_SERVER_ERROR;

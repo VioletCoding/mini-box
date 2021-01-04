@@ -143,4 +143,88 @@
         where cid = #{cid}
     </delete>
 
+
+    <!-- 重构分割线*******************************************-->
+
+    <resultMap id="commentMap" type="com.ghw.minibox.entity.MbComment">
+        <id property="cid" column="cid"/>
+        <result property="state" column="state"/>
+        <result property="content" column="content"/>
+        <result property="type" column="type"/>
+        <result property="tid" column="tid"/>
+        <result property="uid" column="uid"/>
+        <result property="gid" column="gid"/>
+        <result property="score" column="score"/>
+        <result property="createDate" column="create_date"/>
+        <result property="updateDate" column="update_date"/>
+    </resultMap>
+
+    <select id="getAll" resultMap="commentMap">
+        SELECT
+        m.cid, state, content, type, tid, uid, gid,
+        score, create_date, update_date
+        FROM mb_comment AS m
+        <where>
+            <if test="cid!=null">
+                AND m.cid = #{cid}
+            </if>
+            <if test="state!=null">
+                AND m.state = #{state}
+            </if>
+            <if test="content != null and content != '' ">
+                AND m.content = #{content}
+            </if>
+            <if test="type !=null and type != '' ">
+                AND m.type = #{type}
+            </if>
+            <if test="tid!=null">
+                AND m.tid = #{tid}
+            </if>
+            <if test="uid!=null">
+                AND m.uid = #{uid}
+            </if>
+            <if test="gid!=null">
+                AND m.git = #{gid}
+            </if>
+        </where>
+        ORDER BY c.create_date DESC;
+    </select>
+
+    <select id="getOne" resultMap="commentMap">
+        SELECT cid,
+        state,
+        content,
+        type,
+        tid,
+        uid,
+        gid,
+        score,
+        create_date,
+        update_date
+        FROM mb_comment
+        <where>
+            <if test="cid!=null">
+                AND cid = #{cid}
+            </if>
+            <if test="state!=null">
+                AND state = #{state}
+            </if>
+            <if test="content != null and content != '' ">
+                AND content = #{content}
+            </if>
+            <if test="type !=null and type != '' ">
+                AND type = #{type}
+            </if>
+            <if test="tid!=null">
+                AND tid = #{tid}
+            </if>
+            <if test="uid!=null">
+                AND uid = #{uid}
+            </if>
+            <if test="gid!=null">
+                AND git = #{gid}
+            </if>
+        </where>
+    </select>
+
 </mapper>

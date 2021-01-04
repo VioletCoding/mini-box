@@ -25,6 +25,8 @@ public class RedisUtil {
 
     public static final String REDIS_PREFIX = "minibox:";
 
+    public static final String POST_PREFIX = "post:";
+
     @Resource
     private StringRedisTemplate rt;
 

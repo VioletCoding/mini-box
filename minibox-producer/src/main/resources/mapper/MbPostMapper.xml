@@ -137,22 +137,12 @@
         </collection>
     </resultMap>
     <select id="queryUserAllCommentInPost" resultMap="commentInPostMap">
-        SELECT m.tid,
-               m.cover_img,
-               m.uid,
-               m.title,
-
-               u.nickname,
-
-               c.cid,
-               c.content,
-               c.create_date
-
-        FROM mb_post AS m
-                 LEFT JOIN mb_user AS u ON u.uid = m.uid
-                 LEFT JOIN mb_comment AS c ON c.uid = m.uid AND c.type = 'TC'
-        WHERE m.uid = #{uid}
-        ORDER BY c.create_date DESC;
+        SELECT c.content,c.cid,c.create_date,p.tid,p.cover_img,p.uid,p.title,u.nickname
+        FROM mb_comment AS c
+                 LEFT JOIN mb_post AS p ON(p.tid = c.tid)
+                 LEFT JOIN mb_user AS u ON(u.uid = p.uid)
+        WHERE c.uid = #{uid}
+          AND c.type = 'TC';
     </select>
 
 
@@ -222,7 +212,7 @@
                 AND p.title = #{title}
             </if>
         </where>
+        ORDER BY p.create_date DESC;
     </select>
-
 
 </mapper>

@@ -1,5 +1,6 @@
 package com.ghw.minibox.service;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.ghw.minibox.entity.MbComment;
 import com.ghw.minibox.entity.MbReply;
 import com.ghw.minibox.utils.ResultCode;
@@ -21,7 +22,7 @@ public interface MbCommentService {
      * @param mbComment 实例对象
      * @return 实例对象
      */
-    ResultCode postComment(MbComment mbComment);
+    ResultCode postComment(MbComment mbComment) throws JsonProcessingException;
 
     /**
      * 发表回复

@@ -20,6 +20,8 @@ public interface MbPostMapper {
      */
     List<MbPost> getAll(MbPost mbPost);
 
+    //*********************************************************************************
+
     /**
      * 通过实体作为筛选条件查询
      *
