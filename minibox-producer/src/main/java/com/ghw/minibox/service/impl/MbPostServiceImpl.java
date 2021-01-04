@@ -2,7 +2,7 @@ package com.ghw.minibox.service.impl;
 
 import cn.hutool.core.util.IdUtil;
 import com.ghw.minibox.component.GenerateResult;
-import com.ghw.minibox.dto.AllDataDto;
+import com.ghw.minibox.component.RedisUtil;
 import com.ghw.minibox.dto.ReturnDto;
 import com.ghw.minibox.dto.ReturnImgDto;
 import com.ghw.minibox.entity.MbBlock;
@@ -17,6 +17,7 @@ import com.ghw.minibox.utils.QiNiuUtil;
 import com.ghw.minibox.utils.ResultCode;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -56,6 +57,7 @@ public class MbPostServiceImpl implements MbPostService {
      * @param mbPost 实例
      * @return 列表
      */
+    @Cacheable(value = RedisUtil.REDIS_PREFIX,key = "'mini:post'")
     @Override
     public List<MbPost> showAll(MbPost mbPost) {
         //获取帖子列表
@@ -72,24 +74,27 @@ public class MbPostServiceImpl implements MbPostService {
             uidList.add(post.getUid());
             tidList.add(post.getTid());
         });
+
+
         //使用in查询，查出所有版块，顺序是固定的
         List<MbBlock> blocks = mbBlockMapper.queryInId(bidList);
         //使用in查询，查出所有用户，顺序是固定的
         List<MbUser> users = mbUserMapper.queryInId(uidList);
         //查询每个帖子的评论数，顺序是固定的
-        List<AllDataDto> countComment = otherMapper.countComment(tidList);
-
+        List<MbPost> countComment = otherMapper.countComment(tidList);
 
         postList.forEach(post -> {
             //把所有的版块信息组装到MbPost对象中
             blocks.forEach(post::setMbBlock);
             //把所有的用户信息组装到MbPost对象中
             users.forEach(post::setMbUser);
-            //把所有帖子的评论数组装到MbPost对象中
-            //TODO 帖子内的评论数遍历次数和帖子数量不符，原因待查
-            countComment.forEach(count -> {
-                //post.setCountComment((Long) count.getData());
-                log.info("评论数->{}",count.getData());
+            //把组装的评论数加到实例中
+            countComment.forEach(c -> {
+                if (c.getTid().equals(post.getTid())) {
+                    post.setCountComment(c.getCountComment());
+                } else {
+                    post.setCountComment(0L);
+                }
             });
         });
         return postList;

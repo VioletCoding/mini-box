@@ -1,6 +1,6 @@
 package com.ghw.minibox.mapper;
 
-import com.ghw.minibox.dto.AllDataDto;
+import com.ghw.minibox.entity.MbPost;
 
 import java.util.List;
 
@@ -18,6 +18,6 @@ public interface OtherMapper {
      * @param postId 帖子的ID
      * @return 评论数
      */
-    List<AllDataDto> countComment(List<Long> postId);
+    List<MbPost> countComment(List<Long> postId);
 
 }

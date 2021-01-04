@@ -202,23 +202,24 @@
         <result property="postState" column="post_state"/>
         <result property="updateDate" column="update_date"/>
         <result property="state" column="state"/>
+        <result property="countComment" column="count_comment"/>
 
     </resultMap>
     <select id="getAll" resultMap="getAllMap">
-        SELECT tid, uid, bid, title, content, post_state, create_date, update_date, state, cover_img
-        FROM mb_post
+        SELECT p.tid, p.uid, p.bid, p.title, p.content, p.post_state, p.create_date, p.update_date, p.state,p.cover_img
+        FROM mb_post AS p
         <where>
             <if test="tid != null ">
-                AND tid = #{tid}
+                AND p.tid = #{tid}
             </if>
             <if test="uid != null ">
-                AND uid = #{uid}
+                AND p.uid = #{uid}
             </if>
             <if test="bid != null ">
-                AND bid = #{bid}
+                AND p.bid = #{bid}
             </if>
             <if test="title != null and title != '' ">
-                AND title = #{title}
+                AND p.title = #{title}
             </if>
         </where>
     </select>

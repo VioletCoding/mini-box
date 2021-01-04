@@ -3,12 +3,14 @@
 <mapper namespace="com.ghw.minibox.mapper.OtherMapper">
 
 
-    <resultMap id="countMap" type="com.ghw.minibox.dto.AllDataDto">
-        <result property="data" column="countComment"/>
+    <resultMap id="countMap" type="com.ghw.minibox.entity.MbPost">
+        <result property="countComment" column="countComment"/>
+        <result property="tid" column="tid"/>
     </resultMap>
 
     <select id="countComment" resultMap="countMap">
-        SELECT COUNT(*) AS countComment
+        SELECT tid,
+        COUNT(*) AS countComment
         FROM mb_comment
         WHERE tid IN
         <foreach collection="list" item="id" index="index" open="(" close=")" separator=",">
