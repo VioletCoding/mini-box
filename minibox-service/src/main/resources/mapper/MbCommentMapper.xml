@@ -84,12 +84,13 @@
                 and update_date = #{updateDate}
             </if>
         </where>
+        ORDER BY create_date DESC;
     </select>
 
     <!--新增所有列-->
     <insert id="insert" keyProperty="id" useGeneratedKeys="true">
-        insert into minibox.mb_comment(state, content, type, tid, uid, gid, score, create_date, update_date)
-        values (#{state}, #{content}, #{type}, #{tid}, #{uid}, #{gid}, #{score}, #{createDate}, #{updateDate})
+        insert into minibox.mb_comment(content, type, tid, uid, gid, score)
+        values (#{content}, #{type}, #{tid}, #{uid}, #{gid}, #{score})
     </insert>
 
     <insert id="insertBatch" keyProperty="id" useGeneratedKeys="true">

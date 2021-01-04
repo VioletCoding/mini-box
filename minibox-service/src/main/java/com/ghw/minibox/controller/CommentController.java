@@ -1,6 +1,15 @@
 package com.ghw.minibox.controller;
 
 import com.ghw.minibox.component.GenerateResult;
+import com.ghw.minibox.dto.ReturnDto;
+import com.ghw.minibox.entity.MbComment;
+import com.ghw.minibox.entity.MbReply;
+import com.ghw.minibox.service.impl.CommentImpl;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -13,8 +22,31 @@ import javax.annotation.Resource;
  */
 @RestController
 @RequestMapping("comment")
+@Api("评论控制层")
 public class CommentController {
     @Resource
     private GenerateResult<Object> gr;
+    @Resource
+    private CommentImpl comment;
+
+    @ApiOperation("发表评论")
+    @PostMapping("post")
+    public ReturnDto<Object> publish(@RequestBody @Validated MbComment mbComment) {
+        boolean insert = comment.insert(mbComment);
+        if (insert) {
+            return gr.success();
+        }
+        return gr.fail();
+    }
+
+    @ApiOperation("发表回复")
+    @PostMapping("reply")
+    public ReturnDto<Object> reply(@RequestBody @Validated MbReply mbReply) {
+        boolean reply = comment.Reply(mbReply);
+        if (reply) {
+            return gr.success();
+        }
+        return gr.fail();
+    }
 
 }

@@ -1,10 +1,7 @@
 package com.ghw.minibox.service.impl;
 
 import cn.hutool.core.util.IdUtil;
-import com.ghw.minibox.entity.MbBlock;
-import com.ghw.minibox.entity.MbComment;
-import com.ghw.minibox.entity.MbPost;
-import com.ghw.minibox.entity.MbUser;
+import com.ghw.minibox.entity.*;
 import com.ghw.minibox.mapper.*;
 import com.ghw.minibox.service.CommonService;
 import com.ghw.minibox.utils.AOPLog;
@@ -37,6 +34,8 @@ public class PostImpl implements CommonService<MbPost> {
     private MbUserMapper mbUserMapper;
     @Resource
     private MbCommentMapper commentMapper;
+    @Resource
+    private MbReplyMapper replyMapper;
     @Resource
     private MapperUtils mapperUtils;
     @Resource
@@ -145,8 +144,15 @@ public class PostImpl implements CommonService<MbPost> {
 
         //获取评论信息
         List<MbComment> comments = commentMapper.queryAll(new MbComment().setTid(mbPost.getId()));
+        //获取评论里的回复信息
+        List<MbReply> replies = replyMapper.queryAll(new MbReply().setReplyInPost(mbPost.getId()));
+
         //获取评论的人的信息
-        comments.forEach(c -> c.setMbUser(mbUserMapper.queryById(c.getUid())));
+        comments.forEach(c -> {
+            c.setMbUser(mbUserMapper.queryById(c.getUid()));
+            c.setReplyList(replies);
+        });
+
         mbPost.setCommentList(comments);
 
         return mbPost;

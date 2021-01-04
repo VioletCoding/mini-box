@@ -84,12 +84,13 @@
                 and cover_img = #{coverImg}
             </if>
         </where>
+        ORDER BY create_date DESC;
     </select>
 
     <!--新增所有列-->
     <insert id="insert" keyProperty="id" useGeneratedKeys="true">
         insert into minibox.mb_post(uid, bid, title, content, cover_img)
-        values (#{uid}, #{bid}, #{title}, #{content},#{coverImg})
+        values (#{uid}, #{bid}, #{title}, #{content}, #{coverImg})
     </insert>
 
     <insert id="insertBatch" keyProperty="id" useGeneratedKeys="true">

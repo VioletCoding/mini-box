@@ -2,8 +2,6 @@ package com.ghw.minibox.entity;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.ghw.minibox.validatedgroup.CommentInGameGroup;
-import com.ghw.minibox.validatedgroup.CommentInPostGroup;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.experimental.Accessors;
@@ -27,18 +25,17 @@ public class MbComment implements Serializable {
     private static final long serialVersionUID = -88043199982765063L;
 
     @ApiModelProperty(notes = "主键")
-    @NotNull(message = "评论cid不能为空")
     private Long id;
 
     @ApiModelProperty(notes = "记录状态，0有效，1无效")
     private Integer state;
 
     @ApiModelProperty(notes = "评论内容")
-    @NotEmpty(message = "评论内容content不能为空",groups = {CommentInPostGroup.class, CommentInGameGroup.class})
+    @NotEmpty(message = "评论内容content不能为空")
     private String content;
 
     @ApiModelProperty(notes = "评论类型，TC为正常帖子下的评论，RC是回复其他用户的评论，GC是游戏下的评论")
-    @NotEmpty(message = "评论类型type不能为空", groups = {CommentInPostGroup.class, CommentInGameGroup.class})
+    @NotEmpty(message = "评论类型type不能为空")
     private String type;
 
     @ApiModelProperty(notes = "帖子ID，如果type=TC，该字段必填")
@@ -46,7 +43,7 @@ public class MbComment implements Serializable {
     private Long tid;
 
     @ApiModelProperty(notes = "用户ID，如果type=RC，该字段必填")
-    @NotNull(message = "用户uid不能为空", groups = {CommentInPostGroup.class, CommentInGameGroup.class})
+    @NotNull(message = "用户uid不能为空")
     private Long uid;
 
     @ApiModelProperty(notes = "游戏ID，如果type=GC，该字段必填")
@@ -60,6 +57,7 @@ public class MbComment implements Serializable {
     private Date createDate;
 
     @ApiModelProperty(notes = "更新时间")
+    @JsonFormat(pattern = "yyyy-MM-dd", timezone = "GMT+8")
     private Date updateDate;
 
     @ApiModelProperty(notes = "一个评论对应一个用户")

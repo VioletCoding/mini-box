@@ -40,7 +40,6 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ReturnDto<String> methodArgumentNotValidException(MethodArgumentNotValidException e) {
         log.error("异常=>", e);
-        log.error("ahhhhhhhhhhhhhhh");
         ObjectError objectError = e.getBindingResult().getAllErrors().get(0);
         return gr.custom(ResultCode.BAD_REQUEST.getCode(), objectError.getDefaultMessage());
     }
