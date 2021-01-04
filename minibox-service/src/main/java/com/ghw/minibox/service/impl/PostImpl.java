@@ -1,10 +1,13 @@
 package com.ghw.minibox.service.impl;
 
 import cn.hutool.core.util.IdUtil;
-import com.ghw.minibox.entity.*;
+import com.ghw.minibox.entity.MbBlock;
+import com.ghw.minibox.entity.MbComment;
+import com.ghw.minibox.entity.MbPost;
+import com.ghw.minibox.entity.MbUser;
 import com.ghw.minibox.mapper.*;
 import com.ghw.minibox.service.CommonService;
-import com.ghw.minibox.utils.PostType;
+import com.ghw.minibox.utils.AOPLog;
 import com.ghw.minibox.utils.QiNiuUtil;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -31,8 +34,6 @@ public class PostImpl implements CommonService<MbPost> {
     @Resource
     private MbBlockMapper blockMapper;
     @Resource
-    private MbPhotoMapper photoMapper;
-    @Resource
     private MbUserMapper mbUserMapper;
     @Resource
     private MbCommentMapper commentMapper;
@@ -49,6 +50,7 @@ public class PostImpl implements CommonService<MbPost> {
      * @param param 参数
      * @return 帖子列表
      */
+    @AOPLog("帖子列表")
     @Override
     public List<MbPost> selectAll(MbPost param) {
         //得到帖子列表
@@ -90,6 +92,7 @@ public class PostImpl implements CommonService<MbPost> {
      * @param entity 实体
      * @return 是否成功
      */
+    @AOPLog("发布帖子")
     @Override
     @Transactional(rollbackFor = Exception.class)
     public boolean insert(MbPost entity) {
@@ -104,6 +107,7 @@ public class PostImpl implements CommonService<MbPost> {
      * @return map集合，里面有图片的全部链接
      * @throws IOException -
      */
+    @AOPLog("文件上传")
     @Transactional(rollbackFor = Exception.class)
     public Map<String, Object> upload(MultipartFile[] multipartFiles) throws IOException {
 
@@ -112,25 +116,16 @@ public class PostImpl implements CommonService<MbPost> {
         }
 
         List<String> links = new ArrayList<>();
-        List<MbPhoto> photos = new ArrayList<>();
 
         for (MultipartFile m : multipartFiles) {
             String fastSimpleUUID = IdUtil.fastSimpleUUID();
             //key是文件名，随机生成，使用字节数组上传可以获取上传进度，以及断点续传
             qiNiuUtil.syncUpload(fastSimpleUUID, m.getBytes());
-            links.add(fastSimpleUUID);
-            photos.add(new MbPhoto().setPhotoLink(qnLink + fastSimpleUUID).setType(PostType.PHOTO_POST.getType()));
+            links.add(this.qnLink + fastSimpleUUID);
         }
-
-        int insertBatch = photoMapper.insertBatch(photos);
-
-        if (insertBatch > 0) {
-            Map<String, Object> map = new HashMap<>();
-            map.put("images", links);
-            return map;
-        }
-
-        throw new RuntimeException("图片上传出错");
+        Map<String, Object> map = new HashMap<>();
+        map.put("images", links);
+        return map;
     }
 
     /**
@@ -139,6 +134,7 @@ public class PostImpl implements CommonService<MbPost> {
      * @param id 帖子id
      * @return 帖子详情
      */
+    @AOPLog("帖子详情")
     @Override
     public MbPost selectOne(Long id) {
         //得到帖子详情
@@ -150,9 +146,7 @@ public class PostImpl implements CommonService<MbPost> {
         //获取评论信息
         List<MbComment> comments = commentMapper.queryAll(new MbComment().setTid(mbPost.getId()));
         //获取评论的人的信息
-        comments.forEach(c -> {
-            c.setMbUser(mbUserMapper.queryById(c.getUid()));
-        });
+        comments.forEach(c -> c.setMbUser(mbUserMapper.queryById(c.getUid())));
         mbPost.setCommentList(comments);
 
         return mbPost;

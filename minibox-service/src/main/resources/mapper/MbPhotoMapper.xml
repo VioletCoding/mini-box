@@ -5,7 +5,7 @@
     <resultMap type="com.ghw.minibox.entity.MbPhoto" id="MbPhotoMap">
         <result property="id" column="id" jdbcType="OTHER"/>
         <result property="type" column="type" jdbcType="VARCHAR"/>
-        <result property="link" column="link" jdbcType="VARCHAR"/>
+        <result property="photoLink" column="photoLink" jdbcType="VARCHAR"/>
         <result property="uid" column="uid" jdbcType="OTHER"/>
         <result property="tid" column="tid" jdbcType="OTHER"/>
         <result property="cid" column="cid" jdbcType="OTHER"/>
@@ -19,7 +19,7 @@
     <select id="queryById" resultMap="MbPhotoMap">
         select id,
                type,
-               link,
+               photoLink,
                uid,
                tid,
                cid,
@@ -31,11 +31,20 @@
         where id = #{id}
     </select>
 
+    <select id="queryInId" resultMap="MbPhotoMap">
+        SELECT p.id, type, photoLink, uid, tid, cid, gid, state, create_date, update_date
+        FROM mb_photo AS p
+        WHERE id IN
+        <foreach collection="list" item="item" index="index" open="(" close=")" separator=",">
+            #{item}
+        </foreach>
+    </select>
+
     <!--查询指定行数据-->
     <select id="queryAllByLimit" resultMap="MbPhotoMap">
         select id,
                type,
-               link,
+               photoLink,
                uid,
                tid,
                cid,
@@ -50,7 +59,7 @@
     <!--通过实体作为筛选条件查询-->
     <select id="queryAll" resultMap="MbPhotoMap">
         select
-        id, type, link, uid, tid, cid, gid, state, create_date, update_date
+        id, type, photoLink, uid, tid, cid, gid, state, create_date, update_date
         from minibox.mb_photo
         <where>
             <if test="id != null">
@@ -59,8 +68,8 @@
             <if test="type != null and type != ''">
                 and type = #{type}
             </if>
-            <if test="link != null and link != ''">
-                and link = #{link}
+            <if test="photoLink != null and photoLink != ''">
+                and photoLink = #{photoLink}
             </if>
             <if test="uid != null">
                 and uid = #{uid}
@@ -88,27 +97,28 @@
 
     <!--新增所有列-->
     <insert id="insert" keyProperty="id" useGeneratedKeys="true">
-        insert into minibox.mb_photo(type, link, uid, tid, cid, gid)
-        values (#{type}, #{link}, #{uid}, #{tid}, #{cid}, #{gid})
+        insert into minibox.mb_photo(type, photoLink, uid, tid, cid, gid)
+        values (#{type}, #{photoLink}, #{uid}, #{tid}, #{cid}, #{gid})
     </insert>
 
     <insert id="insertBatch" keyProperty="id" useGeneratedKeys="true">
-        insert into minibox.mb_photo(type, link, uid, tid, cid, gid)
+        insert into minibox.mb_photo(type, photoLink, uid, tid, cid, gid)
         values
         <foreach collection="entities" item="entity" separator=",">
-            (#{entity.type}, #{entity.link}, #{entity.uid}, #{entity.tid}, #{entity.cid}, #{entity.gid})
+            (#{entity.type}, #{entity.photoLink}, #{entity.uid}, #{entity.tid}, #{entity.cid}, #{entity.gid})
         </foreach>
     </insert>
 
     <insert id="insertOrUpdateBatch" keyProperty="id" useGeneratedKeys="true">
-        insert into minibox.mb_photo(type, link, uid, tid, cid, gid, state, create_date, update_date)
+        insert into minibox.mb_photo(type, photoLink, uid, tid, cid, gid, state, create_date, update_date)
         values
         <foreach collection="entities" item="entity" separator=",">
-            (#{entity.type}, #{entity.link}, #{entity.uid}, #{entity.tid}, #{entity.cid}, #{entity.gid},
+            (#{entity.type}, #{entity.photoLink}, #{entity.uid}, #{entity.tid}, #{entity.cid}, #{entity.gid},
             #{entity.state}, #{entity.createDate}, #{entity.updateDate})
         </foreach>
         on duplicate key update
-        type = values(type) , link = values(link) , uid = values(uid) , tid = values(tid) , cid = values(cid) , gid =
+        type = values(type) , photoLink = values(photoLink) , uid = values(uid) , tid = values(tid) , cid = values(cid)
+        , gid =
         values(gid) , state = values(state) , create_date = values(create_date) , update_date = values(update_date)
     </insert>
 
@@ -119,8 +129,8 @@
             <if test="type != null and type != ''">
                 type = #{type},
             </if>
-            <if test="link != null and link != ''">
-                link = #{link},
+            <if test="photoLink != null and photoLink != ''">
+                photoLink = #{photoLink},
             </if>
             <if test="uid != null">
                 uid = #{uid},

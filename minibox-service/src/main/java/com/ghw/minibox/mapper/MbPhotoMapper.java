@@ -19,7 +19,15 @@ public interface MbPhotoMapper {
      * @param id 主键
      * @return 实例对象
      */
-    MbPhoto queryById(Object id);
+    MbPhoto queryById(Long id);
+
+    /**
+     * in 查询
+     *
+     * @param id 主键
+     * @return 实例对象列表
+     */
+    List<MbPhoto> queryInId(List<Long> id);
 
     /**
      * 查询指定行数据
