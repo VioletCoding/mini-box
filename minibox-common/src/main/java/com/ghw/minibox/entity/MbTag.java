@@ -21,7 +21,7 @@ public class MbTag implements Serializable {
     private static final long serialVersionUID = -76639098783076019L;
 
     @ApiModelProperty(notes = "主键")
-    private Long tid;
+    private Long id;
 
     @ApiModelProperty(notes = "标签名称")
     private String tagName;

@@ -24,7 +24,7 @@ public class MbPost implements Serializable {
     private static final long serialVersionUID = -34132088850314000L;
 
     @ApiModelProperty(notes = "主键")
-    private Long tid;
+    private Long id;
 
     @ApiModelProperty(notes = "关联的用户ID")
     private Long uid;

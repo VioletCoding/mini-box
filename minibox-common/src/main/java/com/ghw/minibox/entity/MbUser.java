@@ -33,7 +33,7 @@ public class MbUser implements Serializable {
 
     @ApiModelProperty(notes = "主键")
     @NotNull(message = "用户uid不能为空", groups = UpdatePassword.class)
-    private Long uid;
+    private Long id;
 
     @ApiModelProperty(notes = "验证码")
     @NotEmpty(message = "验证码code不能为空", groups = {AuthGroup.class})

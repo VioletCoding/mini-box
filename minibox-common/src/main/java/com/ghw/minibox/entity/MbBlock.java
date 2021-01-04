@@ -26,7 +26,7 @@ public class MbBlock implements Serializable {
 
     @ApiModelProperty(notes = "主键")
     @NotNull(message = "版块bid不能为空")
-    private Long bid;
+    private Long id;
 
     @ApiModelProperty(notes = "版块名称，一般是【游戏名称】，如果不是【游戏名称】，就是【杂谈】")
     @NotEmpty(message = "版块名称name不能为空")

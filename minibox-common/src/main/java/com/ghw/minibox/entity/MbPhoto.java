@@ -24,7 +24,7 @@ public class MbPhoto implements Serializable {
 
     @ApiModelProperty(notes = "主键")
     @NotNull(message = "图片pid不能为空")
-    private Long pid;
+    private Long id;
 
     @ApiModelProperty(notes = "图片类型，枚举，用户头像UP、帖子图片TP、评论图片CP、游戏图片GP")
     @NotEmpty(message = "图片type不能为空，必须是PostType里定义的枚举值")

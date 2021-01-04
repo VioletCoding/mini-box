@@ -24,7 +24,7 @@ public class MbReply implements Serializable {
     private static final long serialVersionUID = -57131563410726990L;
 
     @ApiModelProperty(notes = "回复ID")
-    private Long rid;
+    private Long id;
 
     @ApiModelProperty(notes = "回复类型，在哪里回复，TR表示在文章（帖子）下回复他们的评论")
     @NotEmpty(message = "type不能为空")

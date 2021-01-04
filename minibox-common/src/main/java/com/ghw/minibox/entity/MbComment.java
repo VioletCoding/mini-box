@@ -28,7 +28,7 @@ public class MbComment implements Serializable {
 
     @ApiModelProperty(notes = "主键")
     @NotNull(message = "评论cid不能为空")
-    private Long cid;
+    private Long id;
 
     @ApiModelProperty(notes = "记录状态，0有效，1无效")
     private Integer state;

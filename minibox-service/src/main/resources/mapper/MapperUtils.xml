@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ghw.minibox.mapper.MapperUtils">
+
+
+    <resultMap id="countMap" type="com.ghw.minibox.entity.MbPost">
+        <result property="countComment" column="countComment"/>
+        <result property="id" column="tid"/>
+    </resultMap>
+
+    <select id="countComment" resultMap="countMap">
+        SELECT
+               tid,
+               COUNT(*) AS countComment
+        FROM mb_comment
+        WHERE tid IN
+        <foreach collection="list" item="id" index="index" open="(" close=")" separator=",">
+            #{id}
+        </foreach>
+        GROUP BY tid;
+    </select>
+
+</mapper>

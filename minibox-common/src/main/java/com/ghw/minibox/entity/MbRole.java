@@ -23,7 +23,7 @@ public class MbRole implements Serializable {
 
     @ApiModelProperty(notes = "主键")
     @NotNull(message = "角色rid不能为空")
-    private Long rid;
+    private Long id;
 
     @ApiModelProperty(notes = "角色名称，枚举值USER | ADMIN")
     @NotEmpty(message = "角色名称name不能为空，必须是UserRole里定义的枚举值")

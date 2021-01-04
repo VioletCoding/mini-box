@@ -1,0 +1,159 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ghw.minibox.mapper.MbCommentMapper">
+
+    <resultMap type="com.ghw.minibox.entity.MbComment" id="MbCommentMap">
+        <result property="id" column="id" jdbcType="OTHER"/>
+        <result property="state" column="state" jdbcType="OTHER"/>
+        <result property="content" column="content" jdbcType="VARCHAR"/>
+        <result property="type" column="type" jdbcType="VARCHAR"/>
+        <result property="tid" column="tid" jdbcType="INTEGER"/>
+        <result property="uid" column="uid" jdbcType="INTEGER"/>
+        <result property="gid" column="gid" jdbcType="INTEGER"/>
+        <result property="score" column="score" jdbcType="OTHER"/>
+        <result property="createDate" column="create_date" jdbcType="TIMESTAMP"/>
+        <result property="updateDate" column="update_date" jdbcType="TIMESTAMP"/>
+    </resultMap>
+
+    <!--查询单个-->
+    <select id="queryById" resultMap="MbCommentMap">
+        select id,
+               state,
+               content,
+               type,
+               tid,
+               uid,
+               gid,
+               score,
+               create_date,
+               update_date
+        from minibox.mb_comment
+        where id = #{id}
+    </select>
+
+    <!--查询指定行数据-->
+    <select id="queryAllByLimit" resultMap="MbCommentMap">
+        select id,
+               state,
+               content,
+               type,
+               tid,
+               uid,
+               gid,
+               score,
+               create_date,
+               update_date
+        from minibox.mb_comment
+        limit #{offset}, #{limit}
+    </select>
+
+    <!--通过实体作为筛选条件查询-->
+    <select id="queryAll" resultMap="MbCommentMap">
+        select
+        id, state, content, type, tid, uid, gid, score, create_date, update_date
+        from minibox.mb_comment
+        <where>
+            <if test="id != null">
+                and id = #{id}
+            </if>
+            <if test="state != null">
+                and state = #{state}
+            </if>
+            <if test="content != null and content != ''">
+                and content = #{content}
+            </if>
+            <if test="type != null and type != ''">
+                and type = #{type}
+            </if>
+            <if test="tid != null">
+                and tid = #{tid}
+            </if>
+            <if test="uid != null">
+                and uid = #{uid}
+            </if>
+            <if test="gid != null">
+                and gid = #{gid}
+            </if>
+            <if test="score != null">
+                and score = #{score}
+            </if>
+            <if test="createDate != null">
+                and create_date = #{createDate}
+            </if>
+            <if test="updateDate != null">
+                and update_date = #{updateDate}
+            </if>
+        </where>
+    </select>
+
+    <!--新增所有列-->
+    <insert id="insert" keyProperty="id" useGeneratedKeys="true">
+        insert into minibox.mb_comment(state, content, type, tid, uid, gid, score, create_date, update_date)
+        values (#{state}, #{content}, #{type}, #{tid}, #{uid}, #{gid}, #{score}, #{createDate}, #{updateDate})
+    </insert>
+
+    <insert id="insertBatch" keyProperty="id" useGeneratedKeys="true">
+        insert into minibox.mb_comment(state, content, type, tid, uid, gid, score, create_date, update_date)
+        values
+        <foreach collection="entities" item="entity" separator=",">
+            (#{entity.state}, #{entity.content}, #{entity.type}, #{entity.tid}, #{entity.uid}, #{entity.gid},
+            #{entity.score}, #{entity.createDate}, #{entity.updateDate})
+        </foreach>
+    </insert>
+
+    <insert id="insertOrUpdateBatch" keyProperty="id" useGeneratedKeys="true">
+        insert into minibox.mb_comment(state, content, type, tid, uid, gid, score, create_date, update_date)
+        values
+        <foreach collection="entities" item="entity" separator=",">
+            (#{entity.state}, #{entity.content}, #{entity.type}, #{entity.tid}, #{entity.uid}, #{entity.gid},
+            #{entity.score}, #{entity.createDate}, #{entity.updateDate})
+        </foreach>
+        on duplicate key update
+        state = values(state) , content = values(content) , type = values(type) , tid = values(tid) , uid = values(uid)
+        , gid = values(gid) , score = values(score) , create_date = values(create_date) , update_date =
+        values(update_date)
+    </insert>
+
+    <!--通过主键修改数据-->
+    <update id="update">
+        update minibox.mb_comment
+        <set>
+            <if test="state != null">
+                state = #{state},
+            </if>
+            <if test="content != null and content != ''">
+                content = #{content},
+            </if>
+            <if test="type != null and type != ''">
+                type = #{type},
+            </if>
+            <if test="tid != null">
+                tid = #{tid},
+            </if>
+            <if test="uid != null">
+                uid = #{uid},
+            </if>
+            <if test="gid != null">
+                gid = #{gid},
+            </if>
+            <if test="score != null">
+                score = #{score},
+            </if>
+            <if test="createDate != null">
+                create_date = #{createDate},
+            </if>
+            <if test="updateDate != null">
+                update_date = #{updateDate},
+            </if>
+        </set>
+        where id = #{id}
+    </update>
+
+    <!--通过主键删除-->
+    <delete id="deleteById">
+        delete
+        from minibox.mb_comment
+        where id = #{id}
+    </delete>
+
+</mapper>

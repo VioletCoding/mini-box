@@ -1,0 +1,157 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ghw.minibox.mapper.MbPhotoMapper">
+
+    <resultMap type="com.ghw.minibox.entity.MbPhoto" id="MbPhotoMap">
+        <result property="id" column="id" jdbcType="OTHER"/>
+        <result property="type" column="type" jdbcType="VARCHAR"/>
+        <result property="link" column="link" jdbcType="VARCHAR"/>
+        <result property="uid" column="uid" jdbcType="OTHER"/>
+        <result property="tid" column="tid" jdbcType="OTHER"/>
+        <result property="cid" column="cid" jdbcType="OTHER"/>
+        <result property="gid" column="gid" jdbcType="OTHER"/>
+        <result property="state" column="state" jdbcType="OTHER"/>
+        <result property="createDate" column="create_date" jdbcType="TIMESTAMP"/>
+        <result property="updateDate" column="update_date" jdbcType="TIMESTAMP"/>
+    </resultMap>
+
+    <!--查询单个-->
+    <select id="queryById" resultMap="MbPhotoMap">
+        select id,
+               type,
+               link,
+               uid,
+               tid,
+               cid,
+               gid,
+               state,
+               create_date,
+               update_date
+        from minibox.mb_photo
+        where id = #{id}
+    </select>
+
+    <!--查询指定行数据-->
+    <select id="queryAllByLimit" resultMap="MbPhotoMap">
+        select id,
+               type,
+               link,
+               uid,
+               tid,
+               cid,
+               gid,
+               state,
+               create_date,
+               update_date
+        from minibox.mb_photo
+        limit #{offset}, #{limit}
+    </select>
+
+    <!--通过实体作为筛选条件查询-->
+    <select id="queryAll" resultMap="MbPhotoMap">
+        select
+        id, type, link, uid, tid, cid, gid, state, create_date, update_date
+        from minibox.mb_photo
+        <where>
+            <if test="id != null">
+                and id = #{id}
+            </if>
+            <if test="type != null and type != ''">
+                and type = #{type}
+            </if>
+            <if test="link != null and link != ''">
+                and link = #{link}
+            </if>
+            <if test="uid != null">
+                and uid = #{uid}
+            </if>
+            <if test="tid != null">
+                and tid = #{tid}
+            </if>
+            <if test="cid != null">
+                and cid = #{cid}
+            </if>
+            <if test="gid != null">
+                and gid = #{gid}
+            </if>
+            <if test="state != null">
+                and state = #{state}
+            </if>
+            <if test="createDate != null">
+                and create_date = #{createDate}
+            </if>
+            <if test="updateDate != null">
+                and update_date = #{updateDate}
+            </if>
+        </where>
+    </select>
+
+    <!--新增所有列-->
+    <insert id="insert" keyProperty="id" useGeneratedKeys="true">
+        insert into minibox.mb_photo(type, link, uid, tid, cid, gid)
+        values (#{type}, #{link}, #{uid}, #{tid}, #{cid}, #{gid})
+    </insert>
+
+    <insert id="insertBatch" keyProperty="id" useGeneratedKeys="true">
+        insert into minibox.mb_photo(type, link, uid, tid, cid, gid)
+        values
+        <foreach collection="entities" item="entity" separator=",">
+            (#{entity.type}, #{entity.link}, #{entity.uid}, #{entity.tid}, #{entity.cid}, #{entity.gid})
+        </foreach>
+    </insert>
+
+    <insert id="insertOrUpdateBatch" keyProperty="id" useGeneratedKeys="true">
+        insert into minibox.mb_photo(type, link, uid, tid, cid, gid, state, create_date, update_date)
+        values
+        <foreach collection="entities" item="entity" separator=",">
+            (#{entity.type}, #{entity.link}, #{entity.uid}, #{entity.tid}, #{entity.cid}, #{entity.gid},
+            #{entity.state}, #{entity.createDate}, #{entity.updateDate})
+        </foreach>
+        on duplicate key update
+        type = values(type) , link = values(link) , uid = values(uid) , tid = values(tid) , cid = values(cid) , gid =
+        values(gid) , state = values(state) , create_date = values(create_date) , update_date = values(update_date)
+    </insert>
+
+    <!--通过主键修改数据-->
+    <update id="update">
+        update minibox.mb_photo
+        <set>
+            <if test="type != null and type != ''">
+                type = #{type},
+            </if>
+            <if test="link != null and link != ''">
+                link = #{link},
+            </if>
+            <if test="uid != null">
+                uid = #{uid},
+            </if>
+            <if test="tid != null">
+                tid = #{tid},
+            </if>
+            <if test="cid != null">
+                cid = #{cid},
+            </if>
+            <if test="gid != null">
+                gid = #{gid},
+            </if>
+            <if test="state != null">
+                state = #{state},
+            </if>
+            <if test="createDate != null">
+                create_date = #{createDate},
+            </if>
+            <if test="updateDate != null">
+                update_date = #{updateDate},
+            </if>
+        </set>
+        where id = #{id}
+    </update>
+
+    <!--通过主键删除-->
+    <delete id="deleteById">
+        delete
+        from minibox.mb_photo
+        where id = #{id}
+    </delete>
+
+</mapper>

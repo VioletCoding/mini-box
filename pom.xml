@@ -10,8 +10,8 @@
     <modules>
         <module>minibox-gateway</module>
         <module>minibox-common</module>
-        <module>minibox-producer</module>
         <module>minibox-search</module>
+        <module>minibox-service</module>
     </modules>
 
     <packaging>pom</packaging>
