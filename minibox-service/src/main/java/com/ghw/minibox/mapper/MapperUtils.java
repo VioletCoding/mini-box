@@ -31,5 +31,12 @@ public interface MapperUtils {
     @MapKey("id")
     List<Map<String, Object>> countGameNum(Long id);
 
+    /**
+     * 用户个人信息显示自己的评论，以及评论在哪个帖子下发布的
+     *
+     * @param uid 用户id
+     * @return 评论列表
+     */
+    List<MbPost> queryUserAllCommentInPost(Long uid);
 
 }

@@ -31,6 +31,7 @@
         where id = #{id}
     </select>
 
+
     <!--查询指定行数据-->
     <select id="queryAllByLimit" resultMap="MbCommentMap">
         select id,

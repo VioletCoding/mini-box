@@ -33,4 +33,41 @@
         WHERE o.uid = #{id}
     </select>
 
+
+    <resultMap type="com.ghw.minibox.entity.MbPost" id="commentInPostMap">
+        <!--帖子内容，帖子ID、帖子标题、帖子内容、帖子发表时间-->
+        <id property="id" column="post_id" jdbcType="INTEGER"/>
+        <result property="title" column="title" jdbcType="VARCHAR"/>
+        <result property="coverImg" column="cover_img" jdbcType="VARCHAR"/>
+        <result property="uid" column="uid" jdbcType="INTEGER"/>
+        <!--是谁发的帖子，作者ID、作者昵称、作者等级-->
+        <association property="mbUser" javaType="com.ghw.minibox.entity.MbUser">
+            <result property="nickname" column="nickname" jdbcType="VARCHAR"/>
+        </association>
+        <!--帖子里的所有评论，包括评论ID、评论内容、评论时间-->
+        <collection property="commentList" ofType="com.ghw.minibox.entity.MbComment">
+            <id property="id" column="id" jdbcType="INTEGER"/>
+            <result property="content" column="content" jdbcType="VARCHAR"/>
+            <result property="createDate" column="create_date" jdbcType="TIMESTAMP"/>
+        </collection>
+    </resultMap>
+
+    <select id="queryUserAllCommentInPost" resultMap="commentInPostMap">
+        SELECT c.content,
+               c.id,
+               c.create_date,
+
+               p.id AS post_id,
+               p.cover_img,
+               p.uid,
+               p.title,
+
+               u.nickname
+        FROM mb_comment AS c
+                 LEFT JOIN mb_post AS p ON (p.id = c.tid)
+                 LEFT JOIN mb_user AS u ON (u.id = p.uid)
+        WHERE c.uid = #{uid}
+    </select>
+
+
 </mapper>

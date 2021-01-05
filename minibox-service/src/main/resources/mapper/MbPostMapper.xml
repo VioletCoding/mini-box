@@ -31,6 +31,24 @@
         where id = #{id}
     </select>
 
+    <select id="queryInId" resultMap="MbPostMap">
+        select id,
+        uid,
+        bid,
+        title,
+        content,
+        post_state,
+        create_date,
+        update_date,
+        state,
+        cover_img
+        from mb_post
+        where id IN
+        <foreach collection="list" item="item" index="index" open="(" close=")" separator=",">
+            #{item}
+        </foreach>
+    </select>
+
     <!--查询指定行数据-->
     <select id="queryAllByLimit" resultMap="MbPostMap">
         select id,

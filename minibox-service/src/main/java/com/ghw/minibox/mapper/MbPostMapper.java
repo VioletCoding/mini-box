@@ -22,6 +22,14 @@ public interface MbPostMapper {
     MbPost queryById(Long id);
 
     /**
+     * in 查询
+     *
+     * @param id 帖子id列表
+     * @return 帖子列表
+     */
+    List<MbPost> queryInId(List<Long> id);
+
+    /**
      * 查询指定行数据
      *
      * @param offset 查询起始位置

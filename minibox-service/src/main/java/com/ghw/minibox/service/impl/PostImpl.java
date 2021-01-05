@@ -93,6 +93,11 @@ public class PostImpl implements CommonService<MbPost> {
         return posts;
     }
 
+    @AOPLog("用户个人信息显示自己的评论，以及评论在哪个帖子下发布的")
+    public Object getCommentAndPostByUid(Long uid) {
+        return mapperUtils.queryUserAllCommentInPost(uid);
+    }
+
     /**
      * 发布帖子
      *

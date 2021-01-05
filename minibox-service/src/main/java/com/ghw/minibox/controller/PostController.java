@@ -60,5 +60,11 @@ public class PostController {
         return gr.success(mbPost);
     }
 
+    @ApiOperation("用户个人信息显示自己的评论，以及评论在哪个帖子下发布的")
+    @GetMapping("userCommentShow")
+    public ReturnDto<Object> userCommentByUid(@RequestParam Long uid) {
+        return gr.success(post.getCommentAndPostByUid(uid));
+    }
+
 
 }
