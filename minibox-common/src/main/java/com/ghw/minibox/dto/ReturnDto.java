@@ -1,6 +1,7 @@
 package com.ghw.minibox.dto;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.experimental.Accessors;
 
@@ -11,19 +12,15 @@ import lombok.experimental.Accessors;
  */
 @Data
 @Accessors(chain = true)
-@JsonInclude(JsonInclude.Include.NON_NULL)
 public class ReturnDto<T> {
-    /**
-     * 响应码
-     */
+
+    @ApiModelProperty("响应码")
     private Integer code;
-    /**
-     * 响应信息
-     */
+
+    @ApiModelProperty("响应信息")
     private String message;
-    /**
-     * 数据
-     */
+
+    @ApiModelProperty("数据")
     @JsonInclude(JsonInclude.Include.NON_NULL)
     private T data;
 }

@@ -24,10 +24,10 @@ public interface MbPhotoMapper {
     /**
      * in 查询
      *
-     * @param id 主键
+     * @param uid 主键
      * @return 实例对象列表
      */
-    List<MbPhoto> queryInId(List<Long> id);
+    List<MbPhoto> queryInId(List<Long> uid);
 
     /**
      * 查询指定行数据

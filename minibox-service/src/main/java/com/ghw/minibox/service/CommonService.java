@@ -1,5 +1,7 @@
 package com.ghw.minibox.service;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+
 import java.util.List;
 
 /**
@@ -17,7 +19,7 @@ public interface CommonService<T> {
     /**
      * 获取一个
      */
-    T selectOne(Long id);
+    T selectOne(Long id) throws JsonProcessingException;
 
     /**
      * 插入

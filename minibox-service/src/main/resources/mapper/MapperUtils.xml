@@ -10,14 +10,27 @@
 
     <select id="countComment" resultMap="countMap">
         SELECT
-               tid,
-               COUNT(*) AS countComment
+        tid,
+        COUNT(*) AS countComment
         FROM mb_comment
         WHERE tid IN
         <foreach collection="list" item="id" index="index" open="(" close=")" separator=",">
             #{id}
         </foreach>
         GROUP BY tid;
+    </select>
+
+
+    <select id="countGameNum" resultType="map">
+        SELECT g.id,
+               g.`name`,
+               g.cover_img,
+               g.price,
+               g.description,
+               (SELECT COUNT(*) FROM mb_order WHERE uid = o.uid) AS game_num
+        FROM mb_game AS g
+                 LEFT JOIN mb_order AS o ON (o.order_game_id = g.id)
+        WHERE o.uid = #{id}
     </select>
 
 </mapper>

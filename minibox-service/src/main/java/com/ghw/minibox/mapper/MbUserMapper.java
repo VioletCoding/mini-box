@@ -22,6 +22,13 @@ public interface MbUserMapper {
     MbUser queryById(Long id);
 
     /**
+     * in查询
+     * @param id 主键
+     * @return 实例对象
+     */
+    List<MbUser> queryInId(List<Long> id);
+
+    /**
      * 查询指定行数据
      *
      * @param offset 查询起始位置

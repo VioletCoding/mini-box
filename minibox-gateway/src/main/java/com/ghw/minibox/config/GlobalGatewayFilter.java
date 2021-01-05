@@ -88,6 +88,12 @@ public class GlobalGatewayFilter implements GlobalFilter, Ordered {
             log.info("网关 - username=> {}", username);
             String tokenInRedis = redis.get(RedisUtil.TOKEN_PREFIX + username);
             log.info("tokenInRedis=>{}", tokenInRedis);
+
+            if (com.qiniu.util.StringUtils.isNullOrEmpty(tokenInRedis)) {
+                log.error("token为空");
+                response.setStatusCode(HttpStatus.UNAUTHORIZED);
+                return getVoidMono(response, new GenerateResult<>().fail(ResultCode.UNAUTHORIZED));
+            }
             if (!tokenInRedis.equals(token)) {
                 log.info("token不合法！");
                 response.setStatusCode(HttpStatus.UNAUTHORIZED);

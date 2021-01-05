@@ -25,10 +25,16 @@
     <!--in查询-->
     <select id="queryInId" resultMap="MbBlockMap">
         SELECT b.id, name, gid, state, create_time, update_time FROM mb_block AS b
-        WHERE id IN
-        <foreach collection="list" item="item" index="index" open="(" close=")" separator=",">
-            #{item}
-        </foreach>
+        <where>
+            <if test="id != null">
+                id IN
+                <foreach collection="list" item="item" index="index" open="(" close=")" separator=",">
+                    #{item}
+                </foreach>
+            </if>
+        </where>
+
+
     </select>
 
     <!--查询指定行数据-->

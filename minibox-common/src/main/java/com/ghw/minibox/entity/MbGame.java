@@ -26,7 +26,7 @@ public class MbGame implements Serializable {
     private static final long serialVersionUID = -20810077618725182L;
 
     @ApiModelProperty(notes = "主键，自增，默认从10000开始自增，建表时候指定，唯一标识 ")
-    @NotNull(message = "游戏gid不能为空")
+    @NotNull(message = "游戏id不能为空")
     private Long id;
 
     @ApiModelProperty(notes = "游戏中文名")
@@ -83,7 +83,7 @@ public class MbGame implements Serializable {
     @ApiModelProperty(notes = "一个游戏对应一个版块")
     private MbBlock mbBlock;
 
-    @ApiModelProperty(notes = "一个游戏多图")
+    @ApiModelProperty(notes = "游戏详情多图")
     private List<MbPhoto> photoList;
 
 

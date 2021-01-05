@@ -1,8 +1,10 @@
 package com.ghw.minibox.mapper;
 
 import com.ghw.minibox.entity.MbPost;
+import org.apache.ibatis.annotations.MapKey;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author Violet
@@ -20,6 +22,14 @@ public interface MapperUtils {
      */
     List<MbPost> countComment(List<Long> postId);
 
+    /**
+     * 统计游戏信息、数量
+     *
+     * @param id 用户id
+     * @return 游戏信息、数量
+     */
+    @MapKey("id")
+    List<Map<String, Object>> countGameNum(Long id);
 
 
 }

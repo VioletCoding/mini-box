@@ -2,7 +2,6 @@ package com.ghw.minibox.entity;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.ghw.minibox.validatedgroup.AuthGroup;
 import com.ghw.minibox.validatedgroup.LoginGroup;
 import com.ghw.minibox.validatedgroup.SingleGroup;
 import com.ghw.minibox.validatedgroup.UpdatePassword;
@@ -15,7 +14,6 @@ import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import java.io.Serializable;
-import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
 
@@ -35,9 +33,9 @@ public class MbUser implements Serializable {
     @NotNull(message = "用户id不能为空", groups = UpdatePassword.class)
     private Long id;
 
-    @ApiModelProperty(notes = "验证码")
-    @NotEmpty(message = "验证码code不能为空", groups = {AuthGroup.class})
-    private String code;
+    @ApiModelProperty("用户头像")
+    @NotEmpty(message = "用户头像不能为空")
+    private String userImg;
 
     @ApiModelProperty(notes = "昵称")
     @NotEmpty(message = "用户nickname不能为空")
@@ -62,16 +60,6 @@ public class MbUser implements Serializable {
     @ApiModelProperty(notes = "个人等级")
     private String level;
 
-    @ApiModelProperty(notes = "token,只存redis")
-    private String token;
-
-    @ApiModelProperty(notes = "游戏数量，不存数据库，只做统计用")
-    private Integer gameNumber;
-
-    @ApiModelProperty(notes = "钱包余额")
-    @JsonFormat(shape = JsonFormat.Shape.NUMBER_FLOAT)
-    private BigDecimal walletBalance;
-
     @ApiModelProperty(notes = "用户状态，枚举 默认是NORMAL（正常），INVALID（失效），BANNED（非法，被封禁）")
     private String userState;
 
@@ -79,18 +67,12 @@ public class MbUser implements Serializable {
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     private Date createDate;
 
-    @ApiModelProperty(notes = "经验，每次升级需要10经验，升级后该字段值update为0")
-    private Integer exp;
-
     @ApiModelProperty(notes = "字段更新时间，修改该条记录则自动更新这个字段")
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     private Date updateDate;
 
     @ApiModelProperty(notes = "状态，记录当前记录是否有效，0有效，1无效")
     private Integer state;
-
-    @ApiModelProperty(notes = "一个用户可以有一张头像")
-    private MbPhoto mbPhoto;
 
     @ApiModelProperty(notes = "一个用户多篇帖子")
     private List<MbPost> postList;

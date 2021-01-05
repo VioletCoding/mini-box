@@ -64,16 +64,24 @@ public class PostImpl implements CommonService<MbPost> {
             tidList.add(p.getId());
         });
         //获取所有版块信息
-        List<MbBlock> mbBlock = blockMapper.queryInId(bidList);
+        List<MbBlock> mbBlock = new ArrayList<>();
+        if (bidList.size() > 0) {
+            mbBlock = blockMapper.queryInId(bidList);
+        }
         //获取评论数
-        List<MbPost> countComment = mapperUtils.countComment(tidList);
+        List<MbPost> countComment = new ArrayList<>();
+        if (tidList.size() > 0) {
+            countComment = mapperUtils.countComment(tidList);
+        }
 
         //数据组装
+        List<MbBlock> finalMbBlock = mbBlock;
+        List<MbPost> finalCountComment = countComment;
         posts.forEach(p -> {
             //版块信息
-            mbBlock.forEach(p::setMbBlock);
+            finalMbBlock.forEach(p::setMbBlock);
             //因为有些帖子没有评论，所以有些返回值是空的，这样的话评论数就会赋值给错误的帖子，应该判断关联的帖子ID是否相等再赋值，如果为空，赋个0
-            countComment.forEach(c -> {
+            finalCountComment.forEach(c -> {
                 if (p.getId().equals(c.getId())) {
                     p.setCountComment(c.getCountComment());
                 } else {
@@ -136,20 +144,29 @@ public class PostImpl implements CommonService<MbPost> {
     @AOPLog("帖子详情")
     @Override
     public MbPost selectOne(Long id) {
-        //得到帖子详情
+        //得到 「帖子详情」
         MbPost mbPost = postMapper.queryById(id);
-        //获取帖子作者信息
+        //获取 「帖子详情」-> 「作者信息」
         MbUser mbUser = mbUserMapper.queryById(mbPost.getUid());
         mbPost.setMbUser(mbUser);
 
-        //获取评论信息
+        //获取 「评论」
         List<MbComment> comments = commentMapper.queryAll(new MbComment().setTid(mbPost.getId()));
-        //获取评论里的回复信息
+        //获取 「评论」 -> 「回复」
         List<MbReply> replies = replyMapper.queryAll(new MbReply().setReplyInPost(mbPost.getId()));
+        //获取 「评论」 -> 「评论用户的id」
+        List<Long> uidList = new ArrayList<>();
+        comments.forEach(c -> uidList.add(c.getUid()));
+        //获取 「评论」 -> 「用户」
+        List<MbUser> users = mbUserMapper.queryInId(uidList);
 
-        //获取评论的人的信息
+        //获取评论的人的信息、人的头像、回复列表
         comments.forEach(c -> {
-            c.setMbUser(mbUserMapper.queryById(c.getUid()));
+            /*
+             * Java 8 lambda 语法塘 等同于
+             * users.forEach(u -> { c.setMbUser(u) })
+             */
+            users.forEach(c::setMbUser);
             c.setReplyList(replies);
         });
 

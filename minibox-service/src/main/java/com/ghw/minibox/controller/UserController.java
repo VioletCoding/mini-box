@@ -57,7 +57,7 @@ public class UserController {
     @ApiOperation("展示用户个人信息")
     @GetMapping("show")
     public ReturnDto<Object> showUserInfo(@RequestParam Long id) {
-        return gr.success(user.selectOne(id));
+        return gr.success(user.showUserInfo(id));
     }
 
     @ApiOperation("更新用户个人信息")

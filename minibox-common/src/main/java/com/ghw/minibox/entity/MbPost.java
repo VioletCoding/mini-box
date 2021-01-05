@@ -64,9 +64,6 @@ public class MbPost implements Serializable {
     @ApiModelProperty(notes = "一篇帖子多条评论")
     private List<MbComment> commentList;
 
-    @ApiModelProperty(notes = "作者头像")
-    private MbPhoto mbPhoto;
-
     @ApiModelProperty(notes = "一个帖子对应一个版块")
     private MbBlock mbBlock;
 

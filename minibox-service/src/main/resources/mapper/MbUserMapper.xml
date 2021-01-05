@@ -8,12 +8,11 @@
         <result property="username" column="username" jdbcType="VARCHAR"/>
         <result property="description" column="description" jdbcType="VARCHAR"/>
         <result property="level" column="level" jdbcType="INTEGER"/>
-        <result property="walletBalance" column="wallet_balance" jdbcType="OTHER"/>
         <result property="userState" column="user_state" jdbcType="VARCHAR"/>
         <result property="createDate" column="create_date" jdbcType="TIMESTAMP"/>
-        <result property="exp" column="exp" jdbcType="OTHER"/>
         <result property="updateDate" column="update_date" jdbcType="TIMESTAMP"/>
         <result property="state" column="state" jdbcType="OTHER"/>
+        <result property="userImg" column="user_img" jdbcType="VARCHAR"/>
     </resultMap>
 
     <!--查询单个-->
@@ -23,14 +22,31 @@
                username,
                description,
                level,
-               wallet_balance,
                user_state,
                create_date,
-               exp,
                update_date,
-               state
+               state,
+               user_img
         FROM minibox.mb_user
         WHERE id = #{id}
+    </select>
+    <!-- in查询 -->
+    <select id="queryInId" resultMap="MbUserMap">
+        SELECT id,
+        nickname,
+        username,
+        description,
+        level,
+        user_state,
+        create_date,
+        update_date,
+        state,
+        user_img
+        FROM minibox.mb_user
+        WHERE id IN
+        <foreach collection="list" item="item" index="index" open="(" close=")" separator=",">
+            #{item}
+        </foreach>
     </select>
 
     <!--查询指定行数据-->
@@ -41,12 +57,11 @@
                password,
                description,
                level,
-               wallet_balance,
                user_state,
                create_date,
-               exp,
                update_date,
-               state
+               state,
+               user_img
         FROM minibox.mb_user
         LIMIT #{offset}, #{limit}
     </select>
@@ -54,20 +69,20 @@
     <!--通过实体作为筛选条件查询-->
     <select id="queryAll" resultMap="MbUserMap">
         SELECT
-        id, nickname, username, password, description, level, wallet_balance, user_state, create_date, exp, update_date,
-        state
+        id, nickname, username, password, description, level, user_state, create_date, update_date,
+        state,user_img
         FROM minibox.mb_user
         <where>
             <if test="id != null">
                 AND id = #{id}
             </if>
-            <if test="nickname != null and nickname != ''">
+            <if test="nickname != null and nickname != '' ">
                 AND nickname = #{nickname}
             </if>
-            <if test="username != null and username != ''">
-                AND username = #{username}
+            <if test="username != null and username != '' ">
+                AND `username` = #{username}
             </if>
-            <if test="password != null and password != ''">
+            <if test="password != null and password != '' ">
                 AND `password` = #{password}
             </if>
             <if test="description != null and description != ''">
@@ -76,17 +91,11 @@
             <if test="level != null">
                 AND `level` = #{level}
             </if>
-            <if test="walletBalance != null">
-                AND wallet_balance = #{walletBalance}
-            </if>
             <if test="userState != null and userState != ''">
                 AND user_state = #{userState}
             </if>
             <if test="createDate != null">
                 AND create_date = #{createDate}
-            </if>
-            <if test="exp != null">
-                AND exp = #{exp}
             </if>
             <if test="updateDate != null">
                 AND update_date = #{updateDate}
@@ -99,37 +108,26 @@
 
     <!--新增所有列-->
     <insert id="insert" keyProperty="id" useGeneratedKeys="true">
-        INSERT INTO minibox.mb_user(nickname, username, password, description, level, wallet_balance, user_state,
-                                    create_date, exp, update_date, state)
-        VALUES (#{nickname}, #{username}, #{password}, #{description}, #{level}, #{walletBalance}, #{userState},
-                #{createDate}, #{exp}, #{updateDate}, #{state})
+        INSERT INTO minibox.mb_user(nickname, username, password, user_img)
+        VALUES (#{nickname}, #{username}, #{password}, #{userImg})
     </insert>
 
     <insert id="insertBatch" keyProperty="id" useGeneratedKeys="true">
-        INSERT INTO minibox.mb_user(nickname, username, password, description, level, wallet_balance, user_state,
-        create_date, exp, update_date, state)
+        INSERT INTO minibox.mb_user(nickname, username, password, user_img)
         VALUES
         <foreach collection="entities" item="entity" separator=",">
-            (#{entity.nickname}, #{entity.username}, #{entity.password}, #{entity.description}, #{entity.level},
-            #{entity.walletBalance}, #{entity.userState}, #{entity.createDate}, #{entity.exp}, #{entity.updateDate},
-            #{entity.state})
+            (#{entity.nickname}, #{entity.username}, #{entity.password}, #{userImg})
         </foreach>
     </insert>
 
     <insert id="insertOrUpdateBatch" keyProperty="id" useGeneratedKeys="true">
-        INSERT INTO minibox.mb_user(nickname, username, password, description, level, wallet_balance, user_state,
-        create_date, exp, update_date, state)
+        INSERT INTO minibox.mb_user(nickname, username, password, user_img)
         VALUES
         <foreach collection="entities" item="entity" separator=",">
-            (#{entity.nickname}, #{entity.username}, #{entity.password}, #{entity.description}, #{entity.level},
-            #{entity.walletBalance}, #{entity.userState}, #{entity.createDate}, #{entity.exp}, #{entity.updateDate},
-            #{entity.state})
+            (#{entity.nickname}, #{entity.username}, #{entity.password}, #{userImg})
         </foreach>
-        ON DUPLICATE KEY UPDATE
-        nickname = values(nickname) , username = values(username) , password = values(password) , description =
-        values(description) , level = values(level) , wallet_balance = values(wallet_balance) , user_state =
-        values(user_state) , create_date = values(create_date) , exp = values(exp) , update_date = values(update_date) ,
-        state = values(state) , upgrade_progress = values(upgrade_progress)
+        ON DUPLICATE KEY UPDATE nickname = values(nickname) , username = values(username) , password = values(password)
+        , user_img = values(user_img)
     </insert>
 
     <!--通过主键修改数据-->
@@ -151,20 +149,8 @@
             <if test="level != null">
                 `level` = #{level},
             </if>
-            <if test="walletBalance != null">
-                `wallet_balance` = #{walletBalance},
-            </if>
             <if test="userState != null and userState != ''">
                 `user_state` = #{userState},
-            </if>
-            <if test="createDate != null">
-                `create_date` = #{createDate},
-            </if>
-            <if test="exp != null">
-                `exp` = #{exp},
-            </if>
-            <if test="updateDate != null">
-                `update_date` = #{updateDate},
             </if>
             <if test="state != null">
                 `state` = #{state},

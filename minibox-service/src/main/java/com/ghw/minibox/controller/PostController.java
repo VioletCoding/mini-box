@@ -30,8 +30,8 @@ public class PostController {
 
     @ApiOperation("获取帖子列表")
     @GetMapping("all")
-    public ReturnDto<Object> showPostList(MbPost mbPost) {
-        return gr.success(post.selectAll(mbPost));
+    public ReturnDto<Object> showPostList(@RequestParam(required = false) Long uid) {
+        return gr.success(post.selectAll(new MbPost().setUid(uid)));
     }
 
     @ApiOperation("发布帖子")
@@ -53,7 +53,7 @@ public class PostController {
     }
 
 
-    @ApiOperation("帖子详情")
+    @ApiOperation("帖子详情，传入帖子id")
     @GetMapping("detail")
     public ReturnDto<Object> showPostDetail(@RequestParam Long id) {
         MbPost mbPost = post.selectOne(id);

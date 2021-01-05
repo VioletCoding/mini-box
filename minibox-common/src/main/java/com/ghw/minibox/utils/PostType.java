@@ -24,11 +24,7 @@ public enum PostType {
     /**
      * 游戏下的回复
      */
-    REPLY_IN_GAME("GR"),
-    /**
-     * 帖子带图
-     */
-    PHOTO_POST("TP");
+    REPLY_IN_GAME("GR");
 
     private final String type;
 

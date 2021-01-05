@@ -5,16 +5,17 @@ import cn.hutool.crypto.SecureUtil;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.ghw.minibox.component.GenerateResult;
 import com.ghw.minibox.component.NimbusJoseJwt;
 import com.ghw.minibox.component.RedisUtil;
 import com.ghw.minibox.dto.PayloadDto;
-import com.ghw.minibox.entity.MbPhoto;
 import com.ghw.minibox.entity.MbUser;
-import com.ghw.minibox.mapper.MbPhotoMapper;
+import com.ghw.minibox.mapper.MapperUtils;
 import com.ghw.minibox.mapper.MbUserMapper;
 import com.ghw.minibox.service.CommonService;
-import com.ghw.minibox.utils.*;
+import com.ghw.minibox.utils.AOPLog;
+import com.ghw.minibox.utils.DefaultUserInfoEnum;
+import com.ghw.minibox.utils.SendEmail;
+import com.ghw.minibox.utils.UserRole;
 import com.nimbusds.jose.JOSEException;
 import com.qiniu.util.StringUtils;
 import lombok.extern.slf4j.Slf4j;
@@ -35,7 +36,6 @@ import java.util.*;
 @Service
 @Slf4j
 public class UserImpl implements CommonService<MbUser> {
-    //TODO 这个类需要大改
     @Resource
     private SendEmail sendEmail;
     @Resource
@@ -43,7 +43,7 @@ public class UserImpl implements CommonService<MbUser> {
     @Resource
     private MbUserMapper userMapper;
     @Resource
-    private MbPhotoMapper photoMapper;
+    private MapperUtils mapperUtils;
     @Resource
     private NimbusJoseJwt jwt;
     @Value("${qiNiu.defaultPhoto}")
@@ -64,8 +64,11 @@ public class UserImpl implements CommonService<MbUser> {
     @AOPLog("发送邮件")
     @Async
     public void sendEmail(String username, String subject, String msg) throws EmailException, JsonProcessingException {
+        //小写用户名
         String lowerCase = username.toLowerCase();
+        //获取自动生成的验证码
         String authCode = generateAuthCode();
+        //发送邮件
         sendEmail.createEmail(lowerCase, subject, msg + authCode);
         Map<String, Object> map = new HashMap<>();
         map.put("data", authCode);
@@ -78,7 +81,8 @@ public class UserImpl implements CommonService<MbUser> {
         //把传进来的邮箱格式化一下，统一小写
         String lowerCase = username.toLowerCase();
         List<MbUser> mbUser = userMapper.queryAll(new MbUser().setUsername(lowerCase));
-        if (mbUser.get(0) != null) {
+
+        if (mbUser.size() != 0) {
             ObjectMapper om = new ObjectMapper();
             String json = om.writeValueAsString(mbUser.get(0));
             log.info("用户存在，存到Redis=>{}", json);
@@ -97,10 +101,9 @@ public class UserImpl implements CommonService<MbUser> {
         log.info("小写后的username是=>{}", lowerCaseUsername);
         Map<String, Object> map = new HashMap<>();
         map.put("data", authCode);
-        log.info("组装后的DataDto=>{}", map.toString());
         try {
             //如果用户存在，执行登陆逻辑，否则执行注册逻辑
-            if (exist(username)) {
+            if (exist(lowerCaseUsername)) {
                 log.info("用户存在，发送「登陆」验证码短信");
                 sendEmail.createEmail(lowerCaseUsername, SendEmail.SUBJECT, SendEmail.LOGIN_MESSAGE + authCode);
             } else {
@@ -137,12 +140,14 @@ public class UserImpl implements CommonService<MbUser> {
     @AOPLog("自动判断登陆或注册逻辑方法")
     @Transactional(rollbackFor = Exception.class)
     public Object doService(String username, String authCode) throws JsonProcessingException, JOSEException {
+        log.info("打印doService入参=>{} => {}", username, authCode);
         String lowerCaseUsername = username.toLowerCase();
+        log.info("小写后的username=>{}", lowerCaseUsername);
         //先校验验证码
         boolean auth = authRegCode(lowerCaseUsername, authCode);
 
         if (auth) {
-            //权限
+            log.info("验证码校验通过");
             //TODO 权限列表记得要加上，现在这里是写死
             List<String> authorities = new ArrayList<>();
             authorities.add(UserRole.USER.getRole());
@@ -151,30 +156,30 @@ public class UserImpl implements CommonService<MbUser> {
             //生成token
             String token = jwt.generateTokenByHMAC(payloadDto);
             try {
-                //如果是已经存在的用户，则返回token和非敏感信息
+                /*如果是已经存在的用户，则返回token和非敏感信息
+                  因为当前需求是要一起返回token信息，但是MbUser实体没这个字段，所以转成map，put一个token字段进去
+                 */
+                ObjectMapper om = new ObjectMapper();
                 if (exist(username)) {
                     String json = redisUtil.get(RedisUtil.LOGIN_FLAG + username);
-                    ObjectMapper om = new ObjectMapper();
-                    MbUser mbUser = om.readValue(json, MbUser.class);
-                    mbUser.setToken(token);
-                    return new GenerateResult<>().success(mbUser);
+                    Map<String, Object> map = om.readValue(json, new TypeReference<Map<String, Object>>() {
+                    });
+                    map.put("token", token);
+                    return map;
                 }
                 //如果不存在，则自动注册，并且注册成功后也返回token和非敏感信息
                 MbUser mbUser = new MbUser();
                 mbUser.setUsername(username)
                         .setNickname(DefaultUserInfoEnum.NICKNAME.getMessage())
-                        .setPassword(IdUtil.fastSimpleUUID());
+                        .setPassword(IdUtil.fastSimpleUUID())
+                        .setUserImg(this.defaultLink);
                 userMapper.insert(mbUser);
-                //默认头像
-                photoMapper.insert(new MbPhoto().setPhotoLink(this.defaultLink).setType("UP").setUid(mbUser.getId()));
-                //用于返回
-                log.info("测试一下是否能获取自增uid=>{}", mbUser.getId());
-                mbUser.setMbPhoto(new MbPhoto().setPhotoLink(this.defaultLink).setType("UP").setUid(mbUser.getId()));
-                mbUser.setToken(token);
-                Map<String, Object> map = new HashMap<>();
-                map.put("code", ResultCode.OK.getCode());
-                map.put("message", ResultCode.OK.getMessage());
-                map.put("data", mbUser);
+                //用于返回，因为当前需求是要一起返回token信息，但是MbUser实体没这个字段，所以转成map，put一个token字段进去
+                MbUser newUser = userMapper.queryById(mbUser.getId());
+                String json = om.writeValueAsString(newUser);
+                Map<String, Object> map = om.readValue(json, new TypeReference<Map<String, Object>>() {
+                });
+                map.put("token", token);
                 return map;
             } finally {
                 redisUtil.set(RedisUtil.TOKEN_PREFIX + username, token, payloadDto.getExp());
@@ -184,10 +189,7 @@ public class UserImpl implements CommonService<MbUser> {
                 redisUtil.remove(remove);
             }
         }
-        Map<String, Object> map = new HashMap<>();
-        map.put("code", ResultCode.AUTH_CODE_ERROR.getCode());
-        map.put("message", ResultCode.AUTH_CODE_ERROR.getMessage());
-        return map;
+        throw new RuntimeException("执行自动注册和登陆方法出错");
     }
 
     @Override
@@ -195,9 +197,24 @@ public class UserImpl implements CommonService<MbUser> {
         return null;
     }
 
+
     @Override
     public MbUser selectOne(Long id) {
         return userMapper.queryById(id);
+    }
+
+    @AOPLog("查询个人信息，包括游戏信息，游戏数量")
+    public Object showUserInfo(Long id) {
+        //用户信息
+        MbUser mbUser = userMapper.queryById(id);
+        //游戏信息（包含游戏数量）
+        List<Map<String, Object>> gameInfo = mapperUtils.countGameNum(id);
+        ObjectMapper objectMapper = new ObjectMapper();
+        Map<String, Object> map = objectMapper.convertValue(mbUser, new TypeReference<Map<String, Object>>() {
+        });
+        //将游戏信息一起返回
+        map.put("gameList", gameInfo);
+        return map;
     }
 
     @Override
