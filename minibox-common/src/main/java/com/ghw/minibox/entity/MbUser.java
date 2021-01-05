@@ -32,7 +32,7 @@ public class MbUser implements Serializable {
     private static final long serialVersionUID = -71315955846878471L;
 
     @ApiModelProperty(notes = "主键")
-    @NotNull(message = "用户uid不能为空", groups = UpdatePassword.class)
+    @NotNull(message = "用户id不能为空", groups = UpdatePassword.class)
     private Long id;
 
     @ApiModelProperty(notes = "验证码")
@@ -83,6 +83,7 @@ public class MbUser implements Serializable {
     private Integer exp;
 
     @ApiModelProperty(notes = "字段更新时间，修改该条记录则自动更新这个字段")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     private Date updateDate;
 
     @ApiModelProperty(notes = "状态，记录当前记录是否有效，0有效，1无效")

@@ -1,6 +1,7 @@
 package com.ghw.minibox.service.impl;
 
 import cn.hutool.core.util.IdUtil;
+import cn.hutool.crypto.SecureUtil;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -76,9 +77,7 @@ public class UserImpl implements CommonService<MbUser> {
     public boolean exist(String username) throws JsonProcessingException {
         //把传进来的邮箱格式化一下，统一小写
         String lowerCase = username.toLowerCase();
-        log.info("小写=>{}", lowerCase);
         List<MbUser> mbUser = userMapper.queryAll(new MbUser().setUsername(lowerCase));
-        log.info("打印一下mbUser=>{}", mbUser);
         if (mbUser.get(0) != null) {
             ObjectMapper om = new ObjectMapper();
             String json = om.writeValueAsString(mbUser.get(0));
@@ -207,8 +206,28 @@ public class UserImpl implements CommonService<MbUser> {
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public boolean update(MbUser entity) {
+        int update = userMapper.update(entity);
+        return update > 0;
+    }
+
+    @AOPLog("更新密码，id、password必传")
+    @Transactional(rollbackFor = Exception.class)
+    public boolean updatePassword(MbUser mbUser) {
+        String md5 = SecureUtil.md5(mbUser.getPassword());
+        mbUser.setPassword(md5);
+        int update = userMapper.update(mbUser);
+        if (update > 0) {
+            redisUtil.remove(RedisUtil.TOKEN_PREFIX + this.selectOne(mbUser.getId()).getUsername());
+            return true;
+        }
         return false;
+    }
+
+    @AOPLog("登出")
+    public void logout(String key) {
+        redisUtil.remove(RedisUtil.TOKEN_PREFIX + key.toLowerCase());
     }
 
     @Override

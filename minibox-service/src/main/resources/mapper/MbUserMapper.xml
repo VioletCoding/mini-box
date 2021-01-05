@@ -18,7 +18,7 @@
 
     <!--查询单个-->
     <select id="queryById" resultMap="MbUserMap">
-        select id,
+        SELECT id,
                nickname,
                username,
                description,
@@ -29,13 +29,13 @@
                exp,
                update_date,
                state
-        from minibox.mb_user
-        where id = #{id}
+        FROM minibox.mb_user
+        WHERE id = #{id}
     </select>
 
     <!--查询指定行数据-->
     <select id="queryAllByLimit" resultMap="MbUserMap">
-        select id,
+        SELECT id,
                nickname,
                username,
                password,
@@ -47,68 +47,68 @@
                exp,
                update_date,
                state
-        from minibox.mb_user
-        limit #{offset}, #{limit}
+        FROM minibox.mb_user
+        LIMIT #{offset}, #{limit}
     </select>
 
     <!--通过实体作为筛选条件查询-->
     <select id="queryAll" resultMap="MbUserMap">
-        select
+        SELECT
         id, nickname, username, password, description, level, wallet_balance, user_state, create_date, exp, update_date,
         state
-        from minibox.mb_user
+        FROM minibox.mb_user
         <where>
             <if test="id != null">
-                and id = #{id}
+                AND id = #{id}
             </if>
             <if test="nickname != null and nickname != ''">
-                and nickname = #{nickname}
+                AND nickname = #{nickname}
             </if>
             <if test="username != null and username != ''">
-                and username = #{username}
+                AND username = #{username}
             </if>
             <if test="password != null and password != ''">
-                and password = #{password}
+                AND `password` = #{password}
             </if>
             <if test="description != null and description != ''">
-                and description = #{description}
+                AND `description` = #{description}
             </if>
             <if test="level != null">
-                and level = #{level}
+                AND `level` = #{level}
             </if>
             <if test="walletBalance != null">
-                and wallet_balance = #{walletBalance}
+                AND wallet_balance = #{walletBalance}
             </if>
             <if test="userState != null and userState != ''">
-                and user_state = #{userState}
+                AND user_state = #{userState}
             </if>
             <if test="createDate != null">
-                and create_date = #{createDate}
+                AND create_date = #{createDate}
             </if>
             <if test="exp != null">
-                and exp = #{exp}
+                AND exp = #{exp}
             </if>
             <if test="updateDate != null">
-                and update_date = #{updateDate}
+                AND update_date = #{updateDate}
             </if>
             <if test="state != null">
-                and state = #{state}
+                AND state = #{state}
             </if>
         </where>
     </select>
 
     <!--新增所有列-->
     <insert id="insert" keyProperty="id" useGeneratedKeys="true">
-        insert into minibox.mb_user(nickname, username, password, description, level, wallet_balance, user_state,
+        INSERT INTO minibox.mb_user(nickname, username, password, description, level, wallet_balance, user_state,
                                     create_date, exp, update_date, state)
-        values (#{nickname}, #{username}, #{password}, #{description}, #{level}, #{walletBalance}, #{userState},
+        VALUES (#{nickname}, #{username}, #{password}, #{description}, #{level}, #{walletBalance}, #{userState},
                 #{createDate}, #{exp}, #{updateDate}, #{state})
     </insert>
 
     <insert id="insertBatch" keyProperty="id" useGeneratedKeys="true">
-        insert into minibox.mb_user(nickname, username, password, description, level, wallet_balance, user_state,
+        INSERT INTO minibox.mb_user(nickname, username, password, description, level, wallet_balance, user_state,
         create_date, exp, update_date, state)
-        values
+        VALUES
         <foreach collection="entities" item="entity" separator=",">
             (#{entity.nickname}, #{entity.username}, #{entity.password}, #{entity.description}, #{entity.level},
             #{entity.walletBalance}, #{entity.userState}, #{entity.createDate}, #{entity.exp}, #{entity.updateDate},
@@ -117,15 +117,15 @@
     </insert>
 
     <insert id="insertOrUpdateBatch" keyProperty="id" useGeneratedKeys="true">
-        insert into minibox.mb_user(nickname, username, password, description, level, wallet_balance, user_state,
+        INSERT INTO minibox.mb_user(nickname, username, password, description, level, wallet_balance, user_state,
         create_date, exp, update_date, state)
-        values
+        VALUES
         <foreach collection="entities" item="entity" separator=",">
             (#{entity.nickname}, #{entity.username}, #{entity.password}, #{entity.description}, #{entity.level},
             #{entity.walletBalance}, #{entity.userState}, #{entity.createDate}, #{entity.exp}, #{entity.updateDate},
             #{entity.state})
         </foreach>
-        on duplicate key update
+        ON DUPLICATE KEY UPDATE
         nickname = values(nickname) , username = values(username) , password = values(password) , description =
         values(description) , level = values(level) , wallet_balance = values(wallet_balance) , user_state =
         values(user_state) , create_date = values(create_date) , exp = values(exp) , update_date = values(update_date) ,
@@ -134,50 +134,50 @@
 
     <!--通过主键修改数据-->
     <update id="update">
-        update minibox.mb_user
+        UPDATE minibox.mb_user
         <set>
             <if test="nickname != null and nickname != ''">
-                nickname = #{nickname},
+                `nickname` = #{nickname},
             </if>
             <if test="username != null and username != ''">
-                username = #{username},
+                `username` = #{username},
             </if>
             <if test="password != null and password != ''">
-                password = #{password},
+                `password` = #{password},
             </if>
             <if test="description != null and description != ''">
-                description = #{description},
+                `description` = #{description},
             </if>
             <if test="level != null">
-                level = #{level},
+                `level` = #{level},
             </if>
             <if test="walletBalance != null">
-                wallet_balance = #{walletBalance},
+                `wallet_balance` = #{walletBalance},
             </if>
             <if test="userState != null and userState != ''">
-                user_state = #{userState},
+                `user_state` = #{userState},
             </if>
             <if test="createDate != null">
-                create_date = #{createDate},
+                `create_date` = #{createDate},
             </if>
             <if test="exp != null">
-                exp = #{exp},
+                `exp` = #{exp},
             </if>
             <if test="updateDate != null">
-                update_date = #{updateDate},
+                `update_date` = #{updateDate},
             </if>
             <if test="state != null">
-                state = #{state},
+                `state` = #{state},
             </if>
         </set>
-        where id = #{id}
+        WHERE id = #{id}
     </update>
 
     <!--通过主键删除-->
     <delete id="deleteById">
-        delete
-        from minibox.mb_user
-        where id = #{id}
+        DELETE
+        FROM minibox.mb_user
+        WHERE id = #{id}
     </delete>
 
 </mapper>
