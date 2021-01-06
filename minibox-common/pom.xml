@@ -23,7 +23,7 @@
             <groupId>com.qiniu</groupId>
             <artifactId>qiniu-java-sdk</artifactId>
         </dependency>
-        <!--Jackson，用于得到七牛云的回调-->
+        <!--Jackson，用于解析七牛云的回调-->
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-databind</artifactId>

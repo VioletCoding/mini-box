@@ -3,24 +3,6 @@
 <mapper namespace="com.ghw.minibox.mapper.MapperUtils">
 
 
-    <resultMap id="countMap" type="com.ghw.minibox.entity.MbPost">
-        <result property="countComment" column="countComment"/>
-        <result property="id" column="tid"/>
-    </resultMap>
-
-    <select id="countComment" resultMap="countMap">
-        SELECT
-        tid,
-        COUNT(*) AS countComment
-        FROM mb_comment
-        WHERE tid IN
-        <foreach collection="list" item="id" index="index" open="(" close=")" separator=",">
-            #{id}
-        </foreach>
-        GROUP BY tid;
-    </select>
-
-
     <select id="countGameNum" resultType="map">
         SELECT g.id,
                g.`name`,

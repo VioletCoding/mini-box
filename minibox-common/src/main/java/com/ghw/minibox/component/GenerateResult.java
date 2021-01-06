@@ -12,14 +12,6 @@ import org.springframework.stereotype.Component;
 @Component
 public class GenerateResult<T> {
 
-
-    public ReturnDto<ResultCode> fromService(ResultCode rc) {
-        return new ReturnDto<ResultCode>()
-                .setCode(rc.getCode())
-                .setMessage(rc.getMessage());
-    }
-
-
     /**
      * 成功，但不返回数据
      *
@@ -41,13 +33,6 @@ public class GenerateResult<T> {
                 .setMessage(ResultCode.OK.getMessage())
                 .setData(data);
     }
-
-    public ReturnDto<ResultCode> success(ResultCode r) {
-        return new ReturnDto<ResultCode>()
-                .setCode(r.getCode())
-                .setMessage(r.getMessage());
-    }
-
 
     /**
      * 失败，响应失败信息，不带数据
@@ -84,21 +69,6 @@ public class GenerateResult<T> {
         return new ReturnDto<T>()
                 .setCode(code)
                 .setMessage(message);
-    }
-
-    /**
-     * 自定义返回信息，带数据
-     *
-     * @param code    响应码
-     * @param message 响应信息
-     * @param data    数据
-     * @return ReturnDto
-     */
-    public ReturnDto<T> custom(int code, String message, T data) {
-        return new ReturnDto<T>()
-                .setCode(code)
-                .setMessage(message)
-                .setData(data);
     }
 
 }

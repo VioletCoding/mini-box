@@ -17,7 +17,7 @@ import javax.annotation.Resource;
 
 /**
  * @author Violet
- * @description
+ * @description 评论 控制器
  * @date 2021/1/4
  */
 @RestController
@@ -29,7 +29,7 @@ public class CommentController {
     @Resource
     private CommentImpl comment;
 
-    @ApiOperation("发表评论")
+    @ApiOperation("发表评论 -> 必传参数看 入参实体 里的Hibernate-Validator注解")
     @PostMapping("post")
     public ReturnDto<Object> publish(@RequestBody @Validated MbComment mbComment) {
         boolean insert = comment.insert(mbComment);
@@ -39,7 +39,7 @@ public class CommentController {
         return gr.fail();
     }
 
-    @ApiOperation("发表回复")
+    @ApiOperation("发表回复 -> 必传参数看 入参实体 里的Hibernate-Validator注解")
     @PostMapping("reply")
     public ReturnDto<Object> reply(@RequestBody @Validated MbReply mbReply) {
         boolean reply = comment.Reply(mbReply);

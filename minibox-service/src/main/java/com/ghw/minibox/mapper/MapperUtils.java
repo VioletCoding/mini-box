@@ -15,14 +15,6 @@ import java.util.Map;
 public interface MapperUtils {
 
     /**
-     * 数帖子评论数
-     *
-     * @param postId 帖子的ID
-     * @return 评论数
-     */
-    List<MbPost> countComment(List<Long> postId);
-
-    /**
      * 统计游戏信息、数量
      *
      * @param id 用户id

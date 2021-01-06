@@ -5,7 +5,7 @@ import org.springframework.stereotype.Component;
 
 /**
  * @author Violet
- * @description
+ * @description 生成一些常用的类，注入到IOC
  * @date 2021/1/6
  */
 @Component

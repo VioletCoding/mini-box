@@ -102,18 +102,10 @@ public class LogAspect {
             }
             aopBean.setParam(params.toString());
         }
-
         long end = System.currentTimeMillis();
-
         aopBean.setTime(end - begin);
 
-        //String json = objectMapper.writeValueAsString(aopBean);
-        log.info("本次使用的线程==>{}", Thread.currentThread().getName());
-        //log.info("本次操作结果==>{}", json);
         log.info("本次操作结果==>{}", aopBean);
-        //操作日志写入redis
-        //redisUtil.set(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()), json);
-        //log.info("已将操作记录写入到Redis");
         log.info("结束执行{}方法", methodName);
     }
 }

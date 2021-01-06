@@ -29,13 +29,13 @@ public class PostController {
     @Resource
     private GenerateResult<Object> gr;
 
-    @ApiOperation("获取帖子列表")
+    @ApiOperation("获取帖子列表 -> 可选传入用户id，那么返回就是那一个用户的所有帖子")
     @GetMapping("all")
     public ReturnDto<Object> showPostList(@RequestParam(required = false) Long uid) throws JsonProcessingException {
         return gr.success(post.selectAll(new MbPost().setUid(uid)));
     }
 
-    @ApiOperation("发布帖子")
+    @ApiOperation("发布帖子 -> 入参要求看实体的注解")
     @PostMapping("publish")
     public ReturnDto<Object> publishPost(@RequestBody @Validated MbPost mbPost) throws JsonProcessingException {
         boolean insert = post.insert(mbPost);
@@ -61,7 +61,7 @@ public class PostController {
         return gr.success(mbPost);
     }
 
-    @ApiOperation("用户个人信息显示自己的评论，以及评论在哪个帖子下发布的")
+    @ApiOperation("用户个人信息显示自己的评论，以及评论在哪个帖子下发布的，传入用户id")
     @GetMapping("userCommentShow")
     public ReturnDto<Object> userCommentByUid(@RequestParam Long uid) {
         return gr.success(post.getCommentAndPostByUid(uid));

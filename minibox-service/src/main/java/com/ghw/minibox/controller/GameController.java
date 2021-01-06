@@ -33,7 +33,7 @@ public class GameController {
         return gr.success(game.selectAll(null));
     }
 
-    @ApiOperation("游戏详情")
+    @ApiOperation("游戏详情 -> 传入游戏id")
     @GetMapping("detail")
     public ReturnDto<Object> showGameDetail(@RequestParam Long id) throws JsonProcessingException {
         return gr.success(game.selectOne(id));

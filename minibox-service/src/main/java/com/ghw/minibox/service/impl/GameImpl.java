@@ -65,7 +65,6 @@ public class GameImpl implements CommonService<MbGame> {
         if (!StringUtils.isNullOrEmpty(fromRedis)) {
             return objectMapper.readValue(fromRedis, MbGame.class);
         }
-
         //游戏详情
         MbGame mbGame = gameMapper.queryById(id);
         //游戏图片列表

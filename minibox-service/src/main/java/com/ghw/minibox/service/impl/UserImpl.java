@@ -128,7 +128,7 @@ public class UserImpl implements CommonService<MbUser> {
         log.info("校验验证码,从Redis获取的值=>{}", valueFromRedis);
 
         if (!StringUtils.isNullOrEmpty(valueFromRedis)) {
-            Map<String, Object> map = new ObjectMapper().readValue(valueFromRedis, new TypeReference<Map<String, Object>>() {
+            Map<String, Object> map = generateBean.getObjectMapper().readValue(valueFromRedis, new TypeReference<Map<String, Object>>() {
             });
             boolean b = code.equals(map.get("data"));
             if (b) {

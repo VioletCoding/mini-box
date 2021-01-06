@@ -12,6 +12,7 @@ import com.ghw.minibox.utils.SendEmail;
 import com.ghw.minibox.validatedgroup.UpdatePassword;
 import com.nimbusds.jose.JOSEException;
 import com.qiniu.util.StringUtils;
+import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -30,6 +31,7 @@ import java.util.Objects;
  */
 @RestController
 @RequestMapping("user")
+@Api("用户控制层")
 public class UserController {
     @Resource
     private GenerateResult<Object> gr;

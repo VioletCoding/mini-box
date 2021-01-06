@@ -9,6 +9,7 @@ import com.ghw.minibox.entity.*;
 import com.ghw.minibox.mapper.*;
 import com.ghw.minibox.service.CommonService;
 import com.ghw.minibox.utils.AOPLog;
+import com.ghw.minibox.utils.GenerateBean;
 import com.ghw.minibox.utils.QiNiuUtil;
 import com.qiniu.util.StringUtils;
 import lombok.extern.slf4j.Slf4j;
@@ -41,13 +42,11 @@ public class PostImpl implements CommonService<MbPost> {
     private RedisUtil redisUtil;
     @Resource
     private QiNiuUtil qiNiuUtil;
+    @Resource
+    private GenerateBean generateBean;
     @Value("${qiNiu.link}")
     private String qnLink;
 
-
-    private ObjectMapper getObjectMapper() {
-        return new ObjectMapper();
-    }
 
     /**
      * 帖子列表
@@ -58,7 +57,7 @@ public class PostImpl implements CommonService<MbPost> {
     @AOPLog("帖子列表")
     @Override
     public List<MbPost> selectAll(MbPost param) throws JsonProcessingException {
-        ObjectMapper objectMapper = this.getObjectMapper();
+        ObjectMapper objectMapper = generateBean.getObjectMapper();
 
         //先查redis
         String fromRedis = redisUtil.get(RedisUtil.REDIS_PREFIX + RedisUtil.POST_PREFIX);
@@ -136,7 +135,7 @@ public class PostImpl implements CommonService<MbPost> {
     @AOPLog("帖子详情")
     @Override
     public MbPost selectOne(Long id) throws JsonProcessingException {
-        ObjectMapper objectMapper = getObjectMapper();
+        ObjectMapper objectMapper = generateBean.getObjectMapper();
         //先查缓存
         String fromRedis = redisUtil.get(RedisUtil.REDIS_PREFIX + RedisUtil.POST_PREFIX + id);
         if (!StringUtils.isNullOrEmpty(fromRedis)) {
