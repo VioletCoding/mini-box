@@ -12,10 +12,7 @@ import com.ghw.minibox.entity.MbUser;
 import com.ghw.minibox.mapper.MapperUtils;
 import com.ghw.minibox.mapper.MbUserMapper;
 import com.ghw.minibox.service.CommonService;
-import com.ghw.minibox.utils.AOPLog;
-import com.ghw.minibox.utils.DefaultUserInfoEnum;
-import com.ghw.minibox.utils.SendEmail;
-import com.ghw.minibox.utils.UserRole;
+import com.ghw.minibox.utils.*;
 import com.nimbusds.jose.JOSEException;
 import com.qiniu.util.StringUtils;
 import lombok.extern.slf4j.Slf4j;
@@ -24,8 +21,10 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
+import java.io.IOException;
 import java.util.*;
 
 /**
@@ -45,9 +44,13 @@ public class UserImpl implements CommonService<MbUser> {
     @Resource
     private MapperUtils mapperUtils;
     @Resource
+    private QiNiuUtil qiNiuUtil;
+    @Resource
     private NimbusJoseJwt jwt;
     @Value("${qiNiu.defaultPhoto}")
     private String defaultLink;
+    @Value("${qiNiu.link}")
+    private String qiNiuYunLink;
 
     @AOPLog("生成验证码")
     private String generateAuthCode() {
@@ -223,10 +226,26 @@ public class UserImpl implements CommonService<MbUser> {
     }
 
     @Override
-    @Transactional(rollbackFor = Exception.class)
+    @Transactional(rollbackFor = Throwable.class)
     public boolean update(MbUser entity) {
         int update = userMapper.update(entity);
         return update > 0;
+    }
+
+    @AOPLog("更新用户头像")
+    @Transactional(rollbackFor = Throwable.class)
+    public MbUser updateUserImg(MultipartFile file, Long uid) throws IOException {
+
+        String fastSimpleUUID = IdUtil.fastSimpleUUID();
+
+        qiNiuUtil.syncUpload(fastSimpleUUID, file.getBytes());
+        //更新用户信息
+        boolean update = this.update(new MbUser().setUserImg(this.qiNiuYunLink + fastSimpleUUID).setId(uid));
+
+        if (update) {
+            return this.selectOne(uid);
+        }
+        throw new RuntimeException("更新用户头像出现错误");
     }
 
     @AOPLog("更新密码，id、password必传")

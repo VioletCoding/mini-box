@@ -70,4 +70,98 @@
     </select>
 
 
+    <resultMap type="com.ghw.minibox.entity.MbPost" id="MbPostMap">
+        <!--帖子内容，帖子ID、帖子标题、帖子内容、帖子发表时间-->
+        <id property="id" column="id" jdbcType="INTEGER"/>
+        <result property="title" column="title" jdbcType="VARCHAR"/>
+        <result property="content" column="post_content" jdbcType="VARCHAR"/>
+        <result property="coverImg" column="cover_img" jdbcType="VARCHAR"/>
+        <result property="createDate" column="create_date" jdbcType="TIMESTAMP"/>
+        <!--是谁发的帖子，作者ID、作者昵称、作者等级-->
+        <association property="mbUser" javaType="com.ghw.minibox.entity.MbUser">
+            <id property="id" column="author_id" jdbcType="INTEGER"/>
+            <result property="nickname" column="author_nickname" jdbcType="VARCHAR"/>
+            <result property="level" column="author_level" jdbcType="VARCHAR"/>
+            <result property="userImg" column="author_photo_link" jdbcType="VARCHAR"/>
+        </association>
+        <!--版块信息-->
+        <association property="mbBlock" javaType="com.ghw.minibox.entity.MbBlock">
+            <id property="id" column="block_id" jdbcType="INTEGER"/>
+            <result property="name" column="block_name" jdbcType="VARCHAR"/>
+        </association>
+        <!--帖子里的所有评论，包括评论ID、评论内容、评论时间-->
+        <collection property="commentList" ofType="com.ghw.minibox.entity.MbComment">
+            <id property="id" column="comment_id" jdbcType="INTEGER"/>
+            <result property="content" column="comment_content" jdbcType="VARCHAR"/>
+            <result property="createDate" column="comment_date" jdbcType="TIMESTAMP"/>
+            <!--每条评论是谁发的，包含评论人的ID、评论人昵称、评论人等级-->
+            <association property="mbUser" javaType="com.ghw.minibox.entity.MbUser">
+                <id property="id" column="comment_list_user_id" jdbcType="INTEGER"/>
+                <result property="nickname" column="comment_list_user_nickname" jdbcType="VARCHAR"/>
+                <result property="level" column="comment_list_user_level" jdbcType="VARCHAR"/>
+                <result property="userImg" column="comment_list_user_img" jdbcType="VARCHAR"/>
+            </association>
+            <!--每条评论里的回复，包括回复ID、回复日期、回复内容、回复人的UID、回复了谁-->
+            <collection property="replyList" ofType="com.ghw.minibox.entity.MbReply">
+                <id property="id" column="comment_list_reply_id" jdbcType="INTEGER"/>
+                <result property="replyDate" column="comment_list_reply_date" jdbcType="TIMESTAMP"/>
+                <result property="replyContent" column="comment_list_reply_content" jdbcType="VARCHAR"/>
+                <result property="replyUid" column="comment_list_reply_login_user" jdbcType="INTEGER"/>
+                <result property="replyWho" column="comment_list_reply_target" jdbcType="INTEGER"/>
+                <!--回复人ID、昵称-->
+                <association property="mbUser" javaType="com.ghw.minibox.entity.MbUser">
+                    <id property="id" column="comment_list_reply_user_id" jdbcType="INTEGER"/>
+                    <result property="nickname" column="comment_list_reply_user_nickname" jdbcType="VARCHAR"/>
+                </association>
+            </collection>
+        </collection>
+    </resultMap>
+
+    <select id="queryPostDetail" resultMap="MbPostMap">
+        SELECT mp.id,
+               mp.title,
+               mp.content                       AS post_content,
+               mp.create_date,
+               mp.cover_img,
+
+               author_info.id                   AS author_id,
+               author_info.nickname             AS author_nickname,
+               author_info.LEVEL                AS author_level,
+               author_info.user_img             AS author_photo_link,
+
+               comment_list.id                  AS comment_id,
+               comment_list.content             AS comment_content,
+               comment_list.create_date         AS comment_date,
+
+               comment_list_user.id             AS comment_list_user_id,
+               comment_list_user.nickname       AS comment_list_user_nickname,
+               comment_list_user.`level`        AS comment_list_user_level,
+               comment_list_user.user_img       AS comment_list_user_img,
+
+               comment_list_reply.id            AS comment_list_reply_id,
+               comment_list_reply.reply_content AS comment_list_reply_content,
+               comment_list_reply.reply_date    AS comment_list_reply_date,
+               comment_list_reply.reply_who     AS comment_list_reply_target,
+               comment_list_reply.reply_uid     AS comment_list_reply_login_user,
+
+               comment_list_reply_user.id       AS comment_list_reply_user_id,
+               comment_list_reply_user.nickname AS comment_list_reply_user_nickname,
+
+               post_in_block.id                 AS block_id,
+               post_in_block.`name`             AS block_name
+
+        FROM mb_post AS mp
+                 LEFT JOIN mb_user AS author_info ON (mp.uid = author_info.id)
+                 LEFT JOIN mb_comment AS comment_list ON (comment_list.tid = mp.id)
+                 LEFT JOIN mb_user AS comment_list_user ON (comment_list_user.id = comment_list.uid)
+                 LEFT JOIN mb_reply AS comment_list_reply ON (comment_list_reply.reply_in_post = mp.id)
+            AND (comment_list_reply.reply_in_comment = comment_list.id)
+                 LEFT JOIN mb_user AS comment_list_reply_user
+                           ON (comment_list_reply_user.id = comment_list_reply.reply_uid)
+                 LEFT JOIN mb_block AS post_in_block ON (post_in_block.id = mp.bid)
+        WHERE mp.id = #{id}
+        ORDER BY comment_list.create_date DESC;
+    </select>
+
+
 </mapper>

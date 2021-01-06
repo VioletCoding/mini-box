@@ -146,6 +146,11 @@
             <if test="description != null and description != ''">
                 `description` = #{description},
             </if>
+
+            <if test=" userImg != null and userImg != '' ">
+                `user_img` = #{userImg}
+            </if>
+
             <if test="level != null">
                 `level` = #{level},
             </if>

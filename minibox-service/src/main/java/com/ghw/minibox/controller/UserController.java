@@ -16,8 +16,10 @@ import io.swagger.annotations.ApiOperation;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.context.request.ServletWebRequest;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
+import java.io.IOException;
 import java.util.Map;
 import java.util.Objects;
 
@@ -114,6 +116,15 @@ public class UserController {
             return gr.success();
         }
         return gr.fail(ResultCode.AUTH_CODE_ERROR);
+    }
+
+    @ApiOperation("修改用户头像")
+    @PostMapping("updateImg")
+    public ReturnDto<Object> updateUserImg(@RequestParam MultipartFile userImg, @RequestParam Long uid) throws IOException {
+        if (userImg.isEmpty()) {
+            return gr.fail();
+        }
+        return gr.success(user.updateUserImg(userImg, uid));
     }
 
     @ApiOperation("登出")

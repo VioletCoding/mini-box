@@ -149,35 +149,7 @@ public class PostImpl implements CommonService<MbPost> {
     @AOPLog("帖子详情")
     @Override
     public MbPost selectOne(Long id) {
-        //得到 「帖子详情」
-        MbPost mbPost = postMapper.queryById(id);
-        //获取 「帖子详情」-> 「作者信息」
-        MbUser mbUser = mbUserMapper.queryById(mbPost.getUid());
-        mbPost.setMbUser(mbUser);
-
-        //获取 「评论」
-        List<MbComment> comments = commentMapper.queryAll(new MbComment().setTid(mbPost.getId()));
-        //获取 「评论」 -> 「回复」
-        List<MbReply> replies = replyMapper.queryAll(new MbReply().setReplyInPost(mbPost.getId()));
-        //获取 「评论」 -> 「评论用户的id」
-        List<Long> uidList = new ArrayList<>();
-        comments.forEach(c -> uidList.add(c.getUid()));
-        //获取 「评论」 -> 「用户」
-        List<MbUser> users = mbUserMapper.queryInId(uidList);
-
-        //获取评论的人的信息、人的头像、回复列表
-        comments.forEach(c -> {
-            /*
-             * Java 8 lambda 语法塘 等同于
-             * users.forEach(u -> { c.setMbUser(u) })
-             */
-            users.forEach(c::setMbUser);
-            c.setReplyList(replies);
-        });
-
-        mbPost.setCommentList(comments);
-
-        return mbPost;
+        return mapperUtils.queryPostDetail(id);
     }
 
     @Override
