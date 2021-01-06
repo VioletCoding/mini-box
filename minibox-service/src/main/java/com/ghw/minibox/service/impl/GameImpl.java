@@ -1,6 +1,7 @@
 package com.ghw.minibox.service.impl;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ghw.minibox.component.RedisUtil;
 import com.ghw.minibox.entity.*;
@@ -40,8 +41,19 @@ public class GameImpl implements CommonService<MbGame> {
 
     @AOPLog("游戏列表")
     @Override
-    public List<MbGame> selectAll(MbGame param) {
-        return gameMapper.queryAll(param);
+    public List<MbGame> selectAll(MbGame param) throws JsonProcessingException {
+        ObjectMapper objectMapper = generateBean.getObjectMapper();
+        //先查缓存
+        String fromRedis = redisUtil.get(RedisUtil.REDIS_PREFIX + RedisUtil.GAME_PREFIX);
+        if (!StringUtils.isNullOrEmpty(fromRedis)) {
+            return objectMapper.readValue(fromRedis, new TypeReference<List<MbGame>>() {
+            });
+        }
+
+        List<MbGame> games = gameMapper.queryAll(param);
+        //打进缓存
+        redisUtil.set(RedisUtil.REDIS_PREFIX + RedisUtil.GAME_PREFIX, objectMapper.writeValueAsString(games), 86400L);
+        return games;
     }
 
     @AOPLog("游戏详情")

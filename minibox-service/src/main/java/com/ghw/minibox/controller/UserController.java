@@ -82,7 +82,7 @@ public class UserController {
      */
     @ApiOperation("展示用户个人信息")
     @GetMapping("show")
-    public ReturnDto<Object> showUserInfo(@RequestParam Long id) {
+    public ReturnDto<Object> showUserInfo(@RequestParam Long id) throws JsonProcessingException {
         return gr.success(user.showUserInfo(id));
     }
 

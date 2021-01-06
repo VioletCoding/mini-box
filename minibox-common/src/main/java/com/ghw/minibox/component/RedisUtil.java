@@ -29,6 +29,10 @@ public class RedisUtil {
 
     public static final String GAME_PREFIX = "game:";
 
+    public static final String BLOCK_PREFIX = "block:";
+
+    public static final String USER_PREFIX = "user:";
+
     @Resource
     private StringRedisTemplate rt;
 
@@ -37,7 +41,7 @@ public class RedisUtil {
     }
 
     /**
-     * 单位是秒
+     * expire 单位是秒
      */
     public void set(String key, String value, long expire) {
         rt.opsForValue().set(key, value, expire, TimeUnit.SECONDS);

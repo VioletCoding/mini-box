@@ -29,7 +29,7 @@ public class GameController {
 
     @ApiOperation("游戏列表")
     @GetMapping("all")
-    public ReturnDto<Object> showAllGame() {
+    public ReturnDto<Object> showAllGame() throws JsonProcessingException {
         return gr.success(game.selectAll(null));
     }
 

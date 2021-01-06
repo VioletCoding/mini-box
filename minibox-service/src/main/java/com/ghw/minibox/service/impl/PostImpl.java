@@ -88,7 +88,7 @@ public class PostImpl implements CommonService<MbPost> {
      */
     @AOPLog("发布帖子")
     @Override
-    @Transactional(rollbackFor = Exception.class)
+    @Transactional(rollbackFor = Throwable.class)
     public boolean insert(MbPost entity) throws JsonProcessingException {
         int insert = postMapper.insert(entity);
         if (insert > 0) {
@@ -107,7 +107,7 @@ public class PostImpl implements CommonService<MbPost> {
      * @throws IOException -
      */
     @AOPLog("文件上传")
-    @Transactional(rollbackFor = Exception.class)
+    @Transactional(rollbackFor = Throwable.class)
     public Map<String, Object> upload(MultipartFile[] multipartFiles) throws IOException {
 
         if (multipartFiles.length < 1) {
@@ -139,12 +139,11 @@ public class PostImpl implements CommonService<MbPost> {
         ObjectMapper objectMapper = getObjectMapper();
         //先查缓存
         String fromRedis = redisUtil.get(RedisUtil.REDIS_PREFIX + RedisUtil.POST_PREFIX + id);
-        if (!StringUtils.isNullOrEmpty(fromRedis)){
-            return objectMapper.readValue(fromRedis,MbPost.class);
+        if (!StringUtils.isNullOrEmpty(fromRedis)) {
+            return objectMapper.readValue(fromRedis, MbPost.class);
         }
-
         MbPost post = mapperUtils.queryPost(id).get(0);
-
+        //打进缓存
         redisUtil.set(RedisUtil.REDIS_PREFIX + RedisUtil.POST_PREFIX + id, objectMapper.writeValueAsString(post), 86400L);
         return post;
     }

@@ -1,5 +1,6 @@
 package com.ghw.minibox.controller;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.ghw.minibox.component.GenerateResult;
 import com.ghw.minibox.dto.ReturnDto;
 import com.ghw.minibox.service.impl.BlockImpl;
@@ -25,7 +26,7 @@ public class BlockController {
 
     @ApiOperation("版块列表")
     @GetMapping("all")
-    public ReturnDto<Object> showAllBlock() {
+    public ReturnDto<Object> showAllBlock() throws JsonProcessingException {
         return gr.success(block.selectAll(null));
     }
 }

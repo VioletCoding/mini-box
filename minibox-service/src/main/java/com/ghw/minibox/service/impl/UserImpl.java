@@ -47,6 +47,8 @@ public class UserImpl implements CommonService<MbUser> {
     private QiNiuUtil qiNiuUtil;
     @Resource
     private NimbusJoseJwt jwt;
+    @Resource
+    private GenerateBean generateBean;
     @Value("${qiNiu.defaultPhoto}")
     private String defaultLink;
     @Value("${qiNiu.link}")
@@ -83,6 +85,7 @@ public class UserImpl implements CommonService<MbUser> {
     public boolean exist(String username) throws JsonProcessingException {
         //把传进来的邮箱格式化一下，统一小写
         String lowerCase = username.toLowerCase();
+
         List<MbUser> mbUser = userMapper.queryAll(new MbUser().setUsername(lowerCase));
 
         if (mbUser.size() != 0) {
@@ -99,9 +102,7 @@ public class UserImpl implements CommonService<MbUser> {
     @AOPLog("对应不同业务发送不同邮件")
     public void service(String username) throws EmailException, JsonProcessingException {
         String authCode = generateAuthCode();
-        log.info("验证码是=>{}", authCode);
         String lowerCaseUsername = username.toLowerCase();
-        log.info("小写后的username是=>{}", lowerCaseUsername);
         Map<String, Object> map = new HashMap<>();
         map.put("data", authCode);
         try {
@@ -116,7 +117,6 @@ public class UserImpl implements CommonService<MbUser> {
         } finally {
             ObjectMapper om = new ObjectMapper();
             String json = om.writeValueAsString(map);
-            log.info("无论如何，把验证码存到redis里=>{}", json);
             redisUtil.set(RedisUtil.AUTH_PREFIX + lowerCaseUsername, json, 300L);
         }
     }
@@ -162,10 +162,10 @@ public class UserImpl implements CommonService<MbUser> {
                 /*如果是已经存在的用户，则返回token和非敏感信息
                   因为当前需求是要一起返回token信息，但是MbUser实体没这个字段，所以转成map，put一个token字段进去
                  */
-                ObjectMapper om = new ObjectMapper();
+                ObjectMapper objectMapper = generateBean.getObjectMapper();
                 if (exist(username)) {
                     String json = redisUtil.get(RedisUtil.LOGIN_FLAG + username);
-                    Map<String, Object> map = om.readValue(json, new TypeReference<Map<String, Object>>() {
+                    Map<String, Object> map = objectMapper.readValue(json, new TypeReference<Map<String, Object>>() {
                     });
                     map.put("token", token);
                     return map;
@@ -179,8 +179,7 @@ public class UserImpl implements CommonService<MbUser> {
                 userMapper.insert(mbUser);
                 //用于返回，因为当前需求是要一起返回token信息，但是MbUser实体没这个字段，所以转成map，put一个token字段进去
                 MbUser newUser = userMapper.queryById(mbUser.getId());
-                String json = om.writeValueAsString(newUser);
-                Map<String, Object> map = om.readValue(json, new TypeReference<Map<String, Object>>() {
+                Map<String, Object> map = objectMapper.convertValue(newUser, new TypeReference<Map<String, Object>>() {
                 });
                 map.put("token", token);
                 return map;
@@ -207,16 +206,24 @@ public class UserImpl implements CommonService<MbUser> {
     }
 
     @AOPLog("查询个人信息，包括游戏信息，游戏数量")
-    public Object showUserInfo(Long id) {
+    public Object showUserInfo(Long id) throws JsonProcessingException {
+        ObjectMapper objectMapper = generateBean.getObjectMapper();
+        //先查缓存
+        String fromRedis = redisUtil.get(RedisUtil.REDIS_PREFIX + RedisUtil.USER_PREFIX + id);
+        if (!StringUtils.isNullOrEmpty(fromRedis)) {
+            return objectMapper.readValue(fromRedis, new TypeReference<Map<String, Object>>() {
+            });
+        }
         //用户信息
         MbUser mbUser = userMapper.queryById(id);
         //游戏信息（包含游戏数量）
         List<Map<String, Object>> gameInfo = mapperUtils.countGameNum(id);
-        ObjectMapper objectMapper = new ObjectMapper();
+
         Map<String, Object> map = objectMapper.convertValue(mbUser, new TypeReference<Map<String, Object>>() {
         });
         //将游戏信息一起返回
         map.put("gameList", gameInfo);
+        redisUtil.set(RedisUtil.REDIS_PREFIX + RedisUtil.USER_PREFIX + id, objectMapper.writeValueAsString(map), 86400L);
         return map;
     }
 
@@ -225,11 +232,16 @@ public class UserImpl implements CommonService<MbUser> {
         return userMapper.insert(entity) > 0;
     }
 
+    @AOPLog("更新用户信息")
     @Override
     @Transactional(rollbackFor = Throwable.class)
     public boolean update(MbUser entity) {
         int update = userMapper.update(entity);
-        return update > 0;
+        if (update > 0) {
+            redisUtil.remove(RedisUtil.REDIS_PREFIX + RedisUtil.USER_PREFIX + entity.getId());
+            return true;
+        }
+        return false;
     }
 
     @AOPLog("更新用户头像")

@@ -43,7 +43,7 @@ public class CommentImpl implements CommonService<MbComment> {
 
     @AOPLog("发表评论")
     @Override
-    @Transactional(rollbackFor = Exception.class)
+    @Transactional(rollbackFor = Throwable.class)
     public boolean insert(MbComment entity) {
 
         if (entity.getType().equals(PostType.COMMENT_IN_POST.getType())) {
@@ -68,7 +68,7 @@ public class CommentImpl implements CommonService<MbComment> {
     }
 
     @AOPLog("发表回复")
-    @Transactional(rollbackFor = Exception.class)
+    @Transactional(rollbackFor = Throwable.class)
     public boolean Reply(MbReply mbReply) {
 
         if (mbReply.getType().equals(PostType.REPLY_IN_POST.getType())) {
