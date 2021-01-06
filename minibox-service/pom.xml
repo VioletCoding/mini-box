@@ -107,7 +107,7 @@
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
                 <configuration>
-                    <mainClass>com.ghw.minibox.ProducerMain</mainClass>
+                    <mainClass>com.ghw.minibox.ServiceMain</mainClass>
                 </configuration>
                 <executions>
                     <execution>

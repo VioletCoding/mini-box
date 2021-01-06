@@ -9,11 +9,13 @@ import com.ghw.minibox.service.CommonService;
 import com.ghw.minibox.utils.AOPLog;
 import com.ghw.minibox.utils.PostType;
 import com.ghw.minibox.utils.ResultCode;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * @author Violet
@@ -21,6 +23,7 @@ import java.util.List;
  * @date 2021/1/4
  */
 @Service
+@Slf4j
 public class CommentImpl implements CommonService<MbComment> {
 
     @Resource
@@ -45,14 +48,14 @@ public class CommentImpl implements CommonService<MbComment> {
     @Override
     @Transactional(rollbackFor = Throwable.class)
     public boolean insert(MbComment entity) {
-
-        if (entity.getType().equals(PostType.COMMENT_IN_POST.getType())) {
+        boolean isPost = entity.getType().equals(PostType.COMMENT_IN_POST.getType());
+        if (isPost) {
             if (entity.getTid() == null) {
                 throw new RuntimeException(ResultCode.TID_IS_NULL.getMessage());
             }
         }
-
-        if (entity.getType().equals(PostType.COMMENT_IN_GAME.getType())) {
+        boolean isGame = entity.getType().equals(PostType.COMMENT_IN_GAME.getType());
+        if (isGame) {
             if (entity.getGid() == null) {
                 throw new RuntimeException(ResultCode.GID_IS_NULL.getMessage());
             }
@@ -61,7 +64,14 @@ public class CommentImpl implements CommonService<MbComment> {
         int insert = commentMapper.insert(entity);
         if (insert > 0) {
             //更新缓存
-            redisUtil.remove(RedisUtil.REDIS_PREFIX + RedisUtil.POST_PREFIX);
+            if (isPost) {
+                log.info("isPost");
+                redisUtil.remove(RedisUtil.REDIS_PREFIX + RedisUtil.POST_PREFIX + Objects.requireNonNull(entity.getTid()));
+            }
+            if (isGame) {
+                log.info("isGame");
+                redisUtil.remove(RedisUtil.REDIS_PREFIX + RedisUtil.GAME_PREFIX + Objects.requireNonNull(entity.getGid()));
+            }
             return true;
         }
         return false;
