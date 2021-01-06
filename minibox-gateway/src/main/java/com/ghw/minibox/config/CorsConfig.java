@@ -9,7 +9,7 @@ import org.springframework.web.util.pattern.PathPatternParser;
 
 /**
  * @author Violet
- * @description
+ * @description  网关 跨域处理器
  * @date 2020/12/24
  */
 @Configuration

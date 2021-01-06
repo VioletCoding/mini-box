@@ -100,6 +100,6 @@ public class GlobalExceptionHandler {
     public ReturnDto<String> maxUploadSizeExceededException(MaxUploadSizeExceededException e) {
         log.error("异常=>", e);
         e.printStackTrace();
-        return gr.custom(ResultCode.BAD_REQUEST.getCode(), "文件大小超出限制，总文件大小最大30MB");
+        return gr.fail(ResultCode.BAD_REQUEST, "文件大小超出限制，总文件大小最大30MB");
     }
 }

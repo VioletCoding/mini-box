@@ -40,11 +40,12 @@ public interface MapperUtils {
     List<MbPost> queryUserAllCommentInPost(Long uid);
 
     /**
-     * 帖子详情内的所有信息
+     * 帖子详情内的所有信息 复杂查询
      *
      * @param id 帖子id
      * @return 帖子详情
      */
-    MbPost queryPostDetail(Long id);
+    List<MbPost> queryPost(Long id);
+
 
 }

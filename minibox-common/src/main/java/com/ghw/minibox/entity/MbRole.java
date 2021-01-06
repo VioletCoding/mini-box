@@ -22,7 +22,7 @@ public class MbRole implements Serializable {
     private static final long serialVersionUID = 297485414723529586L;
 
     @ApiModelProperty(notes = "主键")
-    @NotNull(message = "角色rid不能为空")
+    @NotNull(message = "角色id不能为空")
     private Long id;
 
     @ApiModelProperty(notes = "角色名称，枚举值USER | ADMIN")

@@ -39,7 +39,6 @@ public class MbComment implements Serializable {
     private String type;
 
     @ApiModelProperty(notes = "帖子ID，如果type=TC，该字段必填")
-    @NotNull(message = "评论tid不能为空")
     private Long tid;
 
     @ApiModelProperty(notes = "用户ID，如果type=RC，该字段必填")

@@ -1,11 +1,17 @@
 package com.ghw.minibox.service.impl;
 
 import cn.hutool.core.util.IdUtil;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.ghw.minibox.component.RedisUtil;
 import com.ghw.minibox.entity.*;
 import com.ghw.minibox.mapper.*;
 import com.ghw.minibox.service.CommonService;
 import com.ghw.minibox.utils.AOPLog;
 import com.ghw.minibox.utils.QiNiuUtil;
+import com.qiniu.util.StringUtils;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -24,24 +30,24 @@ import java.util.Map;
  * @date 2021/1/4
  */
 @Service
+@Slf4j
 public class PostImpl implements CommonService<MbPost> {
 
     @Resource
     private MbPostMapper postMapper;
     @Resource
-    private MbBlockMapper blockMapper;
-    @Resource
-    private MbUserMapper mbUserMapper;
-    @Resource
-    private MbCommentMapper commentMapper;
-    @Resource
-    private MbReplyMapper replyMapper;
-    @Resource
     private MapperUtils mapperUtils;
+    @Resource
+    private RedisUtil redisUtil;
     @Resource
     private QiNiuUtil qiNiuUtil;
     @Value("${qiNiu.link}")
     private String qnLink;
+
+
+    private ObjectMapper getObjectMapper() {
+        return new ObjectMapper();
+    }
 
     /**
      * 帖子列表
@@ -51,47 +57,23 @@ public class PostImpl implements CommonService<MbPost> {
      */
     @AOPLog("帖子列表")
     @Override
-    public List<MbPost> selectAll(MbPost param) {
-        //得到帖子列表
-        List<MbPost> posts = postMapper.queryAll(param);
-        //为了组装版块信息
-        List<Long> bidList = new ArrayList<>();
-        //帖子id集合
-        List<Long> tidList = new ArrayList<>();
-        //得到所有版块id
-        posts.forEach(p -> {
-            bidList.add(p.getBid());
-            tidList.add(p.getId());
-        });
-        //获取所有版块信息
-        List<MbBlock> mbBlock = new ArrayList<>();
-        if (bidList.size() > 0) {
-            mbBlock = blockMapper.queryInId(bidList);
-        }
-        //获取评论数
-        List<MbPost> countComment = new ArrayList<>();
-        if (tidList.size() > 0) {
-            countComment = mapperUtils.countComment(tidList);
-        }
+    public List<MbPost> selectAll(MbPost param) throws JsonProcessingException {
+        ObjectMapper objectMapper = this.getObjectMapper();
 
-        //数据组装
-        List<MbBlock> finalMbBlock = mbBlock;
-        List<MbPost> finalCountComment = countComment;
-        posts.forEach(p -> {
-            //版块信息
-            finalMbBlock.forEach(p::setMbBlock);
-            //因为有些帖子没有评论，所以有些返回值是空的，这样的话评论数就会赋值给错误的帖子，应该判断关联的帖子ID是否相等再赋值，如果为空，赋个0
-            finalCountComment.forEach(c -> {
-                if (p.getId().equals(c.getId())) {
-                    p.setCountComment(c.getCountComment());
-                } else {
-                    p.setCountComment(0L);
-                }
+        //先查redis
+        String fromRedis = redisUtil.get(RedisUtil.REDIS_PREFIX + RedisUtil.POST_PREFIX);
+        if (!StringUtils.isNullOrEmpty(fromRedis)) {
+            return objectMapper.readValue(fromRedis, new TypeReference<List<MbPost>>() {
             });
-        });
+        }
 
+        List<MbPost> posts = mapperUtils.queryPost(null);
+        //打进缓存
+        String json = objectMapper.writeValueAsString(posts);
+        redisUtil.set(RedisUtil.REDIS_PREFIX + RedisUtil.POST_PREFIX, json, 86400L);
         return posts;
     }
+
 
     @AOPLog("用户个人信息显示自己的评论，以及评论在哪个帖子下发布的")
     public Object getCommentAndPostByUid(Long uid) {
@@ -107,9 +89,14 @@ public class PostImpl implements CommonService<MbPost> {
     @AOPLog("发布帖子")
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public boolean insert(MbPost entity) {
+    public boolean insert(MbPost entity) throws JsonProcessingException {
         int insert = postMapper.insert(entity);
-        return insert > 0;
+        if (insert > 0) {
+            //更新缓存
+            redisUtil.remove(RedisUtil.REDIS_PREFIX + RedisUtil.POST_PREFIX);
+            return true;
+        }
+        return false;
     }
 
     /**
@@ -148,8 +135,18 @@ public class PostImpl implements CommonService<MbPost> {
      */
     @AOPLog("帖子详情")
     @Override
-    public MbPost selectOne(Long id) {
-        return mapperUtils.queryPostDetail(id);
+    public MbPost selectOne(Long id) throws JsonProcessingException {
+        ObjectMapper objectMapper = getObjectMapper();
+        //先查缓存
+        String fromRedis = redisUtil.get(RedisUtil.REDIS_PREFIX + RedisUtil.POST_PREFIX + id);
+        if (!StringUtils.isNullOrEmpty(fromRedis)){
+            return objectMapper.readValue(fromRedis,MbPost.class);
+        }
+
+        MbPost post = mapperUtils.queryPost(id).get(0);
+
+        redisUtil.set(RedisUtil.REDIS_PREFIX + RedisUtil.POST_PREFIX + id, objectMapper.writeValueAsString(post), 86400L);
+        return post;
     }
 
     @Override

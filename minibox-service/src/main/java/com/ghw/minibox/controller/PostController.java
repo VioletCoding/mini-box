@@ -1,5 +1,6 @@
 package com.ghw.minibox.controller;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.ghw.minibox.component.GenerateResult;
 import com.ghw.minibox.dto.ReturnDto;
 import com.ghw.minibox.entity.MbPost;
@@ -30,13 +31,13 @@ public class PostController {
 
     @ApiOperation("获取帖子列表")
     @GetMapping("all")
-    public ReturnDto<Object> showPostList(@RequestParam(required = false) Long uid) {
+    public ReturnDto<Object> showPostList(@RequestParam(required = false) Long uid) throws JsonProcessingException {
         return gr.success(post.selectAll(new MbPost().setUid(uid)));
     }
 
     @ApiOperation("发布帖子")
     @PostMapping("publish")
-    public ReturnDto<Object> publishPost(@RequestBody @Validated MbPost mbPost) {
+    public ReturnDto<Object> publishPost(@RequestBody @Validated MbPost mbPost) throws JsonProcessingException {
         boolean insert = post.insert(mbPost);
         if (insert) {
             return gr.success();
@@ -55,7 +56,7 @@ public class PostController {
 
     @ApiOperation("帖子详情，传入帖子id")
     @GetMapping("detail")
-    public ReturnDto<Object> showPostDetail(@RequestParam Long id) {
+    public ReturnDto<Object> showPostDetail(@RequestParam Long id) throws JsonProcessingException {
         MbPost mbPost = post.selectOne(id);
         return gr.success(mbPost);
     }

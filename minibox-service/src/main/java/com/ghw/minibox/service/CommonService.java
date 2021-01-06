@@ -14,7 +14,7 @@ public interface CommonService<T> {
     /**
      * 通用列表查找
      */
-    List<T> selectAll(T param);
+    List<T> selectAll(T param) throws JsonProcessingException;
 
     /**
      * 获取一个
@@ -24,7 +24,7 @@ public interface CommonService<T> {
     /**
      * 插入
      */
-    boolean insert(T entity);
+    boolean insert(T entity) throws JsonProcessingException;
 
     /**
      * 更新

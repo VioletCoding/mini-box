@@ -27,6 +27,8 @@ public class RedisUtil {
 
     public static final String POST_PREFIX = "post:";
 
+    public static final String GAME_PREFIX = "game:";
+
     @Resource
     private StringRedisTemplate rt;
 

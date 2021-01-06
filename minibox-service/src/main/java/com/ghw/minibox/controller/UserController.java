@@ -38,6 +38,14 @@ public class UserController {
     @Resource
     private UserImpl user;
 
+    /**
+     * post请求防止username拼在url上
+     * 单个参数没有实体，使用map来接收请求体json内容
+     *
+     * @param username 邮箱（本系统用邮箱当成username登陆）
+     * @return 统一结果Dto
+     * @throws Exception -
+     */
     @ApiOperation("发送邮箱验证码")
     @PostMapping("before")
     public ReturnDto<Object> service(@RequestBody Map<String, Object> username) throws Exception {
@@ -45,7 +53,17 @@ public class UserController {
         return gr.success();
     }
 
-    @ApiOperation("自动判断登陆还是注册，一键登陆功能，通过邮箱验证码就可以一键实现登陆注册，密码是随机生成的字符串，只能通过修改密码功能来改")
+    /**
+     * 自动判断登陆还是注册，一键登陆功能，通过邮箱验证码就可以一键实现登陆注册
+     * 密码是随机生成的字符串，只能通过修改密码功能来改
+     * 两个参数没必要用实体，map接收，post请求原因同上
+     *
+     * @param params authCode:验证码 username:邮箱
+     * @return 统一结果Dto -> 用户部分信息
+     * @throws JsonProcessingException -
+     * @throws JOSEException           -
+     */
+    @ApiOperation("自动判断登陆还是注册")
     @PostMapping("after")
     public ReturnDto<Object> doService(@RequestBody Map<String, Object> params) throws JsonProcessingException, JOSEException {
         String authCode = (String) params.get("authCode");
@@ -56,12 +74,24 @@ public class UserController {
         return gr.success(user.doService(username, authCode));
     }
 
+    /**
+     * 展示用户个人信息
+     *
+     * @param id 用户id
+     * @return 个人非敏感信息
+     */
     @ApiOperation("展示用户个人信息")
     @GetMapping("show")
     public ReturnDto<Object> showUserInfo(@RequestParam Long id) {
         return gr.success(user.showUserInfo(id));
     }
 
+    /**
+     * 更新用户个人信息
+     *
+     * @param mbUser 实例，id必传，使用Hibernate-Validator校验实例里的参数
+     * @return 更新后的个人信息
+     */
     @ApiOperation("更新用户个人信息")
     @PostMapping("update")
     public ReturnDto<Object> updateUserInfo(@RequestBody MbUser mbUser) {
@@ -73,6 +103,13 @@ public class UserController {
         return gr.fail();
     }
 
+    /**
+     * 修改密码校验，通过请求头得到token，解密获取token载荷，从而获取username
+     *
+     * @param request 请求
+     * @return 是否通过校验
+     * @throws Exception -
+     */
     @ApiOperation("修改密码前的校验")
     @GetMapping("beforeModify")
     public ReturnDto<Object> beforeModifyPassword(ServletWebRequest request) throws Exception {
@@ -91,6 +128,14 @@ public class UserController {
         return gr.fail(ResultCode.UNAUTHORIZED);
     }
 
+    /**
+     * 校验验证码，配合 beforeModifyPassword 使用
+     *
+     * @param params  authCode 验证码
+     * @param request 请求
+     * @return 是否校验通过
+     * @throws Exception -
+     */
     @ApiOperation("校验验证码")
     @PostMapping("check")
     public Object checkAuthCode(@RequestBody Map<String, Object> params, ServletWebRequest request) throws Exception {
@@ -108,6 +153,12 @@ public class UserController {
         return gr.fail();
     }
 
+    /**
+     * 校验通过后 修改密码，并从Redis移除当前用户的token，需要重新登陆
+     *
+     * @param mbUser 实例 id、password必传，使用Hibernate-Validator校验实例里的参数
+     * @return 是否成功
+     */
     @ApiOperation("修改密码")
     @PostMapping("modify")
     public Object doModifyPassword(@RequestBody @Validated(UpdatePassword.class) MbUser mbUser) {
@@ -118,6 +169,14 @@ public class UserController {
         return gr.fail(ResultCode.AUTH_CODE_ERROR);
     }
 
+    /**
+     * 修改用户头像
+     *
+     * @param userImg 用户头像
+     * @param uid     用户id
+     * @return 修改过后的信息
+     * @throws IOException -
+     */
     @ApiOperation("修改用户头像")
     @PostMapping("updateImg")
     public ReturnDto<Object> updateUserImg(@RequestParam MultipartFile userImg, @RequestParam Long uid) throws IOException {
@@ -127,6 +186,13 @@ public class UserController {
         return gr.success(user.updateUserImg(userImg, uid));
     }
 
+    /**
+     * 登出，删除token
+     *
+     * @param request 请求
+     * @return 是否成功
+     * @throws Exception -
+     */
     @ApiOperation("登出")
     @GetMapping("logout")
     public Object logout(ServletWebRequest request) throws Exception {

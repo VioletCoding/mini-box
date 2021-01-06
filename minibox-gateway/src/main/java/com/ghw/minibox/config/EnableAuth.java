@@ -10,7 +10,7 @@ import java.util.List;
 
 /**
  * @author Violet
- * @description
+ * @description 是否开启网关鉴权配置类，同时也是Nacos配置的动态刷新类
  * @date 2020/12/23
  */
 
@@ -19,13 +19,15 @@ import java.util.List;
 @Component
 public class EnableAuth {
 
-    //是否开启网关鉴权
+    /**
+     * 是否开启网关鉴权
+     */
     @Getter
     @Value("${enableAuth.switch}")
     private boolean enableAuth;
 
     /**
-     * 放行的url
+     * 放行的url，这里是list集合，需要分隔符才能正常读取yml文件
      */
     @Getter
     @Value("#{'${ignore.url}'.split(',')}")

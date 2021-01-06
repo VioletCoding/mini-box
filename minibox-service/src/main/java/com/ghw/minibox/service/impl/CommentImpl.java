@@ -1,5 +1,6 @@
 package com.ghw.minibox.service.impl;
 
+import com.ghw.minibox.component.RedisUtil;
 import com.ghw.minibox.entity.MbComment;
 import com.ghw.minibox.entity.MbReply;
 import com.ghw.minibox.mapper.MbCommentMapper;
@@ -26,6 +27,8 @@ public class CommentImpl implements CommonService<MbComment> {
     private MbCommentMapper commentMapper;
     @Resource
     private MbReplyMapper replyMapper;
+    @Resource
+    private RedisUtil redisUtil;
 
     @Override
     public List<MbComment> selectAll(MbComment param) {
@@ -56,7 +59,12 @@ public class CommentImpl implements CommonService<MbComment> {
         }
 
         int insert = commentMapper.insert(entity);
-        return insert > 0;
+        if (insert > 0) {
+            //更新缓存
+            redisUtil.remove(RedisUtil.REDIS_PREFIX + RedisUtil.POST_PREFIX);
+            return true;
+        }
+        return false;
     }
 
     @AOPLog("发表回复")
@@ -79,8 +87,12 @@ public class CommentImpl implements CommonService<MbComment> {
 
         int insert = replyMapper.insert(mbReply);
 
-        return insert > 0;
-
+        if (insert > 0) {
+            //更新帖子详情缓存
+            redisUtil.remove(RedisUtil.REDIS_PREFIX + RedisUtil.POST_PREFIX + mbReply.getReplyInPost());
+            return true;
+        }
+        return false;
     }
 
     @Override

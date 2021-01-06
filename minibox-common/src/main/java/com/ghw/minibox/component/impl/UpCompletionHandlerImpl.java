@@ -1,9 +1,11 @@
 package com.ghw.minibox.component.impl;
 
-import com.ghw.minibox.dto.QiNiuPutRet;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.qiniu.common.QiniuException;
 import com.qiniu.http.Response;
 import com.qiniu.storage.UpCompletionHandler;
+import lombok.Data;
+import lombok.experimental.Accessors;
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -13,6 +15,21 @@ import lombok.extern.slf4j.Slf4j;
  */
 @Slf4j
 public class UpCompletionHandlerImpl implements UpCompletionHandler {
+
+    /**
+     * 七牛云相应类
+     */
+    @Data
+    @Accessors(chain = true)
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    static class QiNiuPutRet {
+        private String key;
+        private String hash;
+        private String bucket;
+        private long fsize;
+    }
+
+
     /**
      * 七牛云上传异步回调函数
      *

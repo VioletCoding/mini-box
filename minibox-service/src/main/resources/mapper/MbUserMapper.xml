@@ -42,11 +42,13 @@
         update_date,
         state,
         user_img
-        FROM minibox.mb_user
+        FROM mb_user
+
         WHERE id IN
         <foreach collection="list" item="item" index="index" open="(" close=")" separator=",">
             #{item}
         </foreach>
+
     </select>
 
     <!--查询指定行数据-->

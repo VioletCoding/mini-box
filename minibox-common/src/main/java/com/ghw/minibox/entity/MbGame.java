@@ -86,7 +86,6 @@ public class MbGame implements Serializable {
     @ApiModelProperty(notes = "游戏详情多图")
     private List<MbPhoto> photoList;
 
-
     @ApiModelProperty(notes = "一个游戏多标签")
     private List<MbTag> tagList;
 

@@ -67,6 +67,7 @@
                  LEFT JOIN mb_post AS p ON (p.id = c.tid)
                  LEFT JOIN mb_user AS u ON (u.id = p.uid)
         WHERE c.uid = #{uid}
+        AND c.type = 'TC';
     </select>
 
 
@@ -77,6 +78,7 @@
         <result property="content" column="post_content" jdbcType="VARCHAR"/>
         <result property="coverImg" column="cover_img" jdbcType="VARCHAR"/>
         <result property="createDate" column="create_date" jdbcType="TIMESTAMP"/>
+        <result property="countComment" column="countComment" jdbcType="INTEGER"/>
         <!--是谁发的帖子，作者ID、作者昵称、作者等级-->
         <association property="mbUser" javaType="com.ghw.minibox.entity.MbUser">
             <id property="id" column="author_id" jdbcType="INTEGER"/>
@@ -117,50 +119,60 @@
         </collection>
     </resultMap>
 
-    <select id="queryPostDetail" resultMap="MbPostMap">
+    <select id="queryPost" resultMap="MbPostMap">
         SELECT mp.id,
-               mp.title,
-               mp.content                       AS post_content,
-               mp.create_date,
-               mp.cover_img,
+        mp.title,
+        mp.content AS post_content,
+        mp.create_date,
+        mp.cover_img,
 
-               author_info.id                   AS author_id,
-               author_info.nickname             AS author_nickname,
-               author_info.LEVEL                AS author_level,
-               author_info.user_img             AS author_photo_link,
+        author_info.id AS author_id,
+        author_info.nickname AS author_nickname,
+        author_info.LEVEL AS author_level,
+        author_info.user_img AS author_photo_link,
 
-               comment_list.id                  AS comment_id,
-               comment_list.content             AS comment_content,
-               comment_list.create_date         AS comment_date,
+        comment_list.id AS comment_id,
+        comment_list.content AS comment_content,
+        comment_list.create_date AS comment_date,
 
-               comment_list_user.id             AS comment_list_user_id,
-               comment_list_user.nickname       AS comment_list_user_nickname,
-               comment_list_user.`level`        AS comment_list_user_level,
-               comment_list_user.user_img       AS comment_list_user_img,
+        comment_list_user.id AS comment_list_user_id,
+        comment_list_user.nickname AS comment_list_user_nickname,
+        comment_list_user.`level` AS comment_list_user_level,
+        comment_list_user.user_img AS comment_list_user_img,
 
-               comment_list_reply.id            AS comment_list_reply_id,
-               comment_list_reply.reply_content AS comment_list_reply_content,
-               comment_list_reply.reply_date    AS comment_list_reply_date,
-               comment_list_reply.reply_who     AS comment_list_reply_target,
-               comment_list_reply.reply_uid     AS comment_list_reply_login_user,
+        comment_list_reply.id AS comment_list_reply_id,
+        comment_list_reply.reply_content AS comment_list_reply_content,
+        comment_list_reply.reply_date AS comment_list_reply_date,
+        comment_list_reply.reply_who AS comment_list_reply_target,
+        comment_list_reply.reply_uid AS comment_list_reply_login_user,
 
-               comment_list_reply_user.id       AS comment_list_reply_user_id,
-               comment_list_reply_user.nickname AS comment_list_reply_user_nickname,
+        comment_list_reply_user.id AS comment_list_reply_user_id,
+        comment_list_reply_user.nickname AS comment_list_reply_user_nickname,
 
-               post_in_block.id                 AS block_id,
-               post_in_block.`name`             AS block_name
+        post_in_block.id AS block_id,
+        post_in_block.`name` AS block_name,
+
+        (SELECT COUNT(tid) FROM mb_comment AS forCount WHERE forCount.tid = mp.id) AS countComment
 
         FROM mb_post AS mp
-                 LEFT JOIN mb_user AS author_info ON (mp.uid = author_info.id)
-                 LEFT JOIN mb_comment AS comment_list ON (comment_list.tid = mp.id)
-                 LEFT JOIN mb_user AS comment_list_user ON (comment_list_user.id = comment_list.uid)
-                 LEFT JOIN mb_reply AS comment_list_reply ON (comment_list_reply.reply_in_post = mp.id)
-            AND (comment_list_reply.reply_in_comment = comment_list.id)
-                 LEFT JOIN mb_user AS comment_list_reply_user
-                           ON (comment_list_reply_user.id = comment_list_reply.reply_uid)
-                 LEFT JOIN mb_block AS post_in_block ON (post_in_block.id = mp.bid)
-        WHERE mp.id = #{id}
-        ORDER BY comment_list.create_date DESC;
+        LEFT JOIN mb_user AS author_info ON (mp.uid = author_info.id)
+        LEFT JOIN mb_comment AS comment_list ON (comment_list.tid = mp.id)
+        LEFT JOIN mb_user AS comment_list_user ON (comment_list_user.id = comment_list.uid)
+        LEFT JOIN mb_reply AS comment_list_reply ON (comment_list_reply.reply_in_post = mp.id)
+        AND (comment_list_reply.reply_in_comment = comment_list.id)
+        LEFT JOIN mb_user AS comment_list_reply_user
+        ON (comment_list_reply_user.id = comment_list_reply.reply_uid)
+        LEFT JOIN mb_block AS post_in_block ON (post_in_block.id = mp.bid)
+        <where>
+            <if test="id != null">
+                mp.id = #{id}
+                ORDER BY comment_list.create_date DESC;
+            </if>
+        </where>
+        <if test="id == null">
+            ORDER BY mp.create_date DESC;
+        </if>
+
     </select>
 
 
