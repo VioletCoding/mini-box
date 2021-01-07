@@ -22,6 +22,13 @@ public interface MbGameMapper {
     MbGame queryById(Long id);
 
     /**
+     * in 查询
+     * @param id 游戏id
+     * @return 游戏列表
+     */
+    List<MbGame> queryInId(List<Long> id);
+
+    /**
      * 查询指定行数据
      *
      * @param offset 查询起始位置

@@ -18,6 +18,7 @@ import org.springframework.web.multipart.MaxUploadSizeExceededException;
 
 import javax.annotation.Resource;
 import java.io.UnsupportedEncodingException;
+import java.util.Date;
 
 /**
  * @author Violet
@@ -37,7 +38,7 @@ public class GlobalExceptionHandler {
      */
     @ExceptionHandler(NullPointerException.class)
     public ReturnDto<String> nullPointException(NullPointerException e) {
-        log.error("异常=>", e);
+        log.error("异常=>{}",new Date().toString());
         e.printStackTrace();
         return gr.fail();
     }
@@ -48,7 +49,8 @@ public class GlobalExceptionHandler {
      */
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ReturnDto<String> methodArgumentNotValidException(MethodArgumentNotValidException e) {
-        log.error("异常=>", e);
+        log.error("异常=>{}",new Date().toString());
+        e.printStackTrace();
         ObjectError objectError = e.getBindingResult().getAllErrors().get(0);
         return gr.custom(ResultCode.BAD_REQUEST.getCode(), objectError.getDefaultMessage());
     }
@@ -60,7 +62,7 @@ public class GlobalExceptionHandler {
      */
     @ExceptionHandler(EmailException.class)
     public ReturnDto<String> emailException(EmailException e) {
-        log.error("异常=>", e);
+        log.error("异常=>{}",new Date().toString());
         e.printStackTrace();
         return gr.custom(ResultCode.BAD_REQUEST.getCode(), "该邮箱不存在");
     }
@@ -72,7 +74,7 @@ public class GlobalExceptionHandler {
      */
     @ExceptionHandler(InterruptedException.class)
     public ReturnDto<String> interruptedException(InterruptedException e) {
-        log.error("异常=>", e);
+        log.error("异常=>{}",new Date().toString());
         e.printStackTrace();
         return gr.fail();
     }
@@ -82,7 +84,7 @@ public class GlobalExceptionHandler {
      */
     @ExceptionHandler(JsonProcessingException.class)
     public ReturnDto<String> jsonProcessingException(JsonProcessingException e) {
-        log.error("异常=>", e);
+        log.error("异常=>{}",new Date().toString());
         e.printStackTrace();
         return gr.custom(ResultCode.BAD_REQUEST.getCode(), "Json解析失败");
     }
@@ -95,7 +97,7 @@ public class GlobalExceptionHandler {
      */
     @ExceptionHandler(JOSEException.class)
     public ReturnDto<String> jOSEException(JOSEException e) {
-        log.error("异常=>", e);
+        log.error("异常=>{}",new Date().toString());
         e.printStackTrace();
         return gr.custom(ResultCode.BAD_REQUEST.getCode(), "jwt签发失败");
     }
@@ -117,7 +119,7 @@ public class GlobalExceptionHandler {
      */
     @ExceptionHandler(UnsupportedEncodingException.class)
     public ReturnDto<String> unSupportedEncodingException(UnsupportedEncodingException e) {
-        log.error("异常=>", e);
+        log.error("异常=>{}",new Date().toString());
         e.printStackTrace();
         return gr.custom(ResultCode.BAD_REQUEST.getCode(), "文件编码解析失败");
     }
@@ -129,7 +131,7 @@ public class GlobalExceptionHandler {
      */
     @ExceptionHandler(FileSizeLimitExceededException.class)
     public ReturnDto<String> fileSizeLimitExceededException(FileSizeLimitExceededException e) {
-        log.error("异常=>", e);
+        log.error("异常=>{}",new Date().toString());
         e.printStackTrace();
         return gr.custom(ResultCode.BAD_REQUEST.getCode(), "文件大小超出限制，单个文件最大3MB");
     }
@@ -140,7 +142,7 @@ public class GlobalExceptionHandler {
      */
     @ExceptionHandler(MaxUploadSizeExceededException.class)
     public ReturnDto<String> maxUploadSizeExceededException(MaxUploadSizeExceededException e) {
-        log.error("异常=>", e);
+        log.error("异常=>{}",new Date().toString());
         e.printStackTrace();
         return gr.fail(ResultCode.BAD_REQUEST, "文件大小超出限制，总文件大小最大30MB");
     }

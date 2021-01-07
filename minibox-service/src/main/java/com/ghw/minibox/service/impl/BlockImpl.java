@@ -5,13 +5,16 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ghw.minibox.component.RedisUtil;
 import com.ghw.minibox.entity.MbBlock;
+import com.ghw.minibox.entity.MbGame;
 import com.ghw.minibox.mapper.MbBlockMapper;
+import com.ghw.minibox.mapper.MbGameMapper;
 import com.ghw.minibox.service.CommonService;
 import com.ghw.minibox.utils.GenerateBean;
 import com.qiniu.util.StringUtils;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -23,6 +26,8 @@ import java.util.List;
 public class BlockImpl implements CommonService<MbBlock> {
     @Resource
     private MbBlockMapper blockMapper;
+    @Resource
+    private MbGameMapper gameMapper;
     @Resource
     private RedisUtil redisUtil;
     @Resource
@@ -37,8 +42,24 @@ public class BlockImpl implements CommonService<MbBlock> {
             return objectMapper.readValue(fromRedis, new TypeReference<List<MbBlock>>() {
             });
         }
-
         List<MbBlock> blocks = blockMapper.queryAll(null);
+        //获取游戏的图片
+        List<Long> gidList = new ArrayList<>();
+        blocks.forEach(block -> gidList.add(block.getGid()));
+        List<MbGame> games = new ArrayList<>();
+        if (gidList.size() > 0) {
+            games = gameMapper.queryInId(gidList);
+        }
+
+
+        //数据组装
+        List<MbGame> finalGames = games;
+        blocks.forEach(block -> finalGames.forEach(game -> {
+            if (game.getId().equals(block.getGid())) {
+                block.setMbGame(game);
+            }
+        }));
+
         //打进缓存
         redisUtil.set(RedisUtil.REDIS_PREFIX + RedisUtil.BLOCK_PREFIX, objectMapper.writeValueAsString(blocks), 86400L);
         return blocks;

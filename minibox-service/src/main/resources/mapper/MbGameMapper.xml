@@ -20,6 +20,30 @@
         <result property="coverImg" column="cover_img" jdbcType="VARCHAR"/>
     </resultMap>
 
+
+    <select id="queryInId" resultMap="MbGameMap">
+        SELECT id,
+        name,
+        price,
+        state,
+        game_state,
+        score,
+        description,
+        release_time,
+        developer,
+        publisher,
+        score_count,
+        create_date,
+        update_date,
+        origin_price,
+        cover_img
+        FROM mb_game
+        WHERE id IN
+        <foreach collection="list" item="item" index="index" open="(" close=")" separator=",">
+            #{item}
+        </foreach>
+    </select>
+
     <!--查询单个-->
     <select id="queryById" resultMap="MbGameMap">
         select id,
