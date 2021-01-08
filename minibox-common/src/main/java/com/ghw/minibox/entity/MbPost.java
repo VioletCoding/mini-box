@@ -59,7 +59,7 @@ public class MbPost implements Serializable {
     @NotEmpty(message = "帖子标题title不能为空")
     private String title;
 
-    @Field(analyzer = "ik_max_word", type = FieldType.Text)
+    @Field(type = FieldType.Text)
     @ApiModelProperty(notes = "帖子内容")
     @NotEmpty(message = "帖子内容content不能为空")
     private String content;

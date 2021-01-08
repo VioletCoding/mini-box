@@ -1,10 +1,11 @@
 package com.ghw.minibox.controller;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.ghw.minibox.component.GenerateResult;
 import com.ghw.minibox.dto.ReturnDto;
+import com.ghw.minibox.entity.MbGame;
 import com.ghw.minibox.entity.MbPost;
-import com.ghw.minibox.service.PostSearchService;
+import com.ghw.minibox.service.impl.GameSearchImpl;
+import com.ghw.minibox.service.impl.PostSearchImpl;
 import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -12,6 +13,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * @author Violet
@@ -20,15 +23,21 @@ import javax.annotation.Resource;
  */
 @RestController
 @RequestMapping("search")
-public class PostSearchController {
+public class SearchController {
     @Resource
-    private PostSearchService searchService;
+    private PostSearchImpl postSearch;
+    @Resource
+    private GameSearchImpl gameSearch;
     @Resource
     private GenerateResult<Object> gr;
 
+    /**
+     * 导入帖子表的内容到ES
+     */
     @GetMapping("saveAll")
-    public ReturnDto<Object> importAll() throws JsonProcessingException {
-        searchService.getData();
+    public ReturnDto<Object> importAll() {
+        postSearch.getData();
+        gameSearch.getData();
         return gr.success();
     }
 
@@ -44,8 +53,11 @@ public class PostSearchController {
     public ReturnDto<Object> search(@RequestParam(required = false) String title,
                                     @RequestParam(required = false, defaultValue = "0") Integer pageNum,
                                     @RequestParam(required = false, defaultValue = "5") Integer pageSize) {
-        Page<MbPost> postPage = searchService.search(title, title, pageNum, pageSize);
-        return gr.success(postPage);
-
+        Page<MbPost> postPage = postSearch.search(title, pageNum, pageSize);
+        Page<MbGame> gamePage = gameSearch.search(title, pageNum, pageSize);
+        Map<String, Object> allData = new HashMap<>();
+        allData.put("post", postPage);
+        allData.put("game", gamePage);
+        return gr.success(allData);
     }
 }

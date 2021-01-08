@@ -6,8 +6,7 @@ import com.ghw.minibox.dto.ReturnDto;
 import com.ghw.minibox.entity.MbPost;
 import com.ghw.minibox.feign.SearchFeignClient;
 import com.ghw.minibox.repository.PostSearchRepository;
-import com.ghw.minibox.service.PostSearchService;
-import org.elasticsearch.ElasticsearchException;
+import com.ghw.minibox.service.CommonService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -22,7 +21,7 @@ import java.util.List;
  * @date 2021/1/4
  */
 @Service
-public class PostSearchServiceImpl implements PostSearchService {
+public class PostSearchImpl implements CommonService<MbPost> {
     @Resource
     private PostSearchRepository postSearchRepository;
     @Resource
@@ -32,15 +31,14 @@ public class PostSearchServiceImpl implements PostSearchService {
      * 简单搜索
      *
      * @param title    帖子标题
-     * @param content  帖子内容
      * @param pageNum  第几页
      * @param pageSize 每页多少条
      * @return 分页后的帖子数
      */
     @Override
-    public Page<MbPost> search(String title, String content, Integer pageNum, Integer pageSize) {
+    public Page<MbPost> search(String title, Integer pageNum, Integer pageSize) {
         Pageable pageable = PageRequest.of(pageNum, pageSize);
-        return postSearchRepository.findByTitleOrContent(title, content, pageable);
+        return postSearchRepository.findByTitleOrContent(title, title, pageable);
     }
 
     /**
@@ -50,12 +48,10 @@ public class PostSearchServiceImpl implements PostSearchService {
     public void getData() {
         ReturnDto<Object> dto = searchFeignClient.getDataFromService();
         ObjectMapper objectMapper = new ObjectMapper();
-
         try {
             List<MbPost> posts = objectMapper.convertValue(dto.getData(), new TypeReference<List<MbPost>>() {
             });
             postSearchRepository.saveAll(posts);
-            posts.forEach(post -> System.out.println(post.toString()));
         } catch (Exception e) {
             throw new RuntimeException("从Service服务获取到的数据 转换失败" + e.getMessage());
         }

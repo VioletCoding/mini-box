@@ -20,4 +20,13 @@ public interface SearchFeignClient {
     @GetMapping("/post/all")
     ReturnDto<Object> getDataFromService();
 
+    /**
+     * 获取全部游戏列表
+     *
+     * @return 游戏列表
+     */
+    @GetMapping("/game/all")
+    ReturnDto<Object> getDataFromServiceGame();
+
+
 }
