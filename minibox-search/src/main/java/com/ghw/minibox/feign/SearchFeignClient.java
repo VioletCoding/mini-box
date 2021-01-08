@@ -6,13 +6,18 @@ import org.springframework.web.bind.annotation.GetMapping;
 
 /**
  * @author Violet
- * @description
+ * @description 调用SERVICE服务获取MySQL数据
  * @date 2021/1/4
  */
-@FeignClient(url = "localhost:20002",name = "producer")
+@FeignClient(url = "localhost:20002", name = "service")
 public interface SearchFeignClient {
 
-    @GetMapping("/post/showAll")
-    ReturnDto<Object> getDataFromProducer();
+    /**
+     * 获取全部帖子列表
+     *
+     * @return 帖子列表
+     */
+    @GetMapping("/post/all")
+    ReturnDto<Object> getDataFromService();
 
 }

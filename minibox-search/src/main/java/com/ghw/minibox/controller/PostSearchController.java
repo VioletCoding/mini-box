@@ -32,11 +32,19 @@ public class PostSearchController {
         return gr.success();
     }
 
+    /**
+     * 简单搜索
+     *
+     * @param title    搜索内容
+     * @param pageNum  第几页
+     * @param pageSize 每页几个
+     * @return 搜索结果
+     */
     @GetMapping("simple")
     public ReturnDto<Object> search(@RequestParam(required = false) String title,
-                                    @RequestParam(required = false) Integer pageNum,
-                                    @RequestParam(required = false) Integer pageSize) {
-        Page<MbPost> postPage = searchService.search(title, pageNum, pageSize);
+                                    @RequestParam(required = false, defaultValue = "0") Integer pageNum,
+                                    @RequestParam(required = false, defaultValue = "5") Integer pageSize) {
+        Page<MbPost> postPage = searchService.search(title, title, pageNum, pageSize);
         return gr.success(postPage);
 
     }

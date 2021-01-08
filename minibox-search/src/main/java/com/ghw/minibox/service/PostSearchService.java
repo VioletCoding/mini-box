@@ -12,7 +12,7 @@ import org.springframework.data.domain.Page;
 
 public interface PostSearchService {
 
-    Page<MbPost> search(String title, Integer pageNum, Integer pageSize);
+    Page<MbPost> search(String title, String content,Integer pageNum, Integer pageSize);
 
     void getData() throws JsonProcessingException;
 }

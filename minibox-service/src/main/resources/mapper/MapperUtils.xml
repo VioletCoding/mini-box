@@ -49,7 +49,7 @@
                  LEFT JOIN mb_post AS p ON (p.id = c.tid)
                  LEFT JOIN mb_user AS u ON (u.id = p.uid)
         WHERE c.uid = #{uid}
-        AND c.type = 'TC';
+          AND c.type = 'TC';
     </select>
 
 
