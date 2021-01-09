@@ -24,7 +24,7 @@ public interface CommonService<T> {
     /**
      * 插入
      */
-    boolean insert(T entity) throws JsonProcessingException;
+    Object insert(T entity) throws JsonProcessingException;
 
     /**
      * 更新

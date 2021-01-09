@@ -33,7 +33,7 @@ public class CommentController {
     @ApiOperation("发表评论 -> 必传参数看 入参实体 里的Hibernate-Validator注解")
     @PostMapping("post")
     public ReturnDto<Object> publish(@RequestBody @Validated MbComment mbComment) throws JsonProcessingException {
-        boolean insert = comment.insert(mbComment);
+        boolean insert = (Boolean) comment.insert(mbComment);
         if (insert) {
             return gr.success();
         }

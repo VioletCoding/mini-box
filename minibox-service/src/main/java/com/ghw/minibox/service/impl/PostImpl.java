@@ -93,7 +93,7 @@ public class PostImpl implements CommonService<MbPost> {
     @AOPLog("发布帖子")
     @Override
     @Transactional(rollbackFor = Throwable.class)
-    public boolean insert(MbPost entity) throws JsonProcessingException {
+    public Object insert(MbPost entity) throws JsonProcessingException {
         int insert = postMapper.insert(entity);
         if (insert > 0) {
             //刷新缓存

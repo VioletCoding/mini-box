@@ -71,7 +71,7 @@ public class BlockImpl implements CommonService<MbBlock> {
     }
 
     @Override
-    public boolean insert(MbBlock entity) {
+    public Object insert(MbBlock entity) {
         return false;
     }
 

@@ -47,7 +47,5 @@ public class RefreshDataUtil {
             game.selectAll(null);
             searchFeignClient.refreshData();
         }
-
     }
-
 }

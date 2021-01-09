@@ -228,7 +228,7 @@ public class UserImpl implements CommonService<MbUser> {
     }
 
     @Override
-    public boolean insert(MbUser entity) {
+    public Object insert(MbUser entity) {
         return userMapper.insert(entity) > 0;
     }
 

@@ -51,7 +51,7 @@ public class CommentImpl implements CommonService<MbComment> {
     @AOPLog("发表评论")
     @Override
     @Transactional(rollbackFor = Throwable.class)
-    public boolean insert(MbComment entity) throws JsonProcessingException {
+    public Object insert(MbComment entity) throws JsonProcessingException {
         boolean isPost = entity.getType().equals(PostType.COMMENT_IN_POST.getType());
         if (isPost) {
             if (entity.getTid() == null) {

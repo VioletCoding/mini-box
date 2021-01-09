@@ -96,7 +96,7 @@ public class GameImpl implements CommonService<MbGame> {
     }
 
     @Override
-    public boolean insert(MbGame entity) {
+    public Object insert(MbGame entity) {
         return false;
     }
 
