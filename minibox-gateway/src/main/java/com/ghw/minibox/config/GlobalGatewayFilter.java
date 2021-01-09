@@ -51,7 +51,8 @@ public class GlobalGatewayFilter implements GlobalFilter, Ordered {
      * @return 是否被忽略（如果在忽略列表里，直接放行，不用鉴权）
      */
     private boolean checkUrl(String path) {
-        return enableAuth.getIgnoreUrl()
+        return enableAuth
+                .getIgnoreUrl()
                 .stream()
                 .map(url -> url.replace("/**", ""))
                 .anyMatch(path::startsWith);
@@ -77,17 +78,15 @@ public class GlobalGatewayFilter implements GlobalFilter, Ordered {
         String path = exchange.getRequest().getURI().getRawPath();
         //如果在忽略的url里，则跳过
         if (checkUrl(path)) {
-            log.info("请求的URL在忽略列表里，跳过 -> {}", path);
+            log.info("请求的URL=>{} 在忽略列表里，直接跳过", path);
             return chain.filter(exchange);
         }
-
-        log.info("需鉴权请求，path=>{}", path);
         ServerHttpRequest request = exchange.getRequest();
         ServerHttpResponse response = exchange.getResponse();
         String token = request.getHeaders().getFirst("accessToken");
         //校验token字符串
         if (StringUtils.isNullOrEmpty(token)) {
-            log.error("token为空");
+            log.error("从请求头获取的token为空");
             response.setStatusCode(HttpStatus.UNAUTHORIZED);
             return getVoidMono(response, gr.fail(ResultCode.UNAUTHORIZED));
         }
@@ -98,17 +97,17 @@ public class GlobalGatewayFilter implements GlobalFilter, Ordered {
             String tokenInRedis = redis.get(RedisUtil.TOKEN_PREFIX + username);
 
             if (StringUtils.isNullOrEmpty(tokenInRedis)) {
-                log.error("token为空");
+                log.error("从Redis获取到的token为空");
                 response.setStatusCode(HttpStatus.UNAUTHORIZED);
                 return getVoidMono(response, gr.fail(ResultCode.UNAUTHORIZED));
             }
             if (!tokenInRedis.equals(token)) {
-                log.info("token不合法！");
+                log.error("token不合法！");
                 response.setStatusCode(HttpStatus.UNAUTHORIZED);
                 return getVoidMono(response, gr.fail(ResultCode.UNAUTHORIZED));
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            log.error(e.getMessage());
             response.setStatusCode(HttpStatus.UNAUTHORIZED);
             return getVoidMono(response, gr.fail(ResultCode.UNAUTHORIZED));
         }

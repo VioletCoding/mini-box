@@ -28,7 +28,7 @@
         <skipTests>true</skipTests>
         <java.version>1.8</java.version>
     </properties>
-
+    <!--注意 dependencyManagement 这个标签，在这个标签里的依赖不会被实际引入，只是管理子工程里实际引入了这些依赖的版本-->
     <dependencyManagement>
         <dependencies>
             <!--自定义封装模块-->
@@ -37,13 +37,13 @@
                 <artifactId>minibox-common</artifactId>
                 <version>${project.version}</version>
             </dependency>
-            <!--Spring Boot 基础组件都在这里了-->
+            <!--Spring Boot 基础组件-->
             <dependency>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-starter-web</artifactId>
                 <version>2.3.0.RELEASE</version>
             </dependency>
-            <!--Spring Cloud 相关依赖-->
+            <!--Spring Cloud 相关依赖 注意这里type是pom，要用里面的还要点进去实际声明引入-->
             <dependency>
                 <groupId>org.springframework.cloud</groupId>
                 <artifactId>spring-cloud-dependencies</artifactId>
@@ -51,13 +51,15 @@
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
-            <!-- spring-cloud-starter-gateway -->
+            <!-- spring-cloud-starter-gateway
+            注意spring-boot-starter-web和spring-cloud-starter-gateway不能同时引入
+            因为gateway用的是webflux，而web用的是webmvc，会冲突-->
             <dependency>
                 <groupId>org.springframework.cloud</groupId>
                 <artifactId>spring-cloud-starter-gateway</artifactId>
                 <version>2.2.0.RELEASE</version>
             </dependency>
-            <!--Spring Cloud Alibaba 相关依赖-->
+            <!--Spring Cloud Alibaba 相关依赖 注意这里type是pom，要用里面的还要点进去实际声明引入-->
             <dependency>
                 <groupId>com.alibaba.cloud</groupId>
                 <artifactId>spring-cloud-alibaba-dependencies</artifactId>
@@ -148,6 +150,9 @@
     </dependencyManagement>
 
     <build>
+        <!--注意pluginManagement这个标签，和dependencyManagement是一个道理，只是声明，并不会实际引入
+        所以工程在使用maven打包的时候，如果打包失败，查看子工程实际引入这个构建工具时，是否被这个标签包着
+        如果是，那么删掉即可-->
         <pluginManagement>
             <plugins>
                 <plugin>

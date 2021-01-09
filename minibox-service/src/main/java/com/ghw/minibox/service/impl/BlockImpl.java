@@ -38,26 +38,24 @@ public class BlockImpl implements CommonService<MbBlock> {
         //先查缓存
         ObjectMapper objectMapper = generateBean.getObjectMapper();
         String fromRedis = redisUtil.get(RedisUtil.REDIS_PREFIX + RedisUtil.BLOCK_PREFIX);
+
         if (!StringUtils.isNullOrEmpty(fromRedis)) {
             return objectMapper.readValue(fromRedis, new TypeReference<List<MbBlock>>() {
             });
         }
+
         List<MbBlock> blocks = blockMapper.queryAll(null);
         //获取游戏的图片
         List<Long> gidList = new ArrayList<>();
         blocks.forEach(block -> gidList.add(block.getGid()));
         List<MbGame> games = new ArrayList<>();
-        if (gidList.size() > 0) {
-            games = gameMapper.queryInId(gidList);
-        }
 
+        if (gidList.size() > 0) games = gameMapper.queryInId(gidList);
 
         //数据组装
         List<MbGame> finalGames = games;
         blocks.forEach(block -> finalGames.forEach(game -> {
-            if (game.getId().equals(block.getGid())) {
-                block.setMbGame(game);
-            }
+            if (game.getId().equals(block.getGid())) block.setMbGame(game);
         }));
 
         //打进缓存

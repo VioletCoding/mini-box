@@ -13,7 +13,7 @@ spring:
     nacos:
       discovery:
         #nacos注册中心
-        server-addr: localhost:8848
+        server-addr: 127.0.0.1:8848
         namespace: 55fbbffc-f66a-4226-96a7-fb1c2245651d
         group: MINIBOX
         #naocs配置中心
@@ -23,6 +23,6 @@ spring:
         #命名空间
         namespace: 55fbbffc-f66a-4226-96a7-fb1c2245651d
         #地址
-        server-addr: localhost:8848
+        server-addr: 127.0.0.1:8848
         #配置文件后缀名
         file-extension: yaml

@@ -82,9 +82,7 @@ public class LogAspect {
         //获取注解，AOPLog为自定义注解
         AOPLog annotation = method.getAnnotation(AOPLog.class);
         //获取默认值
-        if (annotation != null) {
-            aopBean.setOperation(annotation.value());
-        }
+        if (annotation != null) aopBean.setOperation(annotation.value());
         //获取类名
         String className = joinPoint.getTarget().getClass().getName();
         //将方法的全类名保存
@@ -104,8 +102,6 @@ public class LogAspect {
         }
         long end = System.currentTimeMillis();
         aopBean.setTime(end - begin);
-
-        log.info("本次操作结果==>{}", aopBean);
-        log.info("结束执行{}方法", methodName);
+        log.info("结束执行{}方法，本次操作结果{}", methodName, aopBean);
     }
 }

@@ -14,8 +14,6 @@ public class GenerateResult<T> {
 
     /**
      * 成功，但不返回数据
-     *
-     * @return ReturnDto
      */
     public ReturnDto<T> success() {
         return new ReturnDto<T>().setCode(ResultCode.OK.getCode()).setMessage(ResultCode.OK.getMessage());
@@ -23,52 +21,31 @@ public class GenerateResult<T> {
 
     /**
      * 成功，并返回数据
-     *
-     * @param data 数据体
-     * @return ReturnDto
      */
     public ReturnDto<T> success(T data) {
-        return new ReturnDto<T>()
-                .setCode(ResultCode.OK.getCode())
-                .setMessage(ResultCode.OK.getMessage())
-                .setData(data);
+        return new ReturnDto<T>().setCode(ResultCode.OK.getCode()).setMessage(ResultCode.OK.getMessage()).setData(data);
     }
 
     /**
      * 失败，响应失败信息，不带数据
-     *
-     * @return ReturnDto
      */
     public ReturnDto<T> fail() {
-        return new ReturnDto<T>()
-                .setCode(ResultCode.BAD_REQUEST.getCode())
-                .setMessage(ResultCode.BAD_REQUEST.getMessage());
+        return new ReturnDto<T>().setCode(ResultCode.BAD_REQUEST.getCode()).setMessage(ResultCode.BAD_REQUEST.getMessage());
     }
 
     public ReturnDto<T> fail(ResultCode r) {
-        return new ReturnDto<T>()
-                .setCode(r.getCode())
-                .setMessage(r.getMessage());
+        return new ReturnDto<T>().setCode(r.getCode()).setMessage(r.getMessage());
     }
 
     public ReturnDto<T> fail(ResultCode r, T data) {
-        return new ReturnDto<T>()
-                .setCode(r.getCode())
-                .setMessage(r.getMessage())
-                .setData(data);
+        return new ReturnDto<T>().setCode(r.getCode()).setMessage(r.getMessage()).setData(data);
     }
 
     /**
      * 自定义返回信息，不带数据
-     *
-     * @param code    响应码
-     * @param message 响应信息
-     * @return ReturnDto
      */
     public ReturnDto<T> custom(int code, String message) {
-        return new ReturnDto<T>()
-                .setCode(code)
-                .setMessage(message);
+        return new ReturnDto<T>().setCode(code).setMessage(message);
     }
 
 }

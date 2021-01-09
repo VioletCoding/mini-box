@@ -52,18 +52,14 @@ public class CommentImpl implements CommonService<MbComment> {
     @Override
     @Transactional(rollbackFor = Throwable.class)
     public Object insert(MbComment entity) throws JsonProcessingException {
+
         boolean isPost = entity.getType().equals(PostType.COMMENT_IN_POST.getType());
-        if (isPost) {
-            if (entity.getTid() == null) {
-                throw new RuntimeException(ResultCode.TID_IS_NULL.getMessage());
-            }
-        }
+        if (isPost)
+            if (entity.getTid() == null) throw new RuntimeException(ResultCode.TID_IS_NULL.getMessage());
+
         boolean isGame = entity.getType().equals(PostType.COMMENT_IN_GAME.getType());
-        if (isGame) {
-            if (entity.getGid() == null) {
-                throw new RuntimeException(ResultCode.GID_IS_NULL.getMessage());
-            }
-        }
+        if (isGame)
+            if (entity.getGid() == null) throw new RuntimeException(ResultCode.GID_IS_NULL.getMessage());
 
         int insert = commentMapper.insert(entity);
         if (insert > 0) {
@@ -86,16 +82,14 @@ public class CommentImpl implements CommonService<MbComment> {
     public boolean Reply(MbReply mbReply) {
 
         if (mbReply.getType().equals(PostType.REPLY_IN_POST.getType())) {
-            if (mbReply.getReplyInPost() == null) {
-                throw new RuntimeException("当type等于TR时，replyInPost字段不能为空");
-            }
+            if (mbReply.getReplyInPost() == null) throw new RuntimeException("当type等于TR时，replyInPost字段不能为空");
+
             mbReply.setReplyInGame(null);
         }
 
         if (mbReply.getType().equals(PostType.REPLY_IN_GAME.getType())) {
-            if (mbReply.getReplyInGame() == null) {
-                throw new RuntimeException("当type等于GR时，replyInGame字段不能为空");
-            }
+            if (mbReply.getReplyInGame() == null) throw new RuntimeException("当type等于GR时，replyInGame字段不能为空");
+
             mbReply.setReplyInPost(null);
         }
 

@@ -68,11 +68,12 @@ public class UserController {
     @ApiOperation("自动判断登陆还是注册")
     @PostMapping("after")
     public ReturnDto<Object> doService(@RequestBody Map<String, Object> params) throws JsonProcessingException, JOSEException {
+
         String authCode = (String) params.get("authCode");
         String username = (String) params.get("username");
-        if (authCode.length() < 6) {
-            return gr.fail(ResultCode.AUTH_CODE_ERROR);
-        }
+
+        if (authCode.length() < 6) return gr.fail(ResultCode.AUTH_CODE_ERROR);
+
         return gr.success(user.doService(username, authCode));
     }
 
@@ -141,16 +142,20 @@ public class UserController {
     @ApiOperation("校验验证码")
     @PostMapping("check")
     public Object checkAuthCode(@RequestBody Map<String, Object> params, ServletWebRequest request) throws Exception {
+
         String token = request.getHeader("accessToken");
+
         String authCode = (String) params.get("authCode");
-        System.out.println("打印一下authCode" + authCode);
+
         boolean c = StringUtils.isNullOrEmpty(authCode);
+
         if (!c) {
+
             PayloadDto payloadDto = jwt.verifyTokenByHMAC(token);
             boolean b = user.authRegCode(payloadDto.getUsername(), authCode);
-            if (b) {
-                return gr.success();
-            }
+
+            if (b) return gr.success();
+
         }
         return gr.fail();
     }
@@ -164,10 +169,11 @@ public class UserController {
     @ApiOperation("修改密码")
     @PostMapping("modify")
     public Object doModifyPassword(@RequestBody @Validated(UpdatePassword.class) MbUser mbUser) {
+
         boolean b = user.updatePassword(mbUser);
-        if (b) {
-            return gr.success();
-        }
+
+        if (b) return gr.success();
+
         return gr.fail(ResultCode.AUTH_CODE_ERROR);
     }
 
@@ -182,9 +188,9 @@ public class UserController {
     @ApiOperation("修改用户头像")
     @PostMapping("updateImg")
     public ReturnDto<Object> updateUserImg(@RequestParam MultipartFile userImg, @RequestParam Long uid) throws IOException {
-        if (userImg.isEmpty()) {
-            return gr.fail();
-        }
+
+        if (userImg.isEmpty()) return gr.fail();
+
         return gr.success(user.updateUserImg(userImg, uid));
     }
 

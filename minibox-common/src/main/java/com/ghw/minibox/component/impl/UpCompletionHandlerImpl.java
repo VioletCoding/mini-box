@@ -17,7 +17,7 @@ import lombok.extern.slf4j.Slf4j;
 public class UpCompletionHandlerImpl implements UpCompletionHandler {
 
     /**
-     * 七牛云相应类
+     * 七牛云响应类
      */
     @Data
     @Accessors(chain = true)
@@ -33,22 +33,22 @@ public class UpCompletionHandlerImpl implements UpCompletionHandler {
     /**
      * 七牛云上传异步回调函数
      *
-     * @param key 文件key
-     * @param r   响应类
+     * @param key 文件名
+     * @param r   七牛云响应类
      */
     @Override
     public void complete(String key, Response r) {
         try {
             QiNiuPutRet qiNiuPutRet = r.jsonToObject(QiNiuPutRet.class);
-            log.info("本次上传已完成,异步上传文件key==>{} \n 异步上传回调==>{}", key, qiNiuPutRet.toString());
+            log.info("上传文件key=>{}", key);
+            log.info("上传回调=>{}", qiNiuPutRet.toString());
         } catch (QiniuException e) {
-            e.printStackTrace();
+            log.error(e.getMessage());
             try {
                 QiNiuPutRet qiNiuPutRet = e.response.jsonToObject(QiNiuPutRet.class);
-                log.error("七牛云返回错误信息==>{}", qiNiuPutRet);
+                log.error("错误信息=>{}", qiNiuPutRet);
             } catch (QiniuException qiniuException) {
-                qiniuException.printStackTrace();
-                log.error("七牛云返回的错误信息中的错误信息==>{}", qiniuException.response.getInfo());
+                log.error("错误信息=={}", qiniuException.response.getInfo());
             }
         }
     }

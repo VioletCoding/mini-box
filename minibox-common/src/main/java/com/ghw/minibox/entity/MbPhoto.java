@@ -28,7 +28,7 @@ public class MbPhoto implements Serializable {
     private Long id;
 
     @ApiModelProperty(notes = "图片链接")
-    @NotEmpty(message = "图片链接link不能为空")
+    @NotEmpty(message = "图片链接photoLink不能为空")
     private String photoLink;
 
     @ApiModelProperty(notes = "游戏id")

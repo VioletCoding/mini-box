@@ -51,7 +51,7 @@ public class MbPost implements Serializable {
     private Long uid;
 
     @Field(type = FieldType.Keyword)
-    @ApiModelProperty(notes = "记录这个帖子在哪个版块下发表的，默认是【杂谈】")
+    @ApiModelProperty(notes = "记录这个帖子在哪个版块下发表的，默认是「杂谈」")
     private Long bid;
 
     @Field(analyzer = "ik_max_word", type = FieldType.Text)

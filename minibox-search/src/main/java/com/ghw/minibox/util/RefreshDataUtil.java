@@ -9,6 +9,7 @@ import com.ghw.minibox.entity.MbPost;
 import com.ghw.minibox.repository.GameSearchRepository;
 import com.ghw.minibox.repository.PostSearchRepository;
 import com.qiniu.util.StringUtils;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
@@ -20,6 +21,7 @@ import java.util.List;
  * @date 2021/1/9
  */
 @Component
+@Slf4j
 public class RefreshDataUtil {
     @Resource
     private RedisUtil redisUtil;
@@ -27,7 +29,6 @@ public class RefreshDataUtil {
     private PostSearchRepository postSearchRepository;
     @Resource
     private GameSearchRepository gameSearchRepository;
-
     /**
      * 刷新数据
      */
@@ -57,7 +58,7 @@ public class RefreshDataUtil {
             }
 
         } catch (JsonProcessingException e) {
-            e.printStackTrace();
+            log.error(e.getMessage());
         }
     }
 }

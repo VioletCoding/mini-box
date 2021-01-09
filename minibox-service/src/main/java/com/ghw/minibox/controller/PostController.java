@@ -38,10 +38,11 @@ public class PostController {
     @ApiOperation("发布帖子 -> 入参要求看实体的注解")
     @PostMapping("publish")
     public ReturnDto<Object> publishPost(@RequestBody @Validated MbPost mbPost) throws JsonProcessingException {
+
         boolean insert = (Boolean) post.insert(mbPost);
-        if (insert) {
-            return gr.success();
-        }
+
+        if (insert) return gr.success();
+
         return gr.fail();
     }
 

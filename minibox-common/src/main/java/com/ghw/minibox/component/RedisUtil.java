@@ -16,21 +16,13 @@ import java.util.concurrent.TimeUnit;
 public class RedisUtil {
 
     public static final String AUTH_PREFIX = "auth_code:";
-
     public static final String TOKEN_PREFIX = "auth_token:";
-
     public static final String LOGIN_FLAG = "login:";
-
     public static final String ORDER_PREFIX = "order:";
-
     public static final String REDIS_PREFIX = "minibox:";
-
     public static final String POST_PREFIX = "post:";
-
     public static final String GAME_PREFIX = "game:";
-
     public static final String BLOCK_PREFIX = "block:";
-
     public static final String USER_PREFIX = "user:";
 
     @Resource

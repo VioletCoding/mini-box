@@ -91,9 +91,9 @@ public class NimbusJoseJwt {
     public PayloadDto verifyTokenByHMAC(String token) throws Exception {
         JWSObject jwsObject = JWSObject.parse(token);
         MACVerifier verifier = new MACVerifier(SECRET);
-        if (!jwsObject.verify(verifier)) {
-            throw new Exception("token签名不合法");
-        }
+
+        if (!jwsObject.verify(verifier)) throw new Exception("token签名不合法");
+
         String payload = jwsObject.getPayload().toString();
         ObjectMapper objectMapper = new ObjectMapper();
         return objectMapper.readValue(payload, PayloadDto.class);

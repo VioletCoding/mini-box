@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.GetMapping;
  * @description 调用SERVICE服务获取MySQL数据
  * @date 2021/1/4
  */
-@FeignClient(url = "localhost:20002", name = "service")
+@FeignClient(url = "127.0.0.1:20002", name = "service")
 public interface SearchFeignClient {
 
     /**

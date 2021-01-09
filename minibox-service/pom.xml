@@ -17,7 +17,7 @@
     </properties>
 
     <dependencies>
-        <!--Spring Boot 基础组件都在这里了-->
+        <!--Spring Boot 基础组件-->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>

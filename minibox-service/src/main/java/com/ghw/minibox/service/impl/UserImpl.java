@@ -91,7 +91,6 @@ public class UserImpl implements CommonService<MbUser> {
         if (mbUser.size() != 0) {
             ObjectMapper om = new ObjectMapper();
             String json = om.writeValueAsString(mbUser.get(0));
-            log.info("用户存在，存到Redis=>{}", json);
             redisUtil.set(RedisUtil.LOGIN_FLAG + username, json, 300L);
             return true;
         } else {
@@ -108,14 +107,12 @@ public class UserImpl implements CommonService<MbUser> {
         try {
             //如果用户存在，执行登陆逻辑，否则执行注册逻辑
             if (exist(lowerCaseUsername)) {
-                log.info("用户存在，发送「登陆」验证码短信");
                 sendEmail.createEmail(lowerCaseUsername, SendEmail.SUBJECT, SendEmail.LOGIN_MESSAGE + authCode);
             } else {
-                log.info("用户不存在，发送「注册」验证码短信");
                 sendEmail.createEmail(lowerCaseUsername, SendEmail.SUBJECT, SendEmail.REGISTER_MESSAGE + authCode);
             }
         } finally {
-            ObjectMapper om = new ObjectMapper();
+            ObjectMapper om = generateBean.getObjectMapper();
             String json = om.writeValueAsString(map);
             redisUtil.set(RedisUtil.AUTH_PREFIX + lowerCaseUsername, json, 300L);
         }
@@ -123,9 +120,8 @@ public class UserImpl implements CommonService<MbUser> {
 
     @AOPLog("校验验证码")
     public boolean authRegCode(String key, String code) throws JsonProcessingException {
-        log.info("打印一下key=>{}和authCode=>{}", key, code);
+
         String valueFromRedis = redisUtil.get(RedisUtil.AUTH_PREFIX + key.toLowerCase());
-        log.info("校验验证码,从Redis获取的值=>{}", valueFromRedis);
 
         if (!StringUtils.isNullOrEmpty(valueFromRedis)) {
             Map<String, Object> map = generateBean.getObjectMapper().readValue(valueFromRedis, new TypeReference<Map<String, Object>>() {
@@ -141,11 +137,9 @@ public class UserImpl implements CommonService<MbUser> {
 
 
     @AOPLog("自动判断登陆或注册逻辑方法")
-    @Transactional(rollbackFor = Exception.class)
+    @Transactional(rollbackFor = Throwable.class)
     public Object doService(String username, String authCode) throws JsonProcessingException, JOSEException {
-        log.info("打印doService入参=>{} => {}", username, authCode);
         String lowerCaseUsername = username.toLowerCase();
-        log.info("小写后的username=>{}", lowerCaseUsername);
         //先校验验证码
         boolean auth = authRegCode(lowerCaseUsername, authCode);
 
@@ -254,17 +248,17 @@ public class UserImpl implements CommonService<MbUser> {
         //更新用户信息
         boolean update = this.update(new MbUser().setUserImg(this.qiNiuYunLink + fastSimpleUUID).setId(uid));
 
-        if (update) {
-            return this.selectOne(uid);
-        }
+        if (update) return this.selectOne(uid);
+
         throw new RuntimeException("更新用户头像出现错误");
     }
 
     @AOPLog("更新密码，id、password必传")
-    @Transactional(rollbackFor = Exception.class)
+    @Transactional(rollbackFor = Throwable.class)
     public boolean updatePassword(MbUser mbUser) {
         String md5 = SecureUtil.md5(mbUser.getPassword());
         mbUser.setPassword(md5);
+
         int update = userMapper.update(mbUser);
         if (update > 0) {
             redisUtil.remove(RedisUtil.TOKEN_PREFIX + this.selectOne(mbUser.getId()).getUsername());

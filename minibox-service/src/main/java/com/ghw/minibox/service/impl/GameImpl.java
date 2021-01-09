@@ -73,18 +73,14 @@ public class GameImpl implements CommonService<MbGame> {
         List<MbComment> comments = commentMapper.queryAll(new MbComment().setGid(mbGame.getId()));
         //评论的用户
         List<Long> uIdList = new ArrayList<>();
-        comments.forEach(comment -> {
-            uIdList.add(comment.getUid());
-        });
+        comments.forEach(comment -> uIdList.add(comment.getUid()));
         //游戏标签
         List<MbTag> tags = tagMapper.queryAll(new MbTag().setGid(mbGame.getId()));
         //数据组装
         if (uIdList.size() > 0) {
             List<MbUser> users = userMapper.queryInId(uIdList);
             comments.forEach(comment -> users.forEach(user -> {
-                if (comment.getUid().equals(user.getId())) {
-                    comment.setMbUser(user);
-                }
+                if (comment.getUid().equals(user.getId())) comment.setMbUser(user);
             }));
         }
         mbGame.setPhotoList(photos);

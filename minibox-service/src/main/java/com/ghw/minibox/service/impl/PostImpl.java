@@ -114,9 +114,7 @@ public class PostImpl implements CommonService<MbPost> {
     @Transactional(rollbackFor = Throwable.class)
     public Map<String, Object> upload(MultipartFile[] multipartFiles) throws IOException {
 
-        if (multipartFiles.length < 1) {
-            throw new RuntimeException("文件为空");
-        }
+        if (multipartFiles.length < 1) throw new RuntimeException("文件为空");
 
         List<String> links = new ArrayList<>();
 
