@@ -40,7 +40,11 @@
             <groupId>com.ghw</groupId>
             <artifactId>minibox-common</artifactId>
         </dependency>
-
+        <!--openfeign-->
+        <dependency>
+            <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-starter-openfeign</artifactId>
+        </dependency>
 
         <!--Nacos注册中心和配置中心-->
         <dependency>

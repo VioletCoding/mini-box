@@ -1,5 +1,6 @@
 package com.ghw.minibox.controller;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.ghw.minibox.component.GenerateResult;
 import com.ghw.minibox.dto.ReturnDto;
 import com.ghw.minibox.entity.MbComment;
@@ -31,7 +32,7 @@ public class CommentController {
 
     @ApiOperation("发表评论 -> 必传参数看 入参实体 里的Hibernate-Validator注解")
     @PostMapping("post")
-    public ReturnDto<Object> publish(@RequestBody @Validated MbComment mbComment) {
+    public ReturnDto<Object> publish(@RequestBody @Validated MbComment mbComment) throws JsonProcessingException {
         boolean insert = comment.insert(mbComment);
         if (insert) {
             return gr.success();

@@ -6,6 +6,7 @@ import com.ghw.minibox.entity.MbGame;
 import com.ghw.minibox.entity.MbPost;
 import com.ghw.minibox.service.impl.GameSearchImpl;
 import com.ghw.minibox.service.impl.PostSearchImpl;
+import com.ghw.minibox.util.RefreshDataUtil;
 import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -29,17 +30,9 @@ public class SearchController {
     @Resource
     private GameSearchImpl gameSearch;
     @Resource
+    private RefreshDataUtil refreshDataUtil;
+    @Resource
     private GenerateResult<Object> gr;
-
-    /**
-     * 导入帖子表的内容到ES
-     */
-    @GetMapping("saveAll")
-    public ReturnDto<Object> importAll() {
-        postSearch.getData();
-        gameSearch.getData();
-        return gr.success();
-    }
 
     /**
      * 简单搜索
@@ -59,5 +52,16 @@ public class SearchController {
         allData.put("post", postPage);
         allData.put("game", gamePage);
         return gr.success(allData);
+    }
+
+    /**
+     * 刷新ElasticSearch数据
+     *
+     * @return 是否成功
+     */
+    @GetMapping("refresh")
+    public ReturnDto<Object> refreshData() {
+        refreshDataUtil.refresh();
+        return gr.success();
     }
 }

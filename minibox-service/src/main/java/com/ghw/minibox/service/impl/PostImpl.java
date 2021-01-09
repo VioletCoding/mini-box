@@ -5,12 +5,14 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ghw.minibox.component.RedisUtil;
-import com.ghw.minibox.entity.*;
-import com.ghw.minibox.mapper.*;
+import com.ghw.minibox.entity.MbPost;
+import com.ghw.minibox.mapper.MapperUtils;
+import com.ghw.minibox.mapper.MbPostMapper;
 import com.ghw.minibox.service.CommonService;
 import com.ghw.minibox.utils.AOPLog;
 import com.ghw.minibox.utils.GenerateBean;
 import com.ghw.minibox.utils.QiNiuUtil;
+import com.ghw.minibox.utils.RefreshDataUtil;
 import com.qiniu.util.StringUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -46,6 +48,8 @@ public class PostImpl implements CommonService<MbPost> {
     private GenerateBean generateBean;
     @Value("${qiNiu.link}")
     private String qnLink;
+    @Resource
+    private RefreshDataUtil refreshDataUtil;
 
 
     /**
@@ -70,6 +74,7 @@ public class PostImpl implements CommonService<MbPost> {
         //打进缓存
         String json = objectMapper.writeValueAsString(posts);
         redisUtil.set(RedisUtil.REDIS_PREFIX + RedisUtil.POST_PREFIX, json, 86400L);
+
         return posts;
     }
 
@@ -91,8 +96,8 @@ public class PostImpl implements CommonService<MbPost> {
     public boolean insert(MbPost entity) throws JsonProcessingException {
         int insert = postMapper.insert(entity);
         if (insert > 0) {
-            //更新缓存
-            redisUtil.remove(RedisUtil.REDIS_PREFIX + RedisUtil.POST_PREFIX);
+            //刷新缓存
+            refreshDataUtil.refresh(RefreshDataUtil.POST);
             return true;
         }
         return false;

@@ -1,5 +1,6 @@
 package com.ghw.minibox.service.impl;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.ghw.minibox.component.RedisUtil;
 import com.ghw.minibox.entity.MbComment;
 import com.ghw.minibox.entity.MbReply;
@@ -8,6 +9,7 @@ import com.ghw.minibox.mapper.MbReplyMapper;
 import com.ghw.minibox.service.CommonService;
 import com.ghw.minibox.utils.AOPLog;
 import com.ghw.minibox.utils.PostType;
+import com.ghw.minibox.utils.RefreshDataUtil;
 import com.ghw.minibox.utils.ResultCode;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -32,6 +34,8 @@ public class CommentImpl implements CommonService<MbComment> {
     private MbReplyMapper replyMapper;
     @Resource
     private RedisUtil redisUtil;
+    @Resource
+    private RefreshDataUtil refreshDataUtil;
 
     @Override
     public List<MbComment> selectAll(MbComment param) {
@@ -47,7 +51,7 @@ public class CommentImpl implements CommonService<MbComment> {
     @AOPLog("发表评论")
     @Override
     @Transactional(rollbackFor = Throwable.class)
-    public boolean insert(MbComment entity) {
+    public boolean insert(MbComment entity) throws JsonProcessingException {
         boolean isPost = entity.getType().equals(PostType.COMMENT_IN_POST.getType());
         if (isPost) {
             if (entity.getTid() == null) {
@@ -65,12 +69,12 @@ public class CommentImpl implements CommonService<MbComment> {
         if (insert > 0) {
             //更新缓存
             if (isPost) {
-                log.info("isPost");
                 redisUtil.remove(RedisUtil.REDIS_PREFIX + RedisUtil.POST_PREFIX + Objects.requireNonNull(entity.getTid()));
+                refreshDataUtil.refresh(RefreshDataUtil.POST);
             }
             if (isGame) {
-                log.info("isGame");
                 redisUtil.remove(RedisUtil.REDIS_PREFIX + RedisUtil.GAME_PREFIX + Objects.requireNonNull(entity.getGid()));
+                refreshDataUtil.refresh(RefreshDataUtil.GAME);
             }
             return true;
         }

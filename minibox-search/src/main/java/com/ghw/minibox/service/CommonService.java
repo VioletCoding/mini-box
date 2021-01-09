@@ -12,6 +12,4 @@ public interface CommonService<T> {
 
     Page<T> search(String value, Integer pageNum, Integer pageSize);
 
-    void getData();
-
 }
