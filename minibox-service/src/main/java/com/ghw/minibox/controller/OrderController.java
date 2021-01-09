@@ -33,18 +33,22 @@ public class OrderController {
     @PostMapping("generateOrder")
     public ReturnDto<Object> generateOrder(@RequestBody @Validated MbOrder mbOrder) throws JsonProcessingException {
 
-        Object generateOrder = order.insert(mbOrder);
+        Object generateOrder = order.create(mbOrder);
 
-        if (generateOrder != null) return gr.success(generateOrder);
+        if (generateOrder.equals(ResultCode.ORDER_PAYED.getMessage())) return gr.fail(ResultCode.ORDER_PAYED);
+        if (generateOrder.equals(ResultCode.GAME_CANT_BE_BUY.getMessage())) return gr.fail(ResultCode.GAME_CANT_BE_BUY);
 
-        return gr.fail(ResultCode.ORDER_GENERATE_FAIL);
+        return gr.success(generateOrder);
+
     }
 
     @ApiOperation("确认订单")
     @PostMapping("confirm")
-    public ReturnDto<Object> confirmOrder(@RequestBody @Validated MbOrder mbOrder) {
+    public ReturnDto<Object> confirmOrder(@RequestBody @Validated MbOrder mbOrder) throws JsonProcessingException {
 
-        boolean b = order.update(mbOrder);
+        if (mbOrder.getOrderId() == null) return gr.fail();
+
+        boolean b = (Boolean) order.insert(mbOrder);
 
         if (b) return gr.success();
 

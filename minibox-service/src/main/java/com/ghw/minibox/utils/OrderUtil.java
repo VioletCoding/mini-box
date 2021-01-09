@@ -23,8 +23,8 @@ public class OrderUtil {
     public Long getOrderId() {
         StringBuilder sb = new StringBuilder();
         Random random = new Random();
-        for (int i = 0; i < 8; i++) {
-            sb.append(random.nextInt(10));
+        for (int i = 1; i < 8; i++) {
+            sb.append(random.nextInt(9));
         }
         return Long.parseLong(sb.toString());
     }

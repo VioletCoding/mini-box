@@ -26,9 +26,15 @@ public enum ResultCode {
 
     ORDER_GENERATE_FAIL(1001, "订单生成失败"),
 
-    ORDER_NOT_FOUND(1002, "未找到订单"),
+    ORDER_CREATED(1002, "订单已创建"),
 
-    ORDER_CANCEL(1003, "订单已被取消");
+    ORDER_NOT_FOUND(1003, "订单未找到"),
+
+    ORDER_CANCEL(1004, "订单已被取消"),
+
+    ORDER_PAYED(1005,"您已拥有此游戏"),
+
+    GAME_CANT_BE_BUY(1006,"游戏暂时不可购买");
 
 
     private final int code;

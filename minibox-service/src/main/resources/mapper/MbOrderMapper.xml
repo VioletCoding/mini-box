@@ -137,7 +137,9 @@
         DELETE
         FROM mb_order
         WHERE id = #{id}
-          AND order_id = #{orderId}
+        <if test="orderId != null">
+            AND order_id = #{orderId}
+        </if>
     </delete>
 
 </mapper>

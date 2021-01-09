@@ -5,11 +5,10 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ghw.minibox.component.RedisUtil;
 import com.ghw.minibox.entity.MbGame;
 import com.ghw.minibox.entity.MbOrder;
-import com.ghw.minibox.entity.MbUser;
 import com.ghw.minibox.mapper.MbGameMapper;
 import com.ghw.minibox.mapper.MbOrderMapper;
-import com.ghw.minibox.mapper.MbUserMapper;
 import com.ghw.minibox.service.CommonService;
+import com.ghw.minibox.utils.AOPLog;
 import com.ghw.minibox.utils.GenerateBean;
 import com.ghw.minibox.utils.OrderUtil;
 import com.ghw.minibox.utils.ResultCode;
@@ -36,8 +35,6 @@ public class OrderImpl implements CommonService<MbOrder> {
     @Resource
     private MbGameMapper gameMapper;
     @Resource
-    private MbUserMapper userMapper;
-    @Resource
     private OrderUtil orderUtil;
     @Resource
     private RedisUtil redisUtil;
@@ -63,14 +60,14 @@ public class OrderImpl implements CommonService<MbOrder> {
      * @param userId      用户id
      * @param successFlag 订单是否成功
      */
-    private boolean buyFlag(Long userId, Long gameId, Integer successFlag) {
+    @AOPLog("检查是否购买过此游戏")
+    public boolean buyFlag(Long userId, Long gameId, Integer successFlag) {
         MbOrder mbOrder = new MbOrder();
         mbOrder.setUid(userId).setOrderGameId(gameId).setSuccess(successFlag);
         List<MbOrder> orders = orderMapper.queryAll(mbOrder);
         //如果有记录，那就是买过了
-        return orders.size() != 0;
+        return orders.size() > 0;
     }
-
 
     /**
      * 生成订单
@@ -78,64 +75,61 @@ public class OrderImpl implements CommonService<MbOrder> {
      * @param mbOrder 实例
      * @return 是否成功
      */
-    @Override
-    public Object insert(MbOrder mbOrder) throws JsonProcessingException {
+    @AOPLog("生成订单")
+    public Object create(MbOrder mbOrder) throws JsonProcessingException {
         //检测下是否已经购买过了
-        if (this.buyFlag(mbOrder.getUid(), mbOrder.getOrderGameId(), orderUtil.SUCCESS)) {
-            log.error("id为 {} 的用户已经购买过 id为 {} 的游戏", mbOrder.getUid(), mbOrder.getOrderGameId());
-            throw new RuntimeException("您已购买过该游戏");
-        }
+        if (this.buyFlag(mbOrder.getUid(), mbOrder.getOrderGameId(), orderUtil.SUCCESS))
+            return ResultCode.ORDER_PAYED.getMessage();
 
-        String v = redisUtil.get(RedisUtil.ORDER_PREFIX + mbOrder.getUid() + mbOrder.getOrderId());
+        //是否创建了订单，超时时间5分钟，如果创建了就直接return订单信息
+        String v = redisUtil.get(RedisUtil.ORDER_PREFIX + mbOrder.getUid() + mbOrder.getOrderGameId());
+        if (!StringUtils.isNullOrEmpty(v)) return v;
 
-        if (!StringUtils.isNullOrEmpty(v)) throw new RuntimeException("订单已创建");
+        //检验一下游戏是否可购买
+        MbGame mbGame = gameMapper.queryById(mbOrder.getOrderGameId());
+        if (mbGame == null) return ResultCode.GAME_CANT_BE_BUY.getMessage();
 
+        //生成订单号
         Long orderId = orderUtil.getOrderId();
         mbOrder.setOrderId(orderId);
-
-        MbGame mbGame = gameMapper.queryById(mbOrder.getOrderGameId());
-        if (mbGame == null) throw new RuntimeException("未找到该游戏");
-
-
-        MbUser mbUser = userMapper.queryById(mbOrder.getUid());
-        if (mbUser == null) throw new RuntimeException("未找到该用户");
-
-
-        mbGame.setCommentList(null).setMbBlock(null).setTagList(null).setPhotoList(null);
-
+        //设置游戏信息
         mbOrder.setMbGame(mbGame);
         ObjectMapper om = generateBean.getObjectMapper();
         //生成5分钟有效时间的订单
-        redisUtil.set(RedisUtil.ORDER_PREFIX + mbOrder.getUid() + orderId, om.writeValueAsString(mbOrder), 300L);
+        //Redis key格式： order:用户id:游戏id:orderId
+        String key = RedisUtil.ORDER_PREFIX + mbOrder.getUid() + ":" + mbOrder.getOrderGameId();
         //但是此时订单未完成
         mbOrder.setSuccess(orderUtil.NOT_SUCCESS);
-        orderMapper.insert(mbOrder);
-        MbOrder notPayOrder = orderMapper.queryById(mbOrder.getId());
-        return notPayOrder.setMbGame(mbGame);
+        String orderJson = om.writeValueAsString(mbOrder);
+        redisUtil.set(key, orderJson, 300L);
+        return mbOrder;
     }
 
     /**
      * 下订单成功后存储
      *
-     * @param entity 实例
+     * @param mbOrder 实例
      * @return 是否成功
      */
-    @Transactional(rollbackFor = Exception.class)
+    @AOPLog("提交订单")
+    @Transactional(rollbackFor = Throwable.class)
     @Override
-    public boolean update(MbOrder entity) {
+    public Object insert(MbOrder mbOrder) throws JsonProcessingException {
 
-        if (entity.getOrderId() == null) throw new RuntimeException("orderId为空");
+        //Redis key格式： order:用户id:游戏id:orderId
+        String key = RedisUtil.ORDER_PREFIX + mbOrder.getUid() + ":" + mbOrder.getOrderGameId();
+        String value = redisUtil.get(key);
 
-        String value = redisUtil.get(RedisUtil.ORDER_PREFIX + entity.getUid() + entity.getOrderId());
+        if (StringUtils.isNullOrEmpty(value)) return ResultCode.ORDER_CANCEL.getMessage();
 
-        if (StringUtils.isNullOrEmpty(value)) throw new RuntimeException(ResultCode.ORDER_CANCEL.getMessage());
-
-        entity.setSuccess(orderUtil.SUCCESS);
-        //更新订单信息
-        int update = orderMapper.update(entity);
-        if (update > 0) {
-            redisUtil.remove(RedisUtil.ORDER_PREFIX + entity.getUid() + entity.getOrderId());
-            redisUtil.remove(RedisUtil.REDIS_PREFIX + RedisUtil.USER_PREFIX + entity.getUid());
+        mbOrder.setSuccess(orderUtil.SUCCESS);
+        //插入订单信息
+        int insert = orderMapper.insert(mbOrder);
+        if (insert > 0) {
+            //删除缓存
+            redisUtil.remove(key);
+            //个人信息缓存
+            redisUtil.remove(RedisUtil.REDIS_PREFIX + RedisUtil.USER_PREFIX + mbOrder.getUid());
             return true;
         }
         return false;
@@ -147,10 +141,16 @@ public class OrderImpl implements CommonService<MbOrder> {
      * @param mbOrder 实例
      * @return 是否成功
      */
-    @Transactional(rollbackFor = Throwable.class)
     public boolean cancelOrder(MbOrder mbOrder) {
-        redisUtil.remove(RedisUtil.ORDER_PREFIX + mbOrder.getUid() + mbOrder.getOrderId());
-        return orderMapper.deleteById(mbOrder) > 1;
+        String key = RedisUtil.ORDER_PREFIX + mbOrder.getUid() + ":" + mbOrder.getOrderGameId();
+        redisUtil.remove(key);
+        return true;
+    }
+
+
+    @Override
+    public boolean update(MbOrder entity) {
+        return false;
     }
 
     @Override
