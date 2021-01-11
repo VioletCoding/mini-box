@@ -14,6 +14,7 @@ import com.nimbusds.jose.JOSEException;
 import com.qiniu.util.StringUtils;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.context.request.ServletWebRequest;
@@ -32,6 +33,7 @@ import java.util.Objects;
 @RestController
 @RequestMapping("user")
 @Api("用户控制层")
+@Slf4j
 public class UserController {
     @Resource
     private GenerateResult<Object> gr;
@@ -73,8 +75,8 @@ public class UserController {
         String username = (String) params.get("username");
 
         if (authCode.length() < 6) return gr.fail(ResultCode.AUTH_CODE_ERROR);
-
-        return gr.success(user.doService(username, authCode));
+        Object service = user.doService(username, authCode);
+        return gr.success(service);
     }
 
     /**

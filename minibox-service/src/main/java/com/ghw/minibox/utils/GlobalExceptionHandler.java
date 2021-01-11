@@ -156,4 +156,10 @@ public class GlobalExceptionHandler {
     //    e.printStackTrace();
     //    return gr.custom(ResultCode.BAD_REQUEST.getCode(), e.getMessage());
     //}
+    @ExceptionHandler(MyException.class)
+    public ReturnDto<String> myException(MyException e) {
+        log.error("异常=>{}", new Date().toString());
+        e.printStackTrace();
+        return gr.custom(ResultCode.BAD_REQUEST.getCode(), e.getMessage());
+    }
 }

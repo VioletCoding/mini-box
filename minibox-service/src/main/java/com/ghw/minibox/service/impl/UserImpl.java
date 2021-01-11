@@ -132,7 +132,7 @@ public class UserImpl implements CommonService<MbUser> {
                 return true;
             }
         }
-        return false;
+        throw new MyException("验证码已过期");
     }
 
 
@@ -171,7 +171,7 @@ public class UserImpl implements CommonService<MbUser> {
                         .setUserImg(this.defaultLink);
                 int insert = userMapper.insert(mbUser);
                 int setUserRole = mapperUtils.setUserRole(UserRole.USER.getRoleId(), mbUser.getId());
-                if (insert == 0 || setUserRole == 0) throw new RuntimeException("注册时出现异常");
+                if (insert == 0 || setUserRole == 0) throw new MyException("注册时出现异常");
                 //用于返回，因为当前需求是要一起返回token信息，但是MbUser实体没这个字段，所以转成map，put一个token字段进去
                 MbUser newUser = userMapper.queryById(mbUser.getId());
                 Map<String, Object> map = objectMapper.convertValue(newUser, new TypeReference<Map<String, Object>>() {
@@ -186,7 +186,7 @@ public class UserImpl implements CommonService<MbUser> {
                 redisUtil.remove(remove);
             }
         }
-        throw new RuntimeException("执行自动注册和登陆方法出错");
+        throw new MyException("验证码不合法");
     }
 
     @Override
