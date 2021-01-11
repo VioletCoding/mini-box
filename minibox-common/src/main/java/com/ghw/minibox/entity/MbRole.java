@@ -1,5 +1,7 @@
 package com.ghw.minibox.entity;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.experimental.Accessors;
@@ -18,6 +20,7 @@ import java.util.List;
  */
 @Data
 @Accessors(chain = true)
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class MbRole implements Serializable {
     private static final long serialVersionUID = 297485414723529586L;
 
@@ -33,9 +36,11 @@ public class MbRole implements Serializable {
     private Integer state;
 
     @ApiModelProperty(notes = "创建时间")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     private Date createDate;
 
     @ApiModelProperty(notes = "更新时间")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     private Date updateDate;
 
     @ApiModelProperty(notes = "一个角色多个用户")

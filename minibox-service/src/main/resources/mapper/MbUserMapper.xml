@@ -13,6 +13,13 @@
         <result property="updateDate" column="update_date" jdbcType="TIMESTAMP"/>
         <result property="state" column="state" jdbcType="OTHER"/>
         <result property="userImg" column="user_img" jdbcType="VARCHAR"/>
+        <collection property="roleList" ofType="com.ghw.minibox.entity.MbRole">
+            <result property="id" column="role_id"/>
+            <result property="name" column="role_name"/>
+            <result property="state" column="role_state"/>
+            <result property="createDate" column="role_create_date"/>
+            <result property="updateDate" column="role_update_date"/>
+        </collection>
     </resultMap>
 
     <!--查询单个-->
@@ -56,7 +63,6 @@
         SELECT id,
                nickname,
                username,
-               password,
                description,
                level,
                user_state,
@@ -71,39 +77,51 @@
     <!--通过实体作为筛选条件查询-->
     <select id="queryAll" resultMap="MbUserMap">
         SELECT
-        id, nickname, username, password, description, level, user_state, create_date, update_date,
-        state,user_img
-        FROM minibox.mb_user
+        u.id,
+        u.nickname,
+        u.username,
+        u.description,
+        u.`level`,
+        u.user_state,
+        u.create_date,
+        u.update_date,
+        u.state,
+        u.user_img ,
+        roles.id AS role_id,
+        roles.`name` AS role_name,
+        roles.state AS role_state,
+        roles.create_date AS role_create_date,
+        roles.update_date AS role_update_date
+        FROM mb_user AS u
+        LEFT JOIN mb_user_role AS relation ON (relation.uid = u.id)
+        LEFT JOIN mb_role AS roles ON (roles.id = relation.rid)
         <where>
             <if test="id != null">
-                AND id = #{id}
+                AND u.id = #{id}
             </if>
             <if test="nickname != null and nickname != '' ">
-                AND nickname = #{nickname}
+                AND u.nickname = #{nickname}
             </if>
             <if test="username != null and username != '' ">
-                AND `username` = #{username}
-            </if>
-            <if test="password != null and password != '' ">
-                AND `password` = #{password}
+                AND u.`username` = #{username}
             </if>
             <if test="description != null and description != ''">
-                AND `description` = #{description}
+                AND u.`description` = #{description}
             </if>
             <if test="level != null">
-                AND `level` = #{level}
+                AND u.`level` = #{level}
             </if>
             <if test="userState != null and userState != ''">
-                AND user_state = #{userState}
+                AND u.user_state = #{userState}
             </if>
             <if test="createDate != null">
-                AND create_date = #{createDate}
+                AND u.create_date = #{createDate}
             </if>
             <if test="updateDate != null">
-                AND update_date = #{updateDate}
+                AND u.update_date = #{updateDate}
             </if>
             <if test="state != null">
-                AND state = #{state}
+                AND u.state = #{state}
             </if>
         </where>
     </select>

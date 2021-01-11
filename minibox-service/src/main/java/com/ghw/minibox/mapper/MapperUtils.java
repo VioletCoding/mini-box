@@ -39,5 +39,10 @@ public interface MapperUtils {
      */
     List<MbPost> queryPost(Long id);
 
+    /**
+     * 赋予用户角色
+     */
+    int setUserRole(Long roleId, Long userId);
+
 
 }

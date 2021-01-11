@@ -81,6 +81,7 @@ public class GlobalGatewayFilter implements GlobalFilter, Ordered {
             log.info("请求的URL=>{} 在忽略列表里，直接跳过", path);
             return chain.filter(exchange);
         }
+
         ServerHttpRequest request = exchange.getRequest();
         ServerHttpResponse response = exchange.getResponse();
         String token = request.getHeaders().getFirst("accessToken");
@@ -106,6 +107,8 @@ public class GlobalGatewayFilter implements GlobalFilter, Ordered {
                 response.setStatusCode(HttpStatus.UNAUTHORIZED);
                 return getVoidMono(response, gr.fail(ResultCode.UNAUTHORIZED));
             }
+
+
         } catch (Exception e) {
             log.error(e.getMessage());
             response.setStatusCode(HttpStatus.UNAUTHORIZED);

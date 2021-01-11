@@ -89,7 +89,7 @@ public class UserImpl implements CommonService<MbUser> {
         List<MbUser> mbUser = userMapper.queryAll(new MbUser().setUsername(lowerCase));
 
         if (mbUser.size() != 0) {
-            ObjectMapper om = new ObjectMapper();
+            ObjectMapper om = generateBean.getObjectMapper();
             String json = om.writeValueAsString(mbUser.get(0));
             redisUtil.set(RedisUtil.LOGIN_FLAG + username, json, 300L);
             return true;
@@ -144,8 +144,7 @@ public class UserImpl implements CommonService<MbUser> {
         boolean auth = authRegCode(lowerCaseUsername, authCode);
 
         if (auth) {
-            log.info("验证码校验通过");
-            //TODO 权限列表记得要加上，现在这里是写死
+            //默认注册的角色 「用户」
             List<String> authorities = new ArrayList<>();
             authorities.add(UserRole.USER.getRole());
             //token的有效载荷，过期时间是一周
@@ -170,7 +169,9 @@ public class UserImpl implements CommonService<MbUser> {
                         .setNickname(DefaultUserInfoEnum.NICKNAME.getMessage())
                         .setPassword(IdUtil.fastSimpleUUID())
                         .setUserImg(this.defaultLink);
-                userMapper.insert(mbUser);
+                int insert = userMapper.insert(mbUser);
+                int setUserRole = mapperUtils.setUserRole(UserRole.USER.getRoleId(), mbUser.getId());
+                if (insert == 0 || setUserRole == 0) throw new RuntimeException("注册时出现异常");
                 //用于返回，因为当前需求是要一起返回token信息，但是MbUser实体没这个字段，所以转成map，put一个token字段进去
                 MbUser newUser = userMapper.queryById(mbUser.getId());
                 Map<String, Object> map = objectMapper.convertValue(newUser, new TypeReference<Map<String, Object>>() {

@@ -82,4 +82,7 @@ public class MbUser implements Serializable {
 
     @ApiModelProperty(notes = "一个用户多个游戏")
     private List<MbGame> gameList;
+
+    @ApiModelProperty(notes = "一个用户多个角色")
+    private List<MbRole> roleList;
 }

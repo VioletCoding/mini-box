@@ -150,10 +150,10 @@ public class GlobalExceptionHandler {
     /**
      * 运行时异常，开发时记得打印栈信息，不然被捕获了出问题了都不知道怎么查
      */
-    @ExceptionHandler(RuntimeException.class)
-    public ReturnDto<String> buyFlagException(RuntimeException e) {
-        log.error("异常=>{}", new Date().toString());
-        e.printStackTrace();
-        return gr.custom(ResultCode.BAD_REQUEST.getCode(), e.getMessage());
-    }
+    //@ExceptionHandler(RuntimeException.class)
+    //public ReturnDto<String> buyFlagException(RuntimeException e) {
+    //    log.error("异常=>{}", new Date().toString());
+    //    e.printStackTrace();
+    //    return gr.custom(ResultCode.BAD_REQUEST.getCode(), e.getMessage());
+    //}
 }

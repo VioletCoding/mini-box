@@ -61,6 +61,7 @@ public class PostImpl implements CommonService<MbPost> {
     @AOPLog("帖子列表")
     @Override
     public List<MbPost> selectAll(MbPost param) throws JsonProcessingException {
+        //TODO 对于多表查询，那么最多LEFT JOIN 2个表，分批组装数据，这里需要改进，评论列表等也需要改进
         ObjectMapper objectMapper = generateBean.getObjectMapper();
 
         //先查redis
