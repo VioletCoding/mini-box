@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.ghw.minibox.mapper.MbSubMenuMapper">
+    <resultMap id="menuMap" type="com.ghw.minibox.entity.MbSubMenu">
+        <id property="id" column="id"/>
+        <result property="subMenuName" column="sub_menu_name"/>
+        <result property="parentMenuId" column="parent_menu_id"/>
+    </resultMap>
+
+
+    <select id="queryAll" resultMap="menuMap">
+        SELECT s.id,
+        sub_menu_name,
+        parent_menu_id
+        FROM mb_sub_menu AS s
+        <where>
+            <if test="id != null">
+                s.id = #{id}
+            </if>
+            <if test="subMenuName != null and subMenuName != '' ">
+                AND s.sub_menu_name = #{subMenuName}
+            </if>
+            <if test="parentMenuId != null">
+                AND s.parent_menu_id = #{parentMenuId}
+            </if>
+        </where>
+    </select>
+
+    <insert id="saveMenu" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO mb_sub_menu(sub_menu_name, parent_menu_id)
+        VALUES (#{subMenuName}, #{parentMenuId})
+    </insert>
+
+    <update id="updateMenu">
+        UPDATE mb_sub_menu
+        <set>
+            <if test="subMenuName != null and subMenuName != '' ">
+                sub_menu_name = #{subMenuName}
+            </if>
+            <if test="parentMenuId != null">
+                parent_menu_id = #{parentMenuId}
+            </if>
+        </set>
+        WHERE id = #{id}
+    </update>
+
+    <delete id="deleteMenu">
+        DELETE
+        FROM mb_sub_menu
+        WHERE id = #{id}
+    </delete>
+
+
+</mapper>
