@@ -4,7 +4,6 @@ import com.ghw.minibox.component.GenerateResult;
 import com.ghw.minibox.dto.ReturnDto;
 import com.ghw.minibox.entity.MbParentMenu;
 import com.ghw.minibox.service.impl.ParentMenuImpl;
-import com.ghw.minibox.service.impl.SubMenuImpl;
 import com.qiniu.util.StringUtils;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -25,8 +24,8 @@ import java.util.List;
 public class MenuController {
     @Resource
     private ParentMenuImpl parentMenu;
-    @Resource
-    private SubMenuImpl subMenu;
+    //@Resource
+    //private SubMenuImpl subMenu;
     @Resource
     private GenerateResult<Object> gr;
 
@@ -39,7 +38,8 @@ public class MenuController {
 
         if (id != null) parentMenu = new MbParentMenu().setId(id);
 
-        if (!StringUtils.isNullOrEmpty(menuName)) parentMenu = new MbParentMenu().setMenuName(menuName);
+        if (!StringUtils.isNullOrEmpty(menuName))
+            parentMenu = new MbParentMenu().setMenuName(menuName);
 
         List<MbParentMenu> menuList = this.parentMenu.selectAll(parentMenu);
 

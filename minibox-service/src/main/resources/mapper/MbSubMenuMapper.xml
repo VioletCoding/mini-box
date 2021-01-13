@@ -6,13 +6,15 @@
         <id property="id" column="id"/>
         <result property="subMenuName" column="sub_menu_name"/>
         <result property="parentMenuId" column="parent_menu_id"/>
+        <result property="subMenuRouteUrl" column="sub_menu_route_url"/>
     </resultMap>
 
 
     <select id="queryAll" resultMap="menuMap">
         SELECT s.id,
-        sub_menu_name,
-        parent_menu_id
+        s.sub_menu_name,
+        s.parent_menu_id,
+        s.sub_menu_route_url
         FROM mb_sub_menu AS s
         <where>
             <if test="id != null">
@@ -24,22 +26,28 @@
             <if test="parentMenuId != null">
                 AND s.parent_menu_id = #{parentMenuId}
             </if>
+            <if test="subMenuRouteUrl != null and subMenuRouteUrl != '' ">
+                AND s.sub_menu_route_url = #{subMenuRouteUrl}
+            </if>
         </where>
     </select>
 
     <insert id="saveMenu" useGeneratedKeys="true" keyProperty="id">
-        INSERT INTO mb_sub_menu(sub_menu_name, parent_menu_id)
-        VALUES (#{subMenuName}, #{parentMenuId})
+        INSERT INTO mb_sub_menu(sub_menu_name, parent_menu_id, sub_menu_route_url)
+        VALUES (#{subMenuName}, #{parentMenuId}, #{subMenuRouteUrl})
     </insert>
 
     <update id="updateMenu">
         UPDATE mb_sub_menu
         <set>
             <if test="subMenuName != null and subMenuName != '' ">
-                sub_menu_name = #{subMenuName}
+                sub_menu_name = #{subMenuName},
             </if>
             <if test="parentMenuId != null">
-                parent_menu_id = #{parentMenuId}
+                parent_menu_id = #{parentMenuId},
+            </if>
+            <if test="subMenuRouteUrl != null and subMenuRouteUrl != '' ">
+                sub_menu_route_url = #{subMenuRouteUrl}
             </if>
         </set>
         WHERE id = #{id}

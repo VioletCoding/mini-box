@@ -18,6 +18,8 @@ public class MbSubMenu {
     private Long id;
     @ApiModelProperty("子菜单名称")
     private String subMenuName;
+    @ApiModelProperty("子菜单路由")
+    private String subMenuRouteUrl;
     @ApiModelProperty("父菜单id")
     private Long parentMenuId;
 }
