@@ -64,21 +64,21 @@ public class GlobalGatewayFilter implements GlobalFilter, Ordered {
      *
      * @param exchange 交换（合同），用于得到请求和响应的信息，个人理解有点像中间件，可以在请求来的时候和响应的时候，中间插手做一些事情，比如鉴权
      * @param chain    过滤链
-     * @return 如果存在于放行列表，直接return，如果未处于放行列表，那么鉴权，token有问题直接返回401，没问题直接放行请求SERVICE模块
+     * @return 如果存在于放行列表，直接return，如果未处于放行列表，那么鉴权，token有问题直接返回401，没问题直接放行请求
      */
     @Override
     public Mono<Void> filter(ServerWebExchange exchange, GatewayFilterChain chain) {
         //如果未启用网关验证，则跳过
         if (!enableAuth.isEnableAuth()) {
-            log.error("没有开启网关鉴权，请求将直接放行，是否配置错误？");
+            log.error("没有开启网关鉴权,请求将直接放行,是否配置错误?");
             return chain.filter(exchange);
         }
 
-        //类似于/user/xxx这样的原始路径
+        //类似于/user/xxx这样的路径
         String path = exchange.getRequest().getURI().getRawPath();
         //如果在忽略的url里，则跳过
         if (checkUrl(path)) {
-            log.info("请求的URL=>{} 在忽略列表里，直接跳过", path);
+            log.warn("请求的URL=>{} 在忽略列表里,直接跳过", path);
             return chain.filter(exchange);
         }
 
@@ -103,7 +103,7 @@ public class GlobalGatewayFilter implements GlobalFilter, Ordered {
                 return getVoidMono(response, gr.fail(ResultCode.UNAUTHORIZED));
             }
             if (!tokenInRedis.equals(token)) {
-                log.error("token不合法！");
+                log.error("token不合法!");
                 response.setStatusCode(HttpStatus.UNAUTHORIZED);
                 return getVoidMono(response, gr.fail(ResultCode.UNAUTHORIZED));
             }

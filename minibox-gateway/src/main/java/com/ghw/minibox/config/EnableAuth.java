@@ -19,15 +19,23 @@ import java.util.List;
 @Component
 public class EnableAuth {
 
-    /**
-     * 是否开启网关鉴权
+    /*
+     * @author：Violet
+     * @description：是否开启网关鉴权，在Nacos配置中心配置
+     * @params:
+     * @return
+     * @date：2021/1/14 14:03
      */
     @Getter
     @Value("${enableAuth.switch}")
     private boolean enableAuth;
 
-    /**
-     * 放行的url，这里是list集合，需要分隔符才能正常读取yml文件
+    /*
+     * @author：Violet
+     * @description：放行的url，这里是list集合，需要分隔符才能正常读取yml文件，在Nacos配置中心配置
+     * @params:
+     * @return
+     * @date：2021/1/14 14:03
      */
     @Getter
     @Value("#{'${ignore.url}'.split(',')}")
