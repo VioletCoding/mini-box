@@ -44,5 +44,32 @@ public interface MapperUtils {
      */
     int setUserRole(Long roleId, Long userId);
 
+    /*
+     * @author：Violet
+     * @description：管理员页面首页的4个卡片的统计数值
+     * @params:
+     * @return 统计数值
+     * @date：2021/1/15 16:37
+     */
+    Map<String, Object> count();
+
+    /*
+     * @author：Violet
+     * @description：每日发帖数情况一览
+     * @params:
+     * @return 集合
+     * @date：2021/1/15 20:35
+     */
+    List<Map<String, Object>> echartsCommentPerDay();
+
+    /*
+     * @author：Violet
+     * @description：游戏销量排行榜
+     * @params:
+     * @return 集合
+     * @date：2021/1/15 21:41
+     */
+    List<Map<String, Object>> gameSalesRankings();
+
 
 }

@@ -163,5 +163,38 @@
         VALUES (#{roleId}, #{userId})
     </insert>
 
+    <select id="count" resultType="map">
+        SELECT COUNT(*)                          AS post_number,
+               (SELECT COUNT(*) FROM mb_user)    AS user_number,
+               (SELECT COUNT(*) FROM mb_game)    AS game_number,
+               (SELECT COUNT(*) FROM mb_comment) AS comment_number
+        FROM mb_post
+    </select>
+
+    <resultMap id="echartsComment" type="map">
+        <result property="createDate" column="create_date"/>
+        <result property="postNumberPerDay" column="post_number_per_day"/>
+    </resultMap>
+
+    <select id="echartsCommentPerDay" resultMap="echartsComment">
+        SELECT date_format(create_date, '%Y-%m-%d') AS create_date,
+               count(*)                             AS post_number_per_day
+        FROM mb_post
+        GROUP BY date_format(create_date, '%Y-%m-%d');
+    </select>
+
+    <resultMap id="gameSalesRankingsMap" type="map">
+        <result property="sales" column="order_count"/>
+        <result property="gameName" column="name"/>
+    </resultMap>
+    <select id="gameSalesRankings" resultMap="gameSalesRankingsMap">
+        SELECT COUNT(o.id) AS order_count,
+               g.`name`
+        FROM mb_order AS o
+                 LEFT JOIN mb_game AS g ON (g.id = o.order_game_id)
+        GROUP BY o.order_game_id
+        ORDER BY order_count DESC;
+    </select>
+
 
 </mapper>

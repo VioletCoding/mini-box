@@ -48,4 +48,5 @@ public class GenerateResult<T> {
         return new ReturnDto<T>().setCode(code).setMessage(message);
     }
 
+
 }
