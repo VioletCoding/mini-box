@@ -60,7 +60,16 @@ public interface MapperUtils {
      * @return 集合
      * @date：2021/1/15 20:35
      */
-    List<Map<String, Object>> echartsCommentPerDay();
+    List<Map<String, Object>> echartsPostPerDay();
+
+    /*
+     * @author：Violet
+     * @description：每日评论数情况一览
+     * @params:
+     * @return 集合
+     * @date：2021/1/18 14:32
+     */
+    List<Map<String,Object>> echartsCommentPerDay();
 
     /*
      * @author：Violet

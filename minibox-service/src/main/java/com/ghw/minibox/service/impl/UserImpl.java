@@ -191,7 +191,7 @@ public class UserImpl implements CommonService<MbUser> {
 
     @Override
     public List<MbUser> selectAll(MbUser param) {
-        return null;
+        return userMapper.queryAll(param);
     }
 
 
@@ -274,7 +274,8 @@ public class UserImpl implements CommonService<MbUser> {
     }
 
     @Override
+    @Transactional(rollbackFor = Throwable.class)
     public boolean delete(Long id) {
-        return false;
+        return userMapper.deleteById(id) > 0;
     }
 }

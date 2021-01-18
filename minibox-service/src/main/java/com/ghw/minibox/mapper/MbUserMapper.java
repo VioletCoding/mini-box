@@ -84,6 +84,6 @@ public interface MbUserMapper {
      * @param id 主键
      * @return 影响行数
      */
-    int deleteById(Object id);
+    int deleteById(Long id);
 
 }

@@ -171,12 +171,12 @@
         FROM mb_post
     </select>
 
-    <resultMap id="echartsComment" type="map">
+    <resultMap id="echartsPost" type="map">
         <result property="createDate" column="create_date"/>
         <result property="postNumberPerDay" column="post_number_per_day"/>
     </resultMap>
 
-    <select id="echartsCommentPerDay" resultMap="echartsComment">
+    <select id="echartsPostPerDay" resultMap="echartsPost">
         SELECT date_format(create_date, '%Y-%m-%d') AS create_date,
                count(*)                             AS post_number_per_day
         FROM mb_post
@@ -194,6 +194,19 @@
                  LEFT JOIN mb_game AS g ON (g.id = o.order_game_id)
         GROUP BY o.order_game_id
         ORDER BY order_count DESC;
+    </select>
+
+
+    <resultMap id="echartsComment" type="map">
+        <result property="createDate" column="create_date"/>
+        <result property="commentNumberPerDay" column="comment_number_per_day"/>
+    </resultMap>
+
+    <select id="echartsCommentPerDay" resultMap="echartsComment">
+        SELECT DATE_FORMAT(c.create_date, '%Y-%m-%d') AS create_date,
+               COUNT(C.id)                            AS comment_number_per_day
+        FROM mb_comment AS c
+        GROUP BY DATE_FORMAT(c.create_date, '%Y-%m-%d');
     </select>
 
 
