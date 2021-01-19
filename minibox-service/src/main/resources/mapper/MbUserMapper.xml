@@ -100,7 +100,7 @@
                 AND u.id = #{id}
             </if>
             <if test="nickname != null and nickname != '' ">
-                AND u.nickname = #{nickname}
+                AND u.nickname LIKE CONCAT('%',#{nickname},'%')
             </if>
             <if test="username != null and username != '' ">
                 AND u.`username` = #{username}
@@ -166,11 +166,9 @@
             <if test="description != null and description != ''">
                 `description` = #{description},
             </if>
-
             <if test=" userImg != null and userImg != '' ">
-                `user_img` = #{userImg}
+                `user_img` = #{userImg},
             </if>
-
             <if test="level != null">
                 `level` = #{level},
             </if>

@@ -58,10 +58,17 @@ public class AdminController {
         return gr.success(countMap);
     }
 
-    @ApiOperation("获取用户列表")
-    @GetMapping("userList")
+    @ApiOperation("获取用户列表里的所有数据")
+    @PostMapping("userList")
     public ReturnDto<Object> getUserList(@RequestBody(required = false) MbUser mbUser) {
         return gr.success(userImpl.selectAll(mbUser));
+    }
+
+    @ApiOperation("更新用户信息")
+    @PostMapping("updateUser")
+    public ReturnDto<Object> updateUserInfo(@RequestBody MbUser mbUser) {
+        System.out.println(mbUser);
+        return gr.success(userImpl.update(mbUser));
     }
 
     @ApiOperation("删除用户")
