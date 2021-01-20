@@ -154,9 +154,7 @@
         <if test="id == null">
             ORDER BY mp.create_date DESC;
         </if>
-
     </select>
-
 
     <insert id="setUserRole" useGeneratedKeys="true">
         INSERT INTO mb_user_role(rid, uid)
@@ -208,6 +206,19 @@
         FROM mb_comment AS c
         GROUP BY DATE_FORMAT(c.create_date, '%Y-%m-%d');
     </select>
+
+    <delete id="deleteUserAdminRole">
+        DELETE
+        FROM mb_user_role
+        WHERE uid = #{userId}
+          AND rid = 10001
+    </delete>
+
+    <delete id="deleteUserRole">
+        DELETE
+        FROM mb_user_role
+        WHERE uid = #{userId}
+    </delete>
 
 
 </mapper>

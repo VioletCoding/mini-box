@@ -276,6 +276,8 @@ public class UserImpl implements CommonService<MbUser> {
     @Override
     @Transactional(rollbackFor = Throwable.class)
     public boolean delete(Long id) {
-        return userMapper.deleteById(id) > 0;
+        int i = userMapper.deleteById(id);
+        int j = mapperUtils.deleteUserRole(id);
+        return i > 0 && j > 0;
     }
 }

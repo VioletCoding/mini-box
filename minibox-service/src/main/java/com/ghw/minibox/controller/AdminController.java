@@ -3,6 +3,7 @@ package com.ghw.minibox.controller;
 import com.ghw.minibox.component.GenerateResult;
 import com.ghw.minibox.dto.ReturnDto;
 import com.ghw.minibox.entity.MbParentMenu;
+import com.ghw.minibox.entity.MbRole;
 import com.ghw.minibox.entity.MbUser;
 import com.ghw.minibox.mapper.MapperUtils;
 import com.ghw.minibox.service.impl.ParentMenuImpl;
@@ -67,8 +68,31 @@ public class AdminController {
     @ApiOperation("更新用户信息")
     @PostMapping("updateUser")
     public ReturnDto<Object> updateUserInfo(@RequestBody MbUser mbUser) {
-        System.out.println(mbUser);
-        return gr.success(userImpl.update(mbUser));
+        boolean update = userImpl.update(mbUser);
+        if (update) return gr.success();
+        return gr.fail();
+    }
+
+    @ApiOperation("删除用户的管理员角色")
+    @GetMapping("deleteRole")
+    public ReturnDto<Object> updateUserRole(@RequestParam Long userId) {
+        int i = mapperUtils.deleteUserAdminRole(userId);
+        if (i > 0) return gr.success();
+        return gr.fail("用户不是管理员，如果要删除USER角色，请直接删除用户");
+    }
+
+    @ApiOperation("添加管理员角色")
+    @GetMapping("addRole")
+    public ReturnDto<Object> giveAdminRole(@RequestParam Long userId) {
+        List<MbUser> users = userImpl.selectAll(new MbUser().setId(userId));
+        MbUser mbUser = users.get(0);
+        List<MbRole> roleList = mbUser.getRoleList();
+        for (MbRole m : roleList){
+            if (m.getName().equals("ADMIN")) return gr.fail("用户已经是管理员了");
+        }
+        int i = mapperUtils.setUserRole(10001L, userId);
+        if (i > 0) return gr.success();
+        return gr.fail();
     }
 
     @ApiOperation("删除用户")

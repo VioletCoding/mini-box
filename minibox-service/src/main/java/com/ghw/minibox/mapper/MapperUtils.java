@@ -46,6 +46,24 @@ public interface MapperUtils {
 
     /*
      * @author：Violet
+     * @description：删除用户的管理员角色
+     * @params:
+     * @return
+     * @date：2021/1/19 18:47
+     */
+    int deleteUserAdminRole(Long userId);
+
+    /*
+     * @author：Violet
+     * @description：删除用户的所有角色，一般用于在删除用户时调用
+     * @params: 用户id
+     * @return
+     * @date：2021/1/19 17:05
+     */
+    int deleteUserRole(Long userId);
+
+    /*
+     * @author：Violet
      * @description：管理员页面首页的4个卡片的统计数值
      * @params:
      * @return 统计数值
@@ -69,7 +87,7 @@ public interface MapperUtils {
      * @return 集合
      * @date：2021/1/18 14:32
      */
-    List<Map<String,Object>> echartsCommentPerDay();
+    List<Map<String, Object>> echartsCommentPerDay();
 
     /*
      * @author：Violet

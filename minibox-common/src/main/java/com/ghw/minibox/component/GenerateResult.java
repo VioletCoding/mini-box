@@ -33,6 +33,10 @@ public class GenerateResult<T> {
         return new ReturnDto<T>().setCode(ResultCode.BAD_REQUEST.getCode()).setMessage(ResultCode.BAD_REQUEST.getMessage());
     }
 
+    public ReturnDto<T> fail(String message){
+        return new ReturnDto<T>().setCode(ResultCode.BAD_REQUEST.getCode()).setMessage(message);
+    }
+
     public ReturnDto<T> fail(ResultCode r) {
         return new ReturnDto<T>().setCode(r.getCode()).setMessage(r.getMessage());
     }
