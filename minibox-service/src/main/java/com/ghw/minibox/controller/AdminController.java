@@ -6,6 +6,7 @@ import com.ghw.minibox.entity.MbParentMenu;
 import com.ghw.minibox.entity.MbRole;
 import com.ghw.minibox.entity.MbUser;
 import com.ghw.minibox.mapper.MapperUtils;
+import com.ghw.minibox.mapper.MbRoleMapper;
 import com.ghw.minibox.service.impl.ParentMenuImpl;
 import com.ghw.minibox.service.impl.UserImpl;
 import com.qiniu.util.StringUtils;
@@ -28,6 +29,8 @@ public class AdminController {
     private ParentMenuImpl parentMenu;
     @Resource
     private MapperUtils mapperUtils;
+    @Resource
+    private MbRoleMapper roleMapper;
     @Resource
     private UserImpl userImpl;
     @Resource
@@ -87,12 +90,18 @@ public class AdminController {
         List<MbUser> users = userImpl.selectAll(new MbUser().setId(userId));
         MbUser mbUser = users.get(0);
         List<MbRole> roleList = mbUser.getRoleList();
-        for (MbRole m : roleList){
-            if (m.getName().equals("ADMIN")) return gr.fail("用户已经是管理员了");
+        for (MbRole m : roleList) {
+            if (m.getId() == 10001) return gr.fail("用户已经是管理员了");
         }
         int i = mapperUtils.setUserRole(10001L, userId);
         if (i > 0) return gr.success();
         return gr.fail();
+    }
+
+    @ApiOperation("角色列表展示")
+    @PostMapping("showRoles")
+    public ReturnDto<Object> showRoleList(@RequestBody(required = false) MbRole mbRole) {
+        return gr.success(roleMapper.queryAll(mbRole));
     }
 
     @ApiOperation("删除用户")
