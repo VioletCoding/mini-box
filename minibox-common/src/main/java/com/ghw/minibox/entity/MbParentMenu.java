@@ -5,6 +5,7 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.experimental.Accessors;
 
+import javax.validation.constraints.NotNull;
 import java.util.List;
 
 /**
@@ -17,6 +18,7 @@ import java.util.List;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class MbParentMenu {
     @ApiModelProperty("主键")
+    @NotNull(message = "菜单ID不能为空")
     private Long id;
     @ApiModelProperty("菜单名称")
     private String menuName;

@@ -4,10 +4,12 @@ import com.ghw.minibox.component.GenerateResult;
 import com.ghw.minibox.dto.ReturnDto;
 import com.ghw.minibox.entity.MbParentMenu;
 import com.ghw.minibox.entity.MbRole;
+import com.ghw.minibox.entity.MbSubMenu;
 import com.ghw.minibox.entity.MbUser;
 import com.ghw.minibox.mapper.MapperUtils;
 import com.ghw.minibox.mapper.MbRoleMapper;
 import com.ghw.minibox.service.impl.ParentMenuImpl;
+import com.ghw.minibox.service.impl.SubMenuImpl;
 import com.ghw.minibox.service.impl.UserImpl;
 import com.qiniu.util.StringUtils;
 import io.swagger.annotations.ApiOperation;
@@ -28,6 +30,8 @@ public class AdminController {
     @Resource
     private ParentMenuImpl parentMenu;
     @Resource
+    private SubMenuImpl subMenu;
+    @Resource
     private MapperUtils mapperUtils;
     @Resource
     private MbRoleMapper roleMapper;
@@ -40,12 +44,42 @@ public class AdminController {
     @GetMapping("allMenu")
     public ReturnDto<Object> showMenu(@RequestParam(value = "id", required = false) Long id,
                                       @RequestParam(value = "menuName", required = false) String menuName) {
-        MbParentMenu parentMenu = null;
-        if (id != null) parentMenu = new MbParentMenu().setId(id);
-        if (!StringUtils.isNullOrEmpty(menuName))
-            parentMenu = new MbParentMenu().setMenuName(menuName);
+
+        MbParentMenu parentMenu = new MbParentMenu();
+        if (id != null) parentMenu.setId(id);
+        if (!StringUtils.isNullOrEmpty(menuName)) parentMenu.setMenuName(menuName);
         List<MbParentMenu> menuList = this.parentMenu.selectAll(parentMenu);
         return gr.success(menuList);
+    }
+
+    @ApiOperation("添加父菜单")
+    @PostMapping("addParentMenu")
+    public ReturnDto<Object> addParentMenu(@RequestBody MbParentMenu parentMenu) {
+        this.parentMenu.insert(parentMenu);
+        return gr.success();
+    }
+
+    @ApiOperation("添加子菜单")
+    @PostMapping("addSubMenu")
+    public ReturnDto<Object> addSubMenu(@RequestBody MbSubMenu subMenu) {
+        this.subMenu.insert(subMenu);
+        return gr.success();
+    }
+
+    @ApiOperation("修改父菜单信息")
+    @PostMapping("updateParentMenu")
+    public ReturnDto<Object> updateParentMenu(@RequestBody MbParentMenu parentMenu) {
+        boolean update = this.parentMenu.update(parentMenu);
+        if (update) return gr.success();
+        return gr.fail();
+    }
+
+    @ApiOperation("修改子菜单信息")
+    @PostMapping("updateSubMenu")
+    public ReturnDto<Object> updateSubMenu(@RequestBody MbSubMenu subMenu) {
+        boolean update = this.subMenu.update(subMenu);
+        if (update) return gr.success();
+        return gr.fail();
     }
 
 

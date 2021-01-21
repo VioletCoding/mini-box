@@ -8,9 +8,9 @@
         <result property="menuIcon" column="menu_icon"/>
         <collection property="subMenuList" ofType="com.ghw.minibox.entity.MbSubMenu">
             <id property="id" column="sub_id"/>
-            <result property="subMenuName" column="sub_name"/>
+            <result property="menuName" column="sub_name"/>
             <result property="parentMenuId" column="parent_menu_id"/>
-            <result property="subMenuRouteUrl" column="sub_menu_route_url"/>
+            <result property="url" column="sub_menu_route_url"/>
         </collection>
     </resultMap>
 
@@ -30,20 +30,27 @@
                 m.id =#{id}
             </if>
             <if test="menuName != null and menuName != '' ">
-                m.menu_name = #{menuName}
+                AND m.menu_name LIKE CONCAT('%',#{menuName},'%')
             </if>
         </where>
         ORDER BY parent_id;
     </select>
 
     <insert id="saveMenu" useGeneratedKeys="true" keyProperty="id">
-        INSERT INTO mb_menu(menu_name)
-        VALUES (#{menuName})
+        INSERT INTO mb_menu(menu_name, menu_icon)
+        VALUES (#{menuName}, #{menuIcon})
     </insert>
 
-    <update id="updateMenu">
+    <update id="updateMenu" useGeneratedKeys="true">
         UPDATE mb_menu
-        SET menu_name = #{menuName}
+        <set>
+            <if test="menuName != null and menuName != '' ">
+                menu_name = #{menuName},
+            </if>
+            <if test="menuIcon != null and menuIcon != '' ">
+                menu_icon = #{menuIcon},
+            </if>
+        </set>
         WHERE id = #{id}
     </update>
 

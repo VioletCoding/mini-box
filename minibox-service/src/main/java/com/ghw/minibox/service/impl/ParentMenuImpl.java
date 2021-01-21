@@ -30,7 +30,7 @@ public class ParentMenuImpl implements CommonService<MbParentMenu> {
     }
 
     @Override
-    public Object insert(MbParentMenu entity) throws JsonProcessingException {
+    public Object insert(MbParentMenu entity){
         return parentMenuMapper.saveMenu(entity);
     }
 

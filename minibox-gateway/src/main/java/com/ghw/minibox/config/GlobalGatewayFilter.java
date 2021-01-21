@@ -108,7 +108,6 @@ public class GlobalGatewayFilter implements GlobalFilter, Ordered {
                 return getVoidMono(response, gr.fail(ResultCode.UNAUTHORIZED));
             }
 
-
         } catch (Exception e) {
             log.error(e.getMessage());
             response.setStatusCode(HttpStatus.UNAUTHORIZED);
