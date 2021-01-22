@@ -1,13 +1,12 @@
 package com.ghw.minibox.controller;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.ghw.minibox.component.GenerateResult;
 import com.ghw.minibox.dto.ReturnDto;
-import com.ghw.minibox.entity.MbParentMenu;
-import com.ghw.minibox.entity.MbRole;
-import com.ghw.minibox.entity.MbSubMenu;
-import com.ghw.minibox.entity.MbUser;
+import com.ghw.minibox.entity.*;
 import com.ghw.minibox.mapper.MapperUtils;
 import com.ghw.minibox.mapper.MbRoleMapper;
+import com.ghw.minibox.service.impl.GameImpl;
 import com.ghw.minibox.service.impl.ParentMenuImpl;
 import com.ghw.minibox.service.impl.SubMenuImpl;
 import com.ghw.minibox.service.impl.UserImpl;
@@ -38,6 +37,8 @@ public class AdminController {
     @Resource
     private UserImpl userImpl;
     @Resource
+    private GameImpl gameImpl;
+    @Resource
     private GenerateResult<Object> gr;
 
     @ApiOperation("获取菜单列表")
@@ -63,6 +64,25 @@ public class AdminController {
     @PostMapping("addSubMenu")
     public ReturnDto<Object> addSubMenu(@RequestBody MbSubMenu subMenu) {
         this.subMenu.insert(subMenu);
+        return gr.success();
+    }
+
+    @ApiOperation("删除父菜单")
+    @GetMapping("delParentMenu")
+    public ReturnDto<Object> delParentMenu(@RequestParam Long id) throws JsonProcessingException {
+        List<MbParentMenu> parentMenu = this.parentMenu.selectAll(new MbParentMenu().setId(id));
+
+        if (parentMenu.get(0).getSubMenuList().size() > 0)
+            return gr.fail("请先删除该菜单下的所有子菜单");
+
+        this.parentMenu.delete(id);
+        return gr.success();
+    }
+
+    @ApiOperation("删除子菜单")
+    @GetMapping("delSubMenu")
+    public ReturnDto<Object> delSubMenu(@RequestParam Long id) {
+        this.subMenu.delete(id);
         return gr.success();
     }
 
@@ -142,6 +162,12 @@ public class AdminController {
     @GetMapping("deleteUser")
     public ReturnDto<Object> deleteUserById(@RequestParam Long id) {
         return gr.success(userImpl.delete(id));
+    }
+
+    @ApiOperation("游戏列表")
+    @PostMapping("gameList")
+    public ReturnDto<Object> getGameList(@RequestBody(required = false) MbGame mbGame) throws JsonProcessingException {
+        return gr.success(gameImpl.selectAll(mbGame));
     }
 
 }

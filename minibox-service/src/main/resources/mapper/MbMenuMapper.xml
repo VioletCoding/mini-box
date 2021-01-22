@@ -55,11 +55,9 @@
     </update>
 
     <delete id="deleteMenu">
-        DELETE p,s
-        FROM mb_menu p,
-             mb_sub_menu s
-        WHERE p.id = s.parent_menu_id
-          AND p.id = #{id}
+        DELETE
+        FROM mb_menu
+        WHERE id = #{id}
     </delete>
 
 

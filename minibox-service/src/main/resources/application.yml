@@ -38,6 +38,6 @@ logging:
 qiNiu:
   accessKey: OeZ3mKc0cwT2RVq-i6tmtmPj55xOp1NdT_6U4NHU
   secretKey: NG3slWtnHU_lFhI7FimGzfF_hke9LTq9yHDn7OFV
-  bucket: minibox-bucket-2
-  defaultPhoto: http://qlscbsxf3.hn-bkt.clouddn.com/default.jpg
-  link: http://qlscbsxf3.hn-bkt.clouddn.com/
+  bucket: minibox-bucket-3
+  defaultPhoto: http://qnbtg7yhm.hn-bkt.clouddn.com/default.jpg
+  link: http://qnbtg7yhm.hn-bkt.clouddn.com/
