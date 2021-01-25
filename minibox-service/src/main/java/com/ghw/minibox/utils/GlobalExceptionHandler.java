@@ -2,9 +2,10 @@ package com.ghw.minibox.utils;
 
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.ghw.minibox.component.GenerateResult;
 import com.ghw.minibox.component.NimbusJoseJwt;
+import com.ghw.minibox.component.Result;
 import com.ghw.minibox.dto.ReturnDto;
+import com.ghw.minibox.exception.MyException;
 import com.nimbusds.jose.JOSEException;
 import com.qiniu.common.QiniuException;
 import lombok.extern.slf4j.Slf4j;
@@ -16,7 +17,6 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.multipart.MaxUploadSizeExceededException;
 
-import javax.annotation.Resource;
 import java.io.UnsupportedEncodingException;
 import java.util.Date;
 
@@ -29,18 +29,14 @@ import java.util.Date;
 @RestControllerAdvice
 @Slf4j
 public class GlobalExceptionHandler {
-
-    @Resource
-    private GenerateResult<String> gr;
-
     /**
      * 防止空指针是每一个程序员的责任，必须做好入参校验
      */
     @ExceptionHandler(NullPointerException.class)
-    public ReturnDto<String> nullPointException(NullPointerException e) {
+    public ReturnDto nullPointException(NullPointerException e) {
         log.error("异常=>{}", new Date().toString());
         e.printStackTrace();
-        return gr.fail();
+        return Result.fail();
     }
 
     /**
@@ -48,11 +44,11 @@ public class GlobalExceptionHandler {
      * 如果传入的实体里的某个入参与实体里要求检验的参数规则不一样，那么抛出此异常
      */
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ReturnDto<String> methodArgumentNotValidException(MethodArgumentNotValidException e) {
+    public ReturnDto methodArgumentNotValidException(MethodArgumentNotValidException e) {
         log.error("异常=>{}", new Date().toString());
         e.printStackTrace();
         ObjectError objectError = e.getBindingResult().getAllErrors().get(0);
-        return gr.custom(ResultCode.BAD_REQUEST.getCode(), objectError.getDefaultMessage());
+        return Result.custom(ResultCode.BAD_REQUEST.getCode(), objectError.getDefaultMessage());
     }
 
 
@@ -61,10 +57,10 @@ public class GlobalExceptionHandler {
      * 本系统通过QQ邮箱的SMTP/POP3进行邮件投递，理论上支持所有其他邮箱服务器的邮件投递
      */
     @ExceptionHandler(EmailException.class)
-    public ReturnDto<String> emailException(EmailException e) {
+    public ReturnDto emailException(EmailException e) {
         log.error("异常=>{}", new Date().toString());
         e.printStackTrace();
-        return gr.custom(ResultCode.BAD_REQUEST.getCode(), "该邮箱不存在");
+        return Result.custom(ResultCode.BAD_REQUEST.getCode(), "该邮箱不存在");
     }
 
     /**
@@ -73,20 +69,20 @@ public class GlobalExceptionHandler {
      * 有时，一种方法可能希望测试当前线程是否已被中断，如果已中断，则立即抛出此异常。
      */
     @ExceptionHandler(InterruptedException.class)
-    public ReturnDto<String> interruptedException(InterruptedException e) {
+    public ReturnDto interruptedException(InterruptedException e) {
         log.error("异常=>{}", new Date().toString());
         e.printStackTrace();
-        return gr.fail();
+        return Result.fail();
     }
 
     /**
      * Json解析异常，如果使用ObjectMapper解析Json或者是Jackson自动解析Json时，解析失败会抛出此异常
      */
     @ExceptionHandler(JsonProcessingException.class)
-    public ReturnDto<String> jsonProcessingException(JsonProcessingException e) {
+    public ReturnDto jsonProcessingException(JsonProcessingException e) {
         log.error("异常=>{}", new Date().toString());
         e.printStackTrace();
-        return gr.custom(ResultCode.BAD_REQUEST.getCode(), "Json解析失败");
+        return Result.custom(ResultCode.BAD_REQUEST.getCode(), "Json解析失败");
     }
 
     /**
@@ -96,10 +92,10 @@ public class GlobalExceptionHandler {
      * 一般抛出此异常的原因：1、token内容被篡改 2、token过期 3、非本系统签名的算法生成的token，也就是非法token
      */
     @ExceptionHandler(JOSEException.class)
-    public ReturnDto<String> jOSEException(JOSEException e) {
+    public ReturnDto jOSEException(JOSEException e) {
         log.error("异常=>{}", new Date().toString());
         e.printStackTrace();
-        return gr.custom(ResultCode.BAD_REQUEST.getCode(), "jwt签发失败");
+        return Result.custom(ResultCode.BAD_REQUEST.getCode(), "jwt签发失败");
     }
 
 
@@ -108,9 +104,9 @@ public class GlobalExceptionHandler {
      * 抛出此异常的原因可能：1、网络问题，未能将文件上传到七牛云 2、七牛云服务器问题 3、文件不合法 4、空间已满 5、其他
      */
     @ExceptionHandler(QiniuException.class)
-    public ReturnDto<String> qiNiuException(QiniuException e) {
+    public ReturnDto qiNiuException(QiniuException e) {
         log.error("异常=>{}", e.response.toString());
-        return gr.custom(ResultCode.BAD_REQUEST.getCode(), "文件上传失败");
+        return Result.custom(ResultCode.BAD_REQUEST.getCode(), "文件上传失败");
     }
 
     /**
@@ -118,10 +114,10 @@ public class GlobalExceptionHandler {
      * 抛出此异常的原因可能：1、文件上传的入参有问题，不是form-data 2、响应头的字符编码写错了（因为是字符串） 3、其他
      */
     @ExceptionHandler(UnsupportedEncodingException.class)
-    public ReturnDto<String> unSupportedEncodingException(UnsupportedEncodingException e) {
+    public ReturnDto unSupportedEncodingException(UnsupportedEncodingException e) {
         log.error("异常=>{}", new Date().toString());
         e.printStackTrace();
-        return gr.custom(ResultCode.BAD_REQUEST.getCode(), "文件编码解析失败");
+        return Result.custom(ResultCode.BAD_REQUEST.getCode(), "文件编码解析失败");
     }
 
 
@@ -130,10 +126,10 @@ public class GlobalExceptionHandler {
      * 抛出此异常的原因可能：单个文件大小超出了系统设置的大小，前端应该在请求服务器前先检查一次文件约定的大小
      */
     @ExceptionHandler(FileSizeLimitExceededException.class)
-    public ReturnDto<String> fileSizeLimitExceededException(FileSizeLimitExceededException e) {
+    public ReturnDto fileSizeLimitExceededException(FileSizeLimitExceededException e) {
         log.error("异常=>{}", new Date().toString());
         e.printStackTrace();
-        return gr.custom(ResultCode.BAD_REQUEST.getCode(), "文件大小超出限制，单个文件最大3MB");
+        return Result.custom(ResultCode.BAD_REQUEST.getCode(), "文件大小超出限制，单个文件最大3MB");
     }
 
     /**
@@ -141,25 +137,25 @@ public class GlobalExceptionHandler {
      * 抛出此异常的原因可能：单个文件大小 合法 ，但是多文件上传超出了系统设置的单次请求的文件总大小，前端应该在请求服务器前先检查一次文件约定的大小
      */
     @ExceptionHandler(MaxUploadSizeExceededException.class)
-    public ReturnDto<String> maxUploadSizeExceededException(MaxUploadSizeExceededException e) {
+    public ReturnDto maxUploadSizeExceededException(MaxUploadSizeExceededException e) {
         log.error("异常=>{}", new Date().toString());
         e.printStackTrace();
-        return gr.fail(ResultCode.BAD_REQUEST, "文件大小超出限制，总文件大小最大30MB");
+        return Result.fail(ResultCode.BAD_REQUEST, "文件大小超出限制，总文件大小最大30MB");
     }
 
     /**
      * 运行时异常，开发时记得打印栈信息，不然被捕获了出问题了都不知道怎么查
      */
     //@ExceptionHandler(RuntimeException.class)
-    //public ReturnDto<String> buyFlagException(RuntimeException e) {
+    //public ReturnDto buyFlagException(RuntimeException e) {
     //    log.error("异常=>{}", new Date().toString());
     //    e.printStackTrace();
-    //    return gr.custom(ResultCode.BAD_REQUEST.getCode(), e.getMessage());
+    //    return Result.custom(ResultCode.BAD_REQUEST.getCode(), e.getMessage());
     //}
     @ExceptionHandler(MyException.class)
-    public ReturnDto<String> myException(MyException e) {
+    public ReturnDto myException(MyException e) {
         log.error("异常=>{}", new Date().toString());
         e.printStackTrace();
-        return gr.custom(ResultCode.BAD_REQUEST.getCode(), e.getMessage());
+        return Result.custom(ResultCode.BAD_REQUEST.getCode(), e.getMessage());
     }
 }

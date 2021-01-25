@@ -9,6 +9,7 @@ import com.ghw.minibox.component.NimbusJoseJwt;
 import com.ghw.minibox.component.RedisUtil;
 import com.ghw.minibox.dto.PayloadDto;
 import com.ghw.minibox.entity.MbUser;
+import com.ghw.minibox.exception.MyException;
 import com.ghw.minibox.mapper.MapperUtils;
 import com.ghw.minibox.mapper.MbUserMapper;
 import com.ghw.minibox.service.CommonService;
@@ -17,7 +18,6 @@ import com.nimbusds.jose.JOSEException;
 import com.qiniu.util.StringUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.mail.EmailException;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -49,10 +49,6 @@ public class UserImpl implements CommonService<MbUser> {
     private NimbusJoseJwt jwt;
     @Resource
     private GenerateBean generateBean;
-    @Value("${qiNiu.defaultPhoto}")
-    private String defaultLink;
-    @Value("${qiNiu.link}")
-    private String qiNiuYunLink;
 
     @AOPLog("生成验证码")
     private String generateAuthCode() {
@@ -77,25 +73,22 @@ public class UserImpl implements CommonService<MbUser> {
         sendEmail.createEmail(lowerCase, subject, msg + authCode);
         Map<String, Object> map = new HashMap<>();
         map.put("data", authCode);
-        String json = new ObjectMapper().writeValueAsString(map);
-        redisUtil.set(RedisUtil.AUTH_PREFIX + username, json, 300L);
+        String json = generateBean.getObjectMapper().writeValueAsString(map);
+        redisUtil.set(RedisUtil.AUTH_PREFIX + username, json, 300);
     }
 
     @AOPLog("用户名查重")
     public boolean exist(String username) throws JsonProcessingException {
         //把传进来的邮箱格式化一下，统一小写
         String lowerCase = username.toLowerCase();
-
         List<MbUser> mbUser = userMapper.queryAll(new MbUser().setUsername(lowerCase));
-
         if (mbUser.size() != 0) {
             ObjectMapper om = generateBean.getObjectMapper();
             String json = om.writeValueAsString(mbUser.get(0));
-            redisUtil.set(RedisUtil.LOGIN_FLAG + username, json, 300L);
+            redisUtil.set(RedisUtil.LOGIN_FLAG + username, json, 300);
             return true;
-        } else {
-            return false;
         }
+        return false;
     }
 
     @AOPLog("对应不同业务发送不同邮件")
@@ -120,9 +113,7 @@ public class UserImpl implements CommonService<MbUser> {
 
     @AOPLog("校验验证码")
     public boolean authRegCode(String key, String code) throws JsonProcessingException {
-
         String valueFromRedis = redisUtil.get(RedisUtil.AUTH_PREFIX + key.toLowerCase());
-
         if (!StringUtils.isNullOrEmpty(valueFromRedis)) {
             Map<String, Object> map = generateBean.getObjectMapper().readValue(valueFromRedis, new TypeReference<Map<String, Object>>() {
             });
@@ -142,7 +133,6 @@ public class UserImpl implements CommonService<MbUser> {
         String lowerCaseUsername = username.toLowerCase();
         //先校验验证码
         boolean auth = authRegCode(lowerCaseUsername, authCode);
-
         if (auth) {
             //默认注册的角色 「用户」
             List<String> authorities = new ArrayList<>();
@@ -168,7 +158,7 @@ public class UserImpl implements CommonService<MbUser> {
                 mbUser.setUsername(username)
                         .setNickname(DefaultUserInfoEnum.NICKNAME.getMessage())
                         .setPassword(IdUtil.fastSimpleUUID())
-                        .setUserImg(this.defaultLink);
+                        .setUserImg(QiNiuUtil.defaultPhotoLink);
                 int insert = userMapper.insert(mbUser);
                 int setUserRole = mapperUtils.setUserRole(UserRole.USER.getRoleId(), mbUser.getId());
                 if (insert == 0 || setUserRole == 0) throw new MyException("注册时出现异常");
@@ -201,24 +191,14 @@ public class UserImpl implements CommonService<MbUser> {
     }
 
     @AOPLog("查询个人信息，包括游戏信息，游戏数量")
-    public Object showUserInfo(Long id) throws JsonProcessingException {
-        ObjectMapper objectMapper = generateBean.getObjectMapper();
-        //先查缓存
-        String fromRedis = redisUtil.get(RedisUtil.REDIS_PREFIX + RedisUtil.USER_PREFIX + id);
-        if (!StringUtils.isNullOrEmpty(fromRedis)) {
-            return objectMapper.readValue(fromRedis, new TypeReference<Map<String, Object>>() {
-            });
-        }
+    public Object showUserInfo(Long id) {
         //用户信息
         MbUser mbUser = userMapper.queryById(id);
         //游戏信息（包含游戏数量）
         List<Map<String, Object>> gameInfo = mapperUtils.countGameNum(id);
-
-        Map<String, Object> map = objectMapper.convertValue(mbUser, new TypeReference<Map<String, Object>>() {
-        });
-        //将游戏信息一起返回
+        Map<String, Object> map = new HashMap<>();
+        map.put("mbUser", mbUser);
         map.put("gameList", gameInfo);
-        redisUtil.set(RedisUtil.REDIS_PREFIX + RedisUtil.USER_PREFIX + id, objectMapper.writeValueAsString(map), 86400L);
         return map;
     }
 
@@ -242,16 +222,13 @@ public class UserImpl implements CommonService<MbUser> {
     @AOPLog("更新用户头像")
     @Transactional(rollbackFor = Throwable.class)
     public MbUser updateUserImg(MultipartFile file, Long uid) throws IOException {
-
         String fastSimpleUUID = IdUtil.fastSimpleUUID();
-
-        qiNiuUtil.syncUpload(fastSimpleUUID, file.getBytes());
+        String link = qiNiuUtil.syncUpload(fastSimpleUUID, file.getBytes());
         //更新用户信息
-        boolean update = this.update(new MbUser().setUserImg(this.qiNiuYunLink + fastSimpleUUID).setId(uid));
-
-        if (update) return this.selectOne(uid);
-
-        throw new RuntimeException("更新用户头像出现错误");
+        boolean update = this.update(new MbUser().setUserImg(link).setId(uid));
+        if (update)
+            return this.selectOne(uid);
+        throw new MyException("更新用户头像出现错误");
     }
 
     @AOPLog("更新密码，id、password必传")
@@ -259,7 +236,6 @@ public class UserImpl implements CommonService<MbUser> {
     public boolean updatePassword(MbUser mbUser) {
         String md5 = SecureUtil.md5(mbUser.getPassword());
         mbUser.setPassword(md5);
-
         int update = userMapper.update(mbUser);
         if (update > 0) {
             redisUtil.remove(RedisUtil.TOKEN_PREFIX + this.selectOne(mbUser.getId()).getUsername());

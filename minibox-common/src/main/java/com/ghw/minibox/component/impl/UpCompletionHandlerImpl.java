@@ -1,6 +1,5 @@
 package com.ghw.minibox.component.impl;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
 import com.qiniu.common.QiniuException;
 import com.qiniu.http.Response;
 import com.qiniu.storage.UpCompletionHandler;
@@ -21,7 +20,6 @@ public class UpCompletionHandlerImpl implements UpCompletionHandler {
      */
     @Data
     @Accessors(chain = true)
-    @JsonInclude(JsonInclude.Include.NON_NULL)
     static class QiNiuPutRet {
         private String key;
         private String hash;
@@ -40,15 +38,14 @@ public class UpCompletionHandlerImpl implements UpCompletionHandler {
     public void complete(String key, Response r) {
         try {
             QiNiuPutRet qiNiuPutRet = r.jsonToObject(QiNiuPutRet.class);
-            log.info("上传文件key=>{}", key);
-            log.info("上传回调=>{}", qiNiuPutRet.toString());
+            log.info("七牛云异步上传回调=>{}", qiNiuPutRet.toString());
         } catch (QiniuException e) {
-            log.error(e.getMessage());
+            log.error("七牛云上传错误信息=>{}", e.getMessage());
             try {
                 QiNiuPutRet qiNiuPutRet = e.response.jsonToObject(QiNiuPutRet.class);
-                log.error("错误信息=>{}", qiNiuPutRet);
+                log.error("七牛云上传错误信息=>{}", qiNiuPutRet);
             } catch (QiniuException qiniuException) {
-                log.error("错误信息=={}", qiniuException.response.getInfo());
+                log.error("七牛云上传错误信息=={}", qiniuException.response.getInfo());
             }
         }
     }

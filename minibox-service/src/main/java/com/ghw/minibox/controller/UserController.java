@@ -1,7 +1,7 @@
 package com.ghw.minibox.controller;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.ghw.minibox.component.GenerateResult;
+import com.ghw.minibox.component.Result;
 import com.ghw.minibox.component.NimbusJoseJwt;
 import com.ghw.minibox.dto.PayloadDto;
 import com.ghw.minibox.dto.ReturnDto;
@@ -36,8 +36,6 @@ import java.util.Objects;
 @Slf4j
 public class UserController {
     @Resource
-    private GenerateResult<Object> gr;
-    @Resource
     private NimbusJoseJwt jwt;
     @Resource
     private UserImpl user;
@@ -52,9 +50,9 @@ public class UserController {
      */
     @ApiOperation("发送邮箱验证码")
     @PostMapping("before")
-    public ReturnDto<Object> service(@RequestBody Map<String, Object> username) throws Exception {
+    public ReturnDto service(@RequestBody Map<String, Object> username) throws Exception {
         user.service((String) username.get("username"));
-        return gr.success();
+        return Result.success();
     }
 
     /**
@@ -69,14 +67,13 @@ public class UserController {
      */
     @ApiOperation("自动判断登陆还是注册")
     @PostMapping("after")
-    public ReturnDto<Object> doService(@RequestBody Map<String, Object> params) throws JsonProcessingException, JOSEException {
-
+    public ReturnDto doService(@RequestBody Map<String, Object> params) throws JsonProcessingException, JOSEException {
         String authCode = (String) params.get("authCode");
         String username = (String) params.get("username");
-
-        if (authCode.length() < 6) return gr.fail(ResultCode.AUTH_CODE_ERROR);
+        if (authCode.length() < 6)
+            return Result.fail(ResultCode.AUTH_CODE_ERROR);
         Object service = user.doService(username, authCode);
-        return gr.success(service);
+        return Result.success(service);
     }
 
     /**
@@ -87,8 +84,8 @@ public class UserController {
      */
     @ApiOperation("展示用户个人信息")
     @GetMapping("show")
-    public ReturnDto<Object> showUserInfo(@RequestParam Long id) throws JsonProcessingException {
-        return gr.success(user.showUserInfo(id));
+    public ReturnDto showUserInfo(@RequestParam Long id) {
+        return Result.success(user.showUserInfo(id));
     }
 
     /**
@@ -99,13 +96,13 @@ public class UserController {
      */
     @ApiOperation("更新用户个人信息")
     @PostMapping("update")
-    public ReturnDto<Object> updateUserInfo(@RequestBody MbUser mbUser) {
+    public ReturnDto updateUserInfo(@RequestBody MbUser mbUser) {
         boolean update = user.update(mbUser);
         if (update) {
             MbUser user = this.user.selectOne(mbUser.getId());
-            return gr.success(user);
+            return Result.success(user);
         }
-        return gr.fail();
+        return Result.fail();
     }
 
     /**
@@ -117,20 +114,19 @@ public class UserController {
      */
     @ApiOperation("修改密码前的校验")
     @GetMapping("beforeModify")
-    public ReturnDto<Object> beforeModifyPassword(ServletWebRequest request) throws Exception {
+    public ReturnDto beforeModifyPassword(ServletWebRequest request) throws Exception {
         String accessToken = request.getHeader("accessToken");
-
         if (!StringUtils.isNullOrEmpty(accessToken)) {
             PayloadDto payloadDto = jwt.verifyTokenByHMAC(accessToken);
             PayloadDto dto = Objects.requireNonNull(payloadDto);
             String username = dto.getUsername();
             if (!StringUtils.isNullOrEmpty(username)) {
                 user.sendEmail(username, SendEmail.SUBJECT, SendEmail.OTHER_MESSAGE);
-                return gr.success();
+                return Result.success();
             }
-            return gr.fail(ResultCode.UNAUTHORIZED);
+            return Result.fail(ResultCode.UNAUTHORIZED);
         }
-        return gr.fail(ResultCode.UNAUTHORIZED);
+        return Result.fail(ResultCode.UNAUTHORIZED);
     }
 
     /**
@@ -143,23 +139,17 @@ public class UserController {
      */
     @ApiOperation("校验验证码")
     @PostMapping("check")
-    public Object checkAuthCode(@RequestBody Map<String, Object> params, ServletWebRequest request) throws Exception {
-
+    public ReturnDto checkAuthCode(@RequestBody Map<String, Object> params, ServletWebRequest request) throws Exception {
         String token = request.getHeader("accessToken");
-
         String authCode = (String) params.get("authCode");
-
         boolean c = StringUtils.isNullOrEmpty(authCode);
-
         if (!c) {
-
             PayloadDto payloadDto = jwt.verifyTokenByHMAC(token);
             boolean b = user.authRegCode(payloadDto.getUsername(), authCode);
-
-            if (b) return gr.success();
-
+            if (b)
+                return Result.success();
         }
-        return gr.fail();
+        return Result.fail();
     }
 
     /**
@@ -170,13 +160,11 @@ public class UserController {
      */
     @ApiOperation("修改密码")
     @PostMapping("modify")
-    public Object doModifyPassword(@RequestBody @Validated(UpdatePassword.class) MbUser mbUser) {
-
+    public ReturnDto doModifyPassword(@RequestBody @Validated(UpdatePassword.class) MbUser mbUser) {
         boolean b = user.updatePassword(mbUser);
-
-        if (b) return gr.success();
-
-        return gr.fail(ResultCode.AUTH_CODE_ERROR);
+        if (b)
+            return Result.success();
+        return Result.fail(ResultCode.AUTH_CODE_ERROR);
     }
 
     /**
@@ -189,11 +177,10 @@ public class UserController {
      */
     @ApiOperation("修改用户头像")
     @PostMapping("updateImg")
-    public ReturnDto<Object> updateUserImg(@RequestParam MultipartFile userImg, @RequestParam Long uid) throws IOException {
-
-        if (userImg.isEmpty()) return gr.fail();
-
-        return gr.success(user.updateUserImg(userImg, uid));
+    public ReturnDto updateUserImg(@RequestParam MultipartFile userImg, @RequestParam Long uid) throws IOException {
+        if (userImg.isEmpty())
+            return Result.fail();
+        return Result.success(user.updateUserImg(userImg, uid));
     }
 
     /**
@@ -205,11 +192,11 @@ public class UserController {
      */
     @ApiOperation("登出")
     @GetMapping("logout")
-    public Object logout(ServletWebRequest request) throws Exception {
+    public ReturnDto logout(ServletWebRequest request) throws Exception {
         String accessToken = request.getHeader("accessToken");
         PayloadDto payloadDto = jwt.verifyTokenByHMAC(accessToken);
         user.logout(payloadDto.getUsername());
-        return gr.success();
+        return Result.success();
     }
 
 

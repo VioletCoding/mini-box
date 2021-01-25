@@ -4,6 +4,8 @@ import cn.hutool.core.util.IdUtil;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ghw.minibox.dto.PayloadDto;
+import com.ghw.minibox.exception.MyException;
+import com.ghw.minibox.utils.GenerateBean;
 import com.nimbusds.jose.*;
 import com.nimbusds.jose.crypto.MACSigner;
 import com.nimbusds.jose.crypto.MACVerifier;
@@ -26,6 +28,8 @@ public class NimbusJoseJwt {
 
     @Resource
     private RedisUtil redisUtil;
+    @Resource
+    private GenerateBean generateBean;
 
     private static final String SECRET = "This JWT Sign By VioletEverGarden,this is a SpringCloud Web Project";
 
@@ -44,12 +48,9 @@ public class NimbusJoseJwt {
      */
     public String generateTokenByHMAC(@NotNull PayloadDto payloadParam) throws JOSEException, JsonProcessingException {
         JWSHeader jwsHeader = new JWSHeader.Builder(JWSAlgorithm.HS256).type(JOSEObjectType.JWT).build();
-
-        ObjectMapper objectMapper = new ObjectMapper();
+        ObjectMapper objectMapper = generateBean.getObjectMapper();
         String obj2json = objectMapper.writeValueAsString(payloadParam);
-
         Payload payload = new Payload(obj2json);
-
         JWSObject jwsObject = new JWSObject(jwsHeader, payload);
         JWSSigner jwsSigner = new MACSigner(SECRET);
         jwsObject.sign(jwsSigner);
@@ -91,11 +92,10 @@ public class NimbusJoseJwt {
     public PayloadDto verifyTokenByHMAC(String token) throws Exception {
         JWSObject jwsObject = JWSObject.parse(token);
         MACVerifier verifier = new MACVerifier(SECRET);
-
-        if (!jwsObject.verify(verifier)) throw new Exception("token签名不合法");
-
+        if (!jwsObject.verify(verifier))
+            throw new MyException("token签名不合法");
         String payload = jwsObject.getPayload().toString();
-        ObjectMapper objectMapper = new ObjectMapper();
+        ObjectMapper objectMapper = generateBean.getObjectMapper();
         return objectMapper.readValue(payload, PayloadDto.class);
     }
 }

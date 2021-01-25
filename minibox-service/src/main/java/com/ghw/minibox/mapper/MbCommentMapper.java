@@ -40,6 +40,14 @@ public interface MbCommentMapper {
     List<MbComment> queryAll(MbComment mbComment);
 
     /**
+     * 找出所有评论，以及每条评论的回复
+     *
+     * @param mbComment 实体
+     * @return 对象列表
+     */
+    List<MbComment> queryAllWithReply(MbComment mbComment);
+
+    /**
      * 新增数据
      *
      * @param mbComment 实例对象

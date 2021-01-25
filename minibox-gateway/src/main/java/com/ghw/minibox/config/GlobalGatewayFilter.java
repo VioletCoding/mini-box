@@ -1,6 +1,6 @@
 package com.ghw.minibox.config;
 
-import com.ghw.minibox.component.GenerateResult;
+import com.ghw.minibox.component.Result;
 import com.ghw.minibox.component.NimbusJoseJwt;
 import com.ghw.minibox.component.RedisUtil;
 import com.ghw.minibox.dto.PayloadDto;
@@ -38,11 +38,9 @@ public class GlobalGatewayFilter implements GlobalFilter, Ordered {
     @Resource
     private final NimbusJoseJwt jwt;
     @Resource
-    private final RedisUtil redis;
+    private final RedisUtil redisUtil;
     @Resource
     private final EnableAuth enableAuth;
-    @Resource
-    private final GenerateResult<Object> gr;
 
     /**
      * 检查url是否在忽略列表里
@@ -89,29 +87,29 @@ public class GlobalGatewayFilter implements GlobalFilter, Ordered {
         if (StringUtils.isNullOrEmpty(token)) {
             log.error("从请求头获取的token为空");
             response.setStatusCode(HttpStatus.UNAUTHORIZED);
-            return getVoidMono(response, gr.fail(ResultCode.UNAUTHORIZED));
+            return getVoidMono(response, Result.fail(ResultCode.UNAUTHORIZED));
         }
         //获取载荷，如果抛异常，那就是token校验失败或者过期
         try {
             PayloadDto payloadDto = jwt.verifyTokenByHMAC(token);
             String username = payloadDto.getUsername();
-            String tokenInRedis = redis.get(RedisUtil.TOKEN_PREFIX + username);
+            String tokenInRedis = redisUtil.get(RedisUtil.TOKEN_PREFIX + username);
 
             if (StringUtils.isNullOrEmpty(tokenInRedis)) {
                 log.error("从Redis获取到的token为空");
                 response.setStatusCode(HttpStatus.UNAUTHORIZED);
-                return getVoidMono(response, gr.fail(ResultCode.UNAUTHORIZED));
+                return getVoidMono(response, Result.fail(ResultCode.UNAUTHORIZED));
             }
             if (!tokenInRedis.equals(token)) {
                 log.error("token不合法!");
                 response.setStatusCode(HttpStatus.UNAUTHORIZED);
-                return getVoidMono(response, gr.fail(ResultCode.UNAUTHORIZED));
+                return getVoidMono(response, Result.fail(ResultCode.UNAUTHORIZED));
             }
 
         } catch (Exception e) {
             log.error(e.getMessage());
             response.setStatusCode(HttpStatus.UNAUTHORIZED);
-            return getVoidMono(response, gr.fail(ResultCode.UNAUTHORIZED));
+            return getVoidMono(response, Result.fail(ResultCode.UNAUTHORIZED));
         }
         //放行
         return chain.filter(exchange);
@@ -124,7 +122,7 @@ public class GlobalGatewayFilter implements GlobalFilter, Ordered {
      * @param r                  自定义返回
      * @return Mono
      */
-    private Mono<Void> getVoidMono(ServerHttpResponse serverHttpResponse, ReturnDto<Object> r) {
+    private Mono<Void> getVoidMono(ServerHttpResponse serverHttpResponse, ReturnDto r) {
         serverHttpResponse.getHeaders().add("Content-Type", "application/json;charset=UTF-8");
         DataBuffer dataBuffer = serverHttpResponse.bufferFactory().wrap(Json.encode(r).getBytes(StandardCharsets.UTF_8));
         return serverHttpResponse.writeWith(Flux.just(dataBuffer));

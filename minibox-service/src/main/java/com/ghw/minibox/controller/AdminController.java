@@ -1,7 +1,7 @@
 package com.ghw.minibox.controller;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.ghw.minibox.component.GenerateResult;
+import cn.hutool.core.util.IdUtil;
+import com.ghw.minibox.component.Result;
 import com.ghw.minibox.dto.ReturnDto;
 import com.ghw.minibox.entity.*;
 import com.ghw.minibox.mapper.MapperUtils;
@@ -10,11 +10,14 @@ import com.ghw.minibox.service.impl.GameImpl;
 import com.ghw.minibox.service.impl.ParentMenuImpl;
 import com.ghw.minibox.service.impl.SubMenuImpl;
 import com.ghw.minibox.service.impl.UserImpl;
+import com.ghw.minibox.utils.QiNiuUtil;
 import com.qiniu.util.StringUtils;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
+import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
@@ -33,79 +36,80 @@ public class AdminController {
     @Resource
     private MapperUtils mapperUtils;
     @Resource
+    private QiNiuUtil qiNiuUtil;
+    @Resource
     private MbRoleMapper roleMapper;
     @Resource
     private UserImpl userImpl;
     @Resource
     private GameImpl gameImpl;
-    @Resource
-    private GenerateResult<Object> gr;
 
     @ApiOperation("获取菜单列表")
     @GetMapping("allMenu")
-    public ReturnDto<Object> showMenu(@RequestParam(value = "id", required = false) Long id,
-                                      @RequestParam(value = "menuName", required = false) String menuName) {
-
+    public ReturnDto showMenu(@RequestParam(value = "id", required = false) Long id,
+                              @RequestParam(value = "menuName", required = false) String menuName) {
         MbParentMenu parentMenu = new MbParentMenu();
-        if (id != null) parentMenu.setId(id);
-        if (!StringUtils.isNullOrEmpty(menuName)) parentMenu.setMenuName(menuName);
+        if (id != null)
+            parentMenu.setId(id);
+        if (!StringUtils.isNullOrEmpty(menuName))
+            parentMenu.setMenuName(menuName);
         List<MbParentMenu> menuList = this.parentMenu.selectAll(parentMenu);
-        return gr.success(menuList);
+        return Result.success(menuList);
     }
 
     @ApiOperation("添加父菜单")
     @PostMapping("addParentMenu")
-    public ReturnDto<Object> addParentMenu(@RequestBody MbParentMenu parentMenu) {
+    public ReturnDto addParentMenu(@RequestBody MbParentMenu parentMenu) {
         this.parentMenu.insert(parentMenu);
-        return gr.success();
+        return Result.success();
     }
 
     @ApiOperation("添加子菜单")
     @PostMapping("addSubMenu")
-    public ReturnDto<Object> addSubMenu(@RequestBody MbSubMenu subMenu) {
+    public ReturnDto addSubMenu(@RequestBody MbSubMenu subMenu) {
         this.subMenu.insert(subMenu);
-        return gr.success();
+        return Result.success();
     }
 
     @ApiOperation("删除父菜单")
     @GetMapping("delParentMenu")
-    public ReturnDto<Object> delParentMenu(@RequestParam Long id) throws JsonProcessingException {
+    public ReturnDto delParentMenu(@RequestParam Long id) {
         List<MbParentMenu> parentMenu = this.parentMenu.selectAll(new MbParentMenu().setId(id));
-
         if (parentMenu.get(0).getSubMenuList().size() > 0)
-            return gr.fail("请先删除该菜单下的所有子菜单");
-
+            return Result.fail("请先删除该菜单下的所有子菜单");
         this.parentMenu.delete(id);
-        return gr.success();
+        return Result.success();
     }
 
     @ApiOperation("删除子菜单")
     @GetMapping("delSubMenu")
-    public ReturnDto<Object> delSubMenu(@RequestParam Long id) {
+    public ReturnDto delSubMenu(@RequestParam Long id) {
         this.subMenu.delete(id);
-        return gr.success();
+        return Result.success();
     }
 
     @ApiOperation("修改父菜单信息")
     @PostMapping("updateParentMenu")
-    public ReturnDto<Object> updateParentMenu(@RequestBody MbParentMenu parentMenu) {
+    public ReturnDto updateParentMenu(@RequestBody MbParentMenu parentMenu) {
         boolean update = this.parentMenu.update(parentMenu);
-        if (update) return gr.success();
-        return gr.fail();
+        if (update)
+            return Result.success();
+        return Result.fail();
     }
 
     @ApiOperation("修改子菜单信息")
     @PostMapping("updateSubMenu")
-    public ReturnDto<Object> updateSubMenu(@RequestBody MbSubMenu subMenu) {
+    public ReturnDto updateSubMenu(@RequestBody MbSubMenu subMenu) {
         boolean update = this.subMenu.update(subMenu);
-        if (update) return gr.success();
-        return gr.fail();
+        if (update)
+            return Result.success();
+        return Result.fail();
     }
 
 
     @ApiOperation("获取首页的「帖子数量」「用户数量」「游戏数量」「评论数量」以及echarts图表数据")
     @GetMapping("allCount")
-    public ReturnDto<Object> getCountNumber() {
+    public ReturnDto getCountNumber() {
         Map<String, Object> countMap = mapperUtils.count();
         List<Map<String, Object>> postsPerDay = mapperUtils.echartsPostPerDay();
         List<Map<String, Object>> gameSalesRankings = mapperUtils.gameSalesRankings();
@@ -113,61 +117,83 @@ public class AdminController {
         countMap.put("echartsPost", postsPerDay);
         countMap.put("gameSalesRankings", gameSalesRankings);
         countMap.put("commentPerDay", commentPerDay);
-        return gr.success(countMap);
+        return Result.success(countMap);
     }
 
     @ApiOperation("获取用户列表里的所有数据")
     @PostMapping("userList")
-    public ReturnDto<Object> getUserList(@RequestBody(required = false) MbUser mbUser) {
-        return gr.success(userImpl.selectAll(mbUser));
+    public ReturnDto getUserList(@RequestBody(required = false) MbUser mbUser) {
+        return Result.success(userImpl.selectAll(mbUser));
     }
 
     @ApiOperation("更新用户信息")
     @PostMapping("updateUser")
-    public ReturnDto<Object> updateUserInfo(@RequestBody MbUser mbUser) {
+    public ReturnDto updateUserInfo(@RequestBody MbUser mbUser) {
         boolean update = userImpl.update(mbUser);
-        if (update) return gr.success();
-        return gr.fail();
+        if (update)
+            return Result.success();
+        return Result.fail();
     }
 
     @ApiOperation("删除用户的管理员角色")
     @GetMapping("deleteRole")
-    public ReturnDto<Object> updateUserRole(@RequestParam Long userId) {
+    public ReturnDto updateUserRole(@RequestParam Long userId) {
         int i = mapperUtils.deleteUserAdminRole(userId);
-        if (i > 0) return gr.success();
-        return gr.fail("用户不是管理员，如果要删除USER角色，请直接删除用户");
+        if (i > 0)
+            return Result.success();
+        return Result.fail("用户不是管理员，如果要删除USER角色，请直接删除用户");
     }
 
     @ApiOperation("添加管理员角色")
     @GetMapping("addRole")
-    public ReturnDto<Object> giveAdminRole(@RequestParam Long userId) {
+    public ReturnDto giveAdminRole(@RequestParam Long userId) {
         List<MbUser> users = userImpl.selectAll(new MbUser().setId(userId));
         MbUser mbUser = users.get(0);
         List<MbRole> roleList = mbUser.getRoleList();
         for (MbRole m : roleList) {
-            if (m.getId() == 10001) return gr.fail("用户已经是管理员了");
+            if (m.getId() == 10001)
+                return Result.fail("用户已经是管理员了");
         }
         int i = mapperUtils.setUserRole(10001L, userId);
-        if (i > 0) return gr.success();
-        return gr.fail();
+        if (i > 0)
+            return Result.success();
+        return Result.fail();
     }
 
     @ApiOperation("角色列表展示")
     @PostMapping("showRoles")
-    public ReturnDto<Object> showRoleList(@RequestBody(required = false) MbRole mbRole) {
-        return gr.success(roleMapper.queryAll(mbRole));
+    public ReturnDto showRoleList(@RequestBody(required = false) MbRole mbRole) {
+        return Result.success(roleMapper.queryAll(mbRole));
     }
 
     @ApiOperation("删除用户")
     @GetMapping("deleteUser")
-    public ReturnDto<Object> deleteUserById(@RequestParam Long id) {
-        return gr.success(userImpl.delete(id));
+    public ReturnDto deleteUserById(@RequestParam Long id) {
+        return Result.success(userImpl.delete(id));
     }
 
     @ApiOperation("游戏列表")
     @PostMapping("gameList")
-    public ReturnDto<Object> getGameList(@RequestBody(required = false) MbGame mbGame) throws JsonProcessingException {
-        return gr.success(gameImpl.selectAll(mbGame));
+    public ReturnDto getGameList(@RequestBody(required = false) MbGame mbGame) {
+        return Result.success(gameImpl.selectAll(mbGame));
+    }
+
+    @ApiOperation("上传文件")
+    @PostMapping("upload")
+    public ReturnDto upload(@RequestParam MultipartFile multipartFile) throws IOException {
+        if (multipartFile.isEmpty())
+            return Result.fail("文件为空");
+        String link = qiNiuUtil.syncUpload(IdUtil.fastSimpleUUID(), multipartFile.getBytes());
+        return Result.success(link);
+    }
+
+    @ApiOperation("更新游戏信息")
+    @PostMapping("updateGameInfo")
+    public ReturnDto updateGameInfo(@RequestBody MbGame mbGame) {
+        boolean update = gameImpl.update(mbGame);
+        if (update)
+            return Result.success();
+        return Result.fail();
     }
 
 }

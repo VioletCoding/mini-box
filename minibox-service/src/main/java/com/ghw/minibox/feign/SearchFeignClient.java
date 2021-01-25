@@ -17,5 +17,5 @@ public interface SearchFeignClient {
      *
      */
     @GetMapping("/search/refresh")
-    ReturnDto<Object> refreshData();
+    ReturnDto refreshData();
 }

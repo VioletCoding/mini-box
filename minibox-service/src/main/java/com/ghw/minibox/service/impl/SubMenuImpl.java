@@ -1,6 +1,5 @@
 package com.ghw.minibox.service.impl;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.ghw.minibox.entity.MbSubMenu;
 import com.ghw.minibox.mapper.MbSubMenuMapper;
 import com.ghw.minibox.service.CommonService;
@@ -20,12 +19,12 @@ public class SubMenuImpl implements CommonService<MbSubMenu> {
     private MbSubMenuMapper subMenuMapper;
 
     @Override
-    public List<MbSubMenu> selectAll(MbSubMenu param) throws JsonProcessingException {
+    public List<MbSubMenu> selectAll(MbSubMenu param){
         return subMenuMapper.queryAll(param);
     }
 
     @Override
-    public MbSubMenu selectOne(Long id) throws JsonProcessingException {
+    public MbSubMenu selectOne(Long id){
         return null;
     }
 

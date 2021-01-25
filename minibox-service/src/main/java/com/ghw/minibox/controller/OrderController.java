@@ -1,7 +1,7 @@
 package com.ghw.minibox.controller;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.ghw.minibox.component.GenerateResult;
+import com.ghw.minibox.component.Result;
 import com.ghw.minibox.dto.ReturnDto;
 import com.ghw.minibox.entity.MbOrder;
 import com.ghw.minibox.service.impl.OrderImpl;
@@ -23,47 +23,39 @@ import javax.annotation.Resource;
 @RestController
 @RequestMapping("order")
 public class OrderController {
-
     @Resource
     private OrderImpl order;
-    @Resource
-    private GenerateResult<Object> gr;
 
     @ApiOperation("生成订单")
     @PostMapping("generateOrder")
-    public ReturnDto<Object> generateOrder(@RequestBody @Validated MbOrder mbOrder) throws JsonProcessingException {
-
+    public ReturnDto generateOrder(@RequestBody @Validated MbOrder mbOrder) throws JsonProcessingException {
         Object generateOrder = order.create(mbOrder);
-
-        if (generateOrder.equals(ResultCode.ORDER_PAYED.getMessage())) return gr.fail(ResultCode.ORDER_PAYED);
-        if (generateOrder.equals(ResultCode.GAME_CANT_BE_BUY.getMessage())) return gr.fail(ResultCode.GAME_CANT_BE_BUY);
-
-        return gr.success(generateOrder);
+        if (generateOrder.equals(ResultCode.ORDER_PAYED.getMessage()))
+            return Result.fail(ResultCode.ORDER_PAYED);
+        if (generateOrder.equals(ResultCode.GAME_CANT_BE_BUY.getMessage()))
+            return Result.fail(ResultCode.GAME_CANT_BE_BUY);
+        return Result.success(generateOrder);
 
     }
 
     @ApiOperation("确认订单")
     @PostMapping("confirm")
-    public ReturnDto<Object> confirmOrder(@RequestBody @Validated MbOrder mbOrder) throws JsonProcessingException {
-
-        if (mbOrder.getOrderId() == null) return gr.fail();
-
+    public ReturnDto confirmOrder(@RequestBody @Validated MbOrder mbOrder) {
+        if (mbOrder.getOrderId() == null)
+            return Result.fail();
         boolean b = (Boolean) order.insert(mbOrder);
-
-        if (b) return gr.success();
-
-        return gr.fail(ResultCode.ORDER_CANCEL);
+        if (b)
+            return Result.success();
+        return Result.fail(ResultCode.ORDER_CANCEL);
     }
 
     @ApiOperation("取消订单")
     @PostMapping("cancel")
-    public ReturnDto<Object> cancelOrder(@RequestBody @Validated MbOrder mbOrder) {
-
+    public ReturnDto cancelOrder(@RequestBody @Validated MbOrder mbOrder) {
         boolean b = order.cancelOrder(mbOrder);
-
-        if (b) return gr.success();
-
-        return gr.fail(ResultCode.ORDER_CANCEL);
+        if (b)
+            return Result.success();
+        return Result.fail(ResultCode.ORDER_CANCEL);
     }
 
 }

@@ -11,11 +11,3 @@ spring:
         max-idle: 8 # 连接池中的最大空闲连接
         min-idle: 0 # 连接池中的最小空闲连接
     timeout: 3000ms # 连接超时时间（毫秒）
-
-#qi niu cloud
-qiNiu:
-  accessKey: OeZ3mKc0cwT2RVq-i6tmtmPj55xOp1NdT_6U4NHU
-  secretKey: NG3slWtnHU_lFhI7FimGzfF_hke9LTq9yHDn7OFV
-  bucket: minibox-bucket-3
-  defaultPhoto: http://qnbtg7yhm.hn-bkt.clouddn.com/default.jpg
-  link: http://qnbtg7yhm.hn-bkt.clouddn.com/

@@ -1,7 +1,6 @@
 package com.ghw.minibox.controller;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.ghw.minibox.component.GenerateResult;
+import com.ghw.minibox.component.Result;
 import com.ghw.minibox.dto.ReturnDto;
 import com.ghw.minibox.service.impl.GameImpl;
 import io.swagger.annotations.Api;
@@ -23,20 +22,18 @@ import javax.annotation.Resource;
 @RequestMapping("game")
 public class GameController {
     @Resource
-    private GenerateResult<Object> gr;
-    @Resource
     private GameImpl game;
 
     @ApiOperation("游戏列表")
     @GetMapping("all")
-    public ReturnDto<Object> showAllGame() throws JsonProcessingException {
-        return gr.success(game.selectAll(null));
+    public ReturnDto showAllGame() {
+        return Result.success(game.selectAll(null));
     }
 
     @ApiOperation("游戏详情 -> 传入游戏id")
     @GetMapping("detail")
-    public ReturnDto<Object> showGameDetail(@RequestParam Long id) throws JsonProcessingException {
-        return gr.success(game.selectOne(id));
+    public ReturnDto showGameDetail(@RequestParam Long id) {
+        return Result.success(game.selectOne(id));
     }
 
 }

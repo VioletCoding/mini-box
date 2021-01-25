@@ -26,46 +26,44 @@ public class RedisUtil {
     public static final String USER_PREFIX = "user:";
 
     @Resource
-    private StringRedisTemplate rt;
+    private StringRedisTemplate stringRedisTemplate;
 
     public void set(String key, String value) {
-        rt.opsForValue().set(key, value);
+        stringRedisTemplate.opsForValue().set(key, value);
     }
 
     /**
      * expire 单位是秒
      */
     public void set(String key, String value, long expire) {
-        rt.opsForValue().set(key, value, expire, TimeUnit.SECONDS);
+        stringRedisTemplate.opsForValue().set(key, value, expire, TimeUnit.SECONDS);
     }
 
     public String get(String key) {
-        return rt.opsForValue().get(key);
+        return stringRedisTemplate.opsForValue().get(key);
     }
-
 
     /**
      * 失效时间
      */
     public void expire(String key, Long expire) throws NullPointerException {
-        rt.expire(key, expire, TimeUnit.SECONDS);
+        stringRedisTemplate.expire(key, expire, TimeUnit.SECONDS);
     }
 
-
     public void remove(String key) {
-        rt.delete(key);
+        stringRedisTemplate.delete(key);
     }
 
     public void remove(List<String> key) {
-        rt.delete(key);
+        stringRedisTemplate.delete(key);
     }
 
     public Long increment(String key, Long delta) {
-        return rt.opsForValue().increment(key, delta);
+        return stringRedisTemplate.opsForValue().increment(key, delta);
     }
 
     public Boolean exist(String key) {
-        return rt.hasKey(key);
+        return stringRedisTemplate.hasKey(key);
     }
 
 }

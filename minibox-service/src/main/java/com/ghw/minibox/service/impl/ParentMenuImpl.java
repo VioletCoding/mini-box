@@ -1,6 +1,5 @@
 package com.ghw.minibox.service.impl;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.ghw.minibox.entity.MbParentMenu;
 import com.ghw.minibox.mapper.MbParentMenuMapper;
 import com.ghw.minibox.service.CommonService;
@@ -25,7 +24,7 @@ public class ParentMenuImpl implements CommonService<MbParentMenu> {
     }
 
     @Override
-    public MbParentMenu selectOne(Long id) throws JsonProcessingException {
+    public MbParentMenu selectOne(Long id) {
         return null;
     }
 

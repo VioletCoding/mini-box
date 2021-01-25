@@ -183,7 +183,7 @@
         update minibox.mb_game
         <set>
             <if test="name != null and name != ''">
-                name = #{name},
+                `name` = #{name},
             </if>
             <if test="price != null">
                 price = #{price},
@@ -198,7 +198,7 @@
                 score = #{score},
             </if>
             <if test="description != null and description != ''">
-                description = #{description},
+                `description` = #{description},
             </if>
             <if test="releaseTime != null">
                 release_time = #{releaseTime},

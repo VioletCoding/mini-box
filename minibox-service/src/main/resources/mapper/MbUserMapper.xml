@@ -70,7 +70,7 @@
                update_date,
                state,
                user_img
-        FROM minibox.mb_user
+        FROM mb_user
         LIMIT #{offset}, #{limit}
     </select>
 

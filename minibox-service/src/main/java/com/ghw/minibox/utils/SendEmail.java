@@ -11,9 +11,7 @@ import org.springframework.stereotype.Component;
  */
 @Component
 public class SendEmail {
-
     private static final String AUTH_CODE = "tieqxwykyjedbaif";
-
     public static final String SUBJECT = "Minibox验证码，请注意查收！";
     public static final String LOGIN_MESSAGE = "您正在登陆迷你盒，本次验证码5分钟内有效：";
     public static final String REGISTER_MESSAGE = "您正在注册迷你盒，本次验证码5分钟内有效：";

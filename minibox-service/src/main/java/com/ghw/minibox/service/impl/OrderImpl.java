@@ -114,7 +114,7 @@ public class OrderImpl implements CommonService<MbOrder> {
     @AOPLog("提交订单")
     @Transactional(rollbackFor = Throwable.class)
     @Override
-    public Object insert(MbOrder mbOrder) throws JsonProcessingException {
+    public Object insert(MbOrder mbOrder){
 
         //Redis key格式： order:用户id:游戏id:orderId
         String key = RedisUtil.ORDER_PREFIX + mbOrder.getUid() + ":" + mbOrder.getOrderGameId();

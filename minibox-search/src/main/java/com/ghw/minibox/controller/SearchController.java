@@ -1,6 +1,6 @@
 package com.ghw.minibox.controller;
 
-import com.ghw.minibox.component.GenerateResult;
+import com.ghw.minibox.component.Result;
 import com.ghw.minibox.dto.ReturnDto;
 import com.ghw.minibox.entity.MbGame;
 import com.ghw.minibox.entity.MbPost;
@@ -31,8 +31,6 @@ public class SearchController {
     private GameSearchImpl gameSearch;
     @Resource
     private RefreshDataUtil refreshDataUtil;
-    @Resource
-    private GenerateResult<Object> gr;
 
     /**
      * 简单搜索
@@ -43,7 +41,7 @@ public class SearchController {
      * @return 搜索结果
      */
     @GetMapping("simple")
-    public ReturnDto<Object> search(@RequestParam(required = false) String title,
+    public ReturnDto search(@RequestParam(required = false) String title,
                                     @RequestParam(required = false, defaultValue = "0") Integer pageNum,
                                     @RequestParam(required = false, defaultValue = "5") Integer pageSize) {
         Page<MbPost> postPage = postSearch.search(title, pageNum, pageSize);
@@ -51,7 +49,7 @@ public class SearchController {
         Map<String, Object> allData = new HashMap<>();
         allData.put("post", postPage);
         allData.put("game", gamePage);
-        return gr.success(allData);
+        return Result.success(allData);
     }
 
     /**
@@ -60,8 +58,8 @@ public class SearchController {
      * @return 是否成功
      */
     @GetMapping("refresh")
-    public ReturnDto<Object> refreshData() {
+    public ReturnDto refreshData() {
         refreshDataUtil.refresh();
-        return gr.success();
+        return Result.success();
     }
 }

@@ -33,11 +33,3 @@ mybatis:
 logging:
   level:
     com.ghw.minibox.mapper: debug
-
-#qi niu cloud
-qiNiu:
-  accessKey: OeZ3mKc0cwT2RVq-i6tmtmPj55xOp1NdT_6U4NHU
-  secretKey: NG3slWtnHU_lFhI7FimGzfF_hke9LTq9yHDn7OFV
-  bucket: minibox-bucket-3
-  defaultPhoto: http://qnbtg7yhm.hn-bkt.clouddn.com/default.jpg
-  link: http://qnbtg7yhm.hn-bkt.clouddn.com/

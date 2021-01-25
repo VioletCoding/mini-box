@@ -1,7 +1,6 @@
 package com.ghw.minibox.controller;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.ghw.minibox.component.GenerateResult;
+import com.ghw.minibox.component.Result;
 import com.ghw.minibox.dto.ReturnDto;
 import com.ghw.minibox.entity.MbPost;
 import com.ghw.minibox.service.impl.PostImpl;
@@ -26,46 +25,42 @@ import java.util.Map;
 public class PostController {
     @Resource
     private PostImpl post;
-    @Resource
-    private GenerateResult<Object> gr;
 
     @ApiOperation("获取帖子列表 -> 可选传入用户id，那么返回就是那一个用户的所有帖子")
     @GetMapping("all")
-    public ReturnDto<Object> showPostList(@RequestParam(required = false) Long uid) throws JsonProcessingException {
-        return gr.success(post.selectAll(new MbPost().setUid(uid)));
+    public ReturnDto showPostList(@RequestParam(required = false) Long uid) {
+        return Result.success(post.selectAll(new MbPost().setUid(uid)));
     }
 
     @ApiOperation("发布帖子 -> 入参要求看实体的注解")
     @PostMapping("publish")
-    public ReturnDto<Object> publishPost(@RequestBody @Validated MbPost mbPost) throws JsonProcessingException {
-
+    public ReturnDto publishPost(@RequestBody @Validated MbPost mbPost) {
         boolean insert = (Boolean) post.insert(mbPost);
-
-        if (insert) return gr.success();
-
-        return gr.fail();
+        if (insert)
+            return Result.success();
+        return Result.fail();
     }
 
 
     @ApiOperation("文件上传，可以批量上传，返回图片的链接，本项目是七牛云链接")
     @PostMapping("upload")
-    public ReturnDto<Object> upload(@RequestParam MultipartFile[] multipartFiles) throws IOException {
+    public ReturnDto upload(@RequestParam MultipartFile[] multipartFiles) throws IOException {
         Map<String, Object> upload = post.upload(multipartFiles);
-        return gr.success(upload);
+        return Result.success(upload);
     }
 
 
     @ApiOperation("帖子详情，传入帖子id")
     @GetMapping("detail")
-    public ReturnDto<Object> showPostDetail(@RequestParam Long id) throws JsonProcessingException {
+    public ReturnDto showPostDetail(@RequestParam Long id) {
         MbPost mbPost = post.selectOne(id);
-        return gr.success(mbPost);
+        return Result.success(mbPost);
     }
 
     @ApiOperation("用户个人信息显示自己的评论，以及评论在哪个帖子下发布的，传入用户id")
     @GetMapping("userCommentShow")
-    public ReturnDto<Object> userCommentByUid(@RequestParam Long uid) {
-        return gr.success(post.getCommentAndPostByUid(uid));
+    public ReturnDto userCommentByUid(@RequestParam Long uid) {
+        return Result.success(post.getCommentAndPostByUid(uid));
     }
 
 

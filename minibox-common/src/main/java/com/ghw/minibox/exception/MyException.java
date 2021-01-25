@@ -1,4 +1,4 @@
-package com.ghw.minibox.utils;
+package com.ghw.minibox.exception;
 
 /**
  * @author Violet
