@@ -97,7 +97,7 @@
                 and id = #{id}
             </if>
             <if test="name != null and name != ''">
-                and `name` = #{name}
+                and `name` LIKE CONCAT('%',#{name},'%')
             </if>
             <if test="price != null">
                 and price = #{price}
@@ -144,10 +144,10 @@
 
     <!--新增所有列-->
     <insert id="insert" keyProperty="id" useGeneratedKeys="true">
-        insert into minibox.mb_game(name, price, score, description, release_time, developer,
-                                    publisher, score_count, origin_price, cover_img)
-        values (#{name}, #{price}, #{score}, #{description}, #{releaseTime}, #{developer},
-                #{publisher}, #{scoreCount}, #{originPrice}, #{coverImg})
+        insert into minibox.mb_game(name, price, description, release_time, developer,
+                                    publisher, origin_price, cover_img)
+        values (#{name}, #{price}, #{description}, #{releaseTime}, #{developer},
+                #{publisher}, #{originPrice}, #{coverImg})
     </insert>
 
     <insert id="insertBatch" keyProperty="id" useGeneratedKeys="true">

@@ -4,6 +4,7 @@ import cn.hutool.core.util.IdUtil;
 import com.ghw.minibox.component.Result;
 import com.ghw.minibox.dto.ReturnDto;
 import com.ghw.minibox.entity.*;
+import com.ghw.minibox.feign.SearchFeignClient;
 import com.ghw.minibox.mapper.MapperUtils;
 import com.ghw.minibox.mapper.MbRoleMapper;
 import com.ghw.minibox.service.impl.GameImpl;
@@ -43,6 +44,8 @@ public class AdminController {
     private UserImpl userImpl;
     @Resource
     private GameImpl gameImpl;
+    @Resource
+    private SearchFeignClient searchFeignClient;
 
     @ApiOperation("获取菜单列表")
     @GetMapping("allMenu")
@@ -195,5 +198,28 @@ public class AdminController {
             return Result.success();
         return Result.fail();
     }
+
+    @ApiOperation("新增游戏")
+    @PostMapping("addGame")
+    public ReturnDto addNewGame(@RequestBody MbGame mbGame) {
+        boolean insert = (boolean) gameImpl.insert(mbGame);
+        if (insert) {
+            searchFeignClient.refreshData();
+            return Result.success();
+        }
+        return Result.fail();
+    }
+
+    @ApiOperation("删除游戏")
+    @GetMapping("delGame")
+    public ReturnDto deleteGame(@RequestParam Long id){
+        boolean delete = gameImpl.delete(id);
+        if (delete){
+            searchFeignClient.refreshData();
+            return Result.success();
+        }
+        return Result.fail();
+    }
+
 
 }

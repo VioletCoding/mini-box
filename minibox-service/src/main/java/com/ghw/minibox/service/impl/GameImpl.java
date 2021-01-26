@@ -5,6 +5,7 @@ import com.ghw.minibox.mapper.*;
 import com.ghw.minibox.service.CommonService;
 import com.ghw.minibox.utils.AOPLog;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
 import java.util.ArrayList;
@@ -63,11 +64,14 @@ public class GameImpl implements CommonService<MbGame> {
     }
 
     @Override
+    @Transactional(rollbackFor = Throwable.class)
     public Object insert(MbGame entity) {
-        return false;
+        int insert = gameMapper.insert(entity);
+        return insert > 0;
     }
 
     @Override
+    @Transactional(rollbackFor = Throwable.class)
     public boolean update(MbGame entity) {
         int update = gameMapper.update(entity);
 
@@ -75,7 +79,8 @@ public class GameImpl implements CommonService<MbGame> {
     }
 
     @Override
+    @Transactional(rollbackFor = Throwable.class)
     public boolean delete(Long id) {
-        return false;
+        return gameMapper.deleteById(id) > 0;
     }
 }
