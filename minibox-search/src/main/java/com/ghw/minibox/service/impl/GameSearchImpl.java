@@ -1,6 +1,6 @@
 package com.ghw.minibox.service.impl;
 
-import com.ghw.minibox.entity.MbGame;
+import com.ghw.minibox.es.ESMbGame;
 import com.ghw.minibox.repository.GameSearchRepository;
 import com.ghw.minibox.service.CommonService;
 import org.springframework.data.domain.Page;
@@ -16,12 +16,12 @@ import javax.annotation.Resource;
  * @date 2021/1/8
  */
 @Service
-public class GameSearchImpl implements CommonService<MbGame> {
+public class GameSearchImpl implements CommonService<ESMbGame> {
     @Resource
     private GameSearchRepository gameSearchRepository;
 
     @Override
-    public Page<MbGame> search(String value, Integer pageNum, Integer pageSize) {
+    public Page<ESMbGame> search(String value, Integer pageNum, Integer pageSize) {
         Pageable pageable = PageRequest.of(pageNum, pageSize);
         return gameSearchRepository.findByName(value, pageable);
     }

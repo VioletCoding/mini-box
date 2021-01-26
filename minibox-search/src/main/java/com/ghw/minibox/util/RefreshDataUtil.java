@@ -1,14 +1,13 @@
 package com.ghw.minibox.util;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.ghw.minibox.component.RedisUtil;
-import com.ghw.minibox.entity.MbGame;
-import com.ghw.minibox.entity.MbPost;
+import com.ghw.minibox.es.ESMbGame;
+import com.ghw.minibox.es.ESMbPost;
+import com.ghw.minibox.feign.SearchFeignClient;
 import com.ghw.minibox.repository.GameSearchRepository;
 import com.ghw.minibox.repository.PostSearchRepository;
-import com.qiniu.util.StringUtils;
+import com.ghw.minibox.utils.GenerateBean;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
@@ -24,41 +23,37 @@ import java.util.List;
 @Slf4j
 public class RefreshDataUtil {
     @Resource
-    private RedisUtil redisUtil;
+    private GenerateBean generateBean;
     @Resource
     private PostSearchRepository postSearchRepository;
     @Resource
     private GameSearchRepository gameSearchRepository;
-    /**
-     * 刷新数据
-     */
+    @Resource
+    private SearchFeignClient searchFeignClient;
+
     public void refresh() {
-        String posts = redisUtil.get(RedisUtil.REDIS_PREFIX + RedisUtil.POST_PREFIX);
-        String games = redisUtil.get(RedisUtil.REDIS_PREFIX + RedisUtil.GAME_PREFIX);
-        ObjectMapper objectMapper = new ObjectMapper();
+        log.info("开始刷新ES数据...");
         try {
+            postSearchRepository.deleteAll();
+            gameSearchRepository.deleteAll();
 
-            if (!StringUtils.isNullOrEmpty(posts)) {
-                List<MbPost> postList = objectMapper.readValue(posts, new TypeReference<List<MbPost>>() {
-                });
-                if (postList.size() > 0) {
-                    postSearchRepository.deleteAll();
-                    postSearchRepository.saveAll(postList);
-                }
-            }
+            Object posts = searchFeignClient.getDataFromService().getData();
+            Object games = searchFeignClient.getDataFromServiceGame().getData();
 
+            ObjectMapper objectMapper = generateBean.getObjectMapper();
+            List<ESMbPost> mbPosts = objectMapper.convertValue(posts, new TypeReference<List<ESMbPost>>() {
+            });
+            postSearchRepository.saveAll(mbPosts);
+            log.info("帖子的数据已更新完成!");
+            List<ESMbGame> mbGames = objectMapper.convertValue(games, new TypeReference<List<ESMbGame>>() {
+            });
+            gameSearchRepository.saveAll(mbGames);
+            log.info("游戏数据已更新完成!");
 
-            if (!StringUtils.isNullOrEmpty(games)) {
-                List<MbGame> gameList = objectMapper.readValue(games, new TypeReference<List<MbGame>>() {
-                });
-                if (gameList.size() > 0) {
-                    gameSearchRepository.deleteAll();
-                    gameSearchRepository.saveAll(gameList);
-                }
-            }
-
-        } catch (JsonProcessingException e) {
-            log.error(e.getMessage());
+            log.info("刷新ES数据完成");
+        } catch (Exception e) {
+            log.error("刷新ES数据出现异常=>{}", e.getMessage());
+            e.printStackTrace();
         }
     }
 }

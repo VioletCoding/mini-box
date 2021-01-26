@@ -70,6 +70,7 @@ public class GameImpl implements CommonService<MbGame> {
     @Override
     public boolean update(MbGame entity) {
         int update = gameMapper.update(entity);
+
         return update > 0;
     }
 

@@ -1,10 +1,13 @@
-package com.ghw.minibox.entity;
+package com.ghw.minibox.es;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import com.fasterxml.jackson.annotation.JsonInclude;
+import com.ghw.minibox.entity.MbBlock;
+import com.ghw.minibox.entity.MbComment;
+import com.ghw.minibox.entity.MbPhoto;
+import com.ghw.minibox.entity.MbTag;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
-import lombok.experimental.Accessors;
+import org.springframework.data.elasticsearch.annotations.Document;
 
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
@@ -14,16 +17,14 @@ import java.util.Date;
 import java.util.List;
 
 /**
- * (MbGame)实体类
- *
  * @author Violet
- * @since 2020-11-19 12:20:11
+ * @description
+ * @date 2021/1/26
  */
 @Data
-@Accessors(chain = true)
-@JsonInclude(JsonInclude.Include.NON_NULL)
-public class MbGame implements Serializable {
-    private static final long serialVersionUID = -20810077618725182L;
+@Document(indexName = "mb_game")
+public class ESMbGame implements Serializable {
+    private static final long serialVersionUID = -208100776325182L;
 
     @ApiModelProperty(notes = "主键，自增，默认从10000开始自增，建表时候指定，唯一标识 ")
     @NotNull(message = "游戏id不能为空")

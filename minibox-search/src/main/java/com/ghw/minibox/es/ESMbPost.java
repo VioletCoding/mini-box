@@ -1,10 +1,12 @@
-package com.ghw.minibox.entity;
+package com.ghw.minibox.es;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import com.fasterxml.jackson.annotation.JsonInclude;
+import com.ghw.minibox.entity.MbBlock;
+import com.ghw.minibox.entity.MbComment;
+import com.ghw.minibox.entity.MbUser;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
-import lombok.experimental.Accessors;
+import org.springframework.data.elasticsearch.annotations.Document;
 
 import javax.validation.constraints.NotEmpty;
 import java.io.Serializable;
@@ -12,16 +14,30 @@ import java.util.Date;
 import java.util.List;
 
 /**
- * (MbPost)实体类
- *
  * @author Violet
- * @since 2020-11-19 12:20:16
+ * @description
+ * @date 2021/1/26
+ * <p>
+ * * <p>
+ * * 注解:
+ * * 1- @Document 标示映射到Elasticsearch文档上的领域对象 {
+ * * indexName:索引库名次，相当于MySQL中数据库的概念
+ * * type(已过时):对象类型，MySQL中表的概念，新版本只允许一个文档一种类型，所以不需要再指定了
+ * * shards:默认分片数，ES是支持分片存储的
+ * * replicas:副本数，ES是支持容灾的
+ * * }
+ * * 2- @Id 表示是文档的Id，文档可以认为是MySQL中表行的概念
+ * * 3- @Field{
+ * * FieldType:文档中字段的类型，不填的话自动识别
+ * * index:是否建立倒排索引，默认是true，这也是ES快的原因
+ * * store:是否进行存储
+ * * analyzer:分词器名次
+ * * }
  */
 @Data
-@Accessors(chain = true)
-@JsonInclude(JsonInclude.Include.NON_NULL)
-public class MbPost implements Serializable {
-    private static final long serialVersionUID = -34132088850314000L;
+@Document(indexName = "mb_post")
+public class ESMbPost implements Serializable {
+    private static final long serialVersionUID = -3413208885031214000L;
 
     @ApiModelProperty(notes = "主键")
     private Long id;

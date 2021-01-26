@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.GetMapping;
  * @description 调用搜索服务
  * @date 2021/1/9
  */
-@FeignClient(url = "localhost:20003", name = "SEARCH")
+@FeignClient(url = "localhost:20003", name = "search")
 public interface SearchFeignClient {
 
     /**

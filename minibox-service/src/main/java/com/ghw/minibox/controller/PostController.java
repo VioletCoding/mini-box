@@ -3,6 +3,7 @@ package com.ghw.minibox.controller;
 import com.ghw.minibox.component.Result;
 import com.ghw.minibox.dto.ReturnDto;
 import com.ghw.minibox.entity.MbPost;
+import com.ghw.minibox.feign.SearchFeignClient;
 import com.ghw.minibox.service.impl.PostImpl;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -25,6 +26,8 @@ import java.util.Map;
 public class PostController {
     @Resource
     private PostImpl post;
+    @Resource
+    private SearchFeignClient searchFeignClient;
 
     @ApiOperation("获取帖子列表 -> 可选传入用户id，那么返回就是那一个用户的所有帖子")
     @GetMapping("all")
@@ -36,8 +39,10 @@ public class PostController {
     @PostMapping("publish")
     public ReturnDto publishPost(@RequestBody @Validated MbPost mbPost) {
         boolean insert = (Boolean) post.insert(mbPost);
-        if (insert)
-            return Result.success();
+        if (insert) {
+            ReturnDto dto = searchFeignClient.refreshData();
+            return Result.success(dto.getMessage());
+        }
         return Result.fail();
     }
 

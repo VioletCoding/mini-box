@@ -18,7 +18,7 @@ public interface SearchFeignClient {
      * @return 帖子列表
      */
     @GetMapping("/post/all")
-    ReturnDto<Object> getDataFromService();
+    ReturnDto getDataFromService();
 
     /**
      * 获取全部游戏列表
@@ -26,7 +26,7 @@ public interface SearchFeignClient {
      * @return 游戏列表
      */
     @GetMapping("/game/all")
-    ReturnDto<Object> getDataFromServiceGame();
+    ReturnDto getDataFromServiceGame();
 
 
 }

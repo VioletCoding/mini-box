@@ -2,8 +2,8 @@ package com.ghw.minibox.controller;
 
 import com.ghw.minibox.component.Result;
 import com.ghw.minibox.dto.ReturnDto;
-import com.ghw.minibox.entity.MbGame;
-import com.ghw.minibox.entity.MbPost;
+import com.ghw.minibox.es.ESMbGame;
+import com.ghw.minibox.es.ESMbPost;
 import com.ghw.minibox.service.impl.GameSearchImpl;
 import com.ghw.minibox.service.impl.PostSearchImpl;
 import com.ghw.minibox.util.RefreshDataUtil;
@@ -44,8 +44,8 @@ public class SearchController {
     public ReturnDto search(@RequestParam(required = false) String title,
                                     @RequestParam(required = false, defaultValue = "0") Integer pageNum,
                                     @RequestParam(required = false, defaultValue = "5") Integer pageSize) {
-        Page<MbPost> postPage = postSearch.search(title, pageNum, pageSize);
-        Page<MbGame> gamePage = gameSearch.search(title, pageNum, pageSize);
+        Page<ESMbPost> postPage = postSearch.search(title, pageNum, pageSize);
+        Page<ESMbGame> gamePage = gameSearch.search(title, pageNum, pageSize);
         Map<String, Object> allData = new HashMap<>();
         allData.put("post", postPage);
         allData.put("game", gamePage);
