@@ -40,8 +40,8 @@ public class PostController {
     public ReturnDto publishPost(@RequestBody @Validated MbPost mbPost) {
         boolean insert = (Boolean) post.insert(mbPost);
         if (insert) {
-            ReturnDto dto = searchFeignClient.refreshData();
-            return Result.success(dto.getMessage());
+            searchFeignClient.refreshData();
+            return Result.success();
         }
         return Result.fail();
     }

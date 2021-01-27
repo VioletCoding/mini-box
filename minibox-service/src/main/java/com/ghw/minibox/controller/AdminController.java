@@ -7,10 +7,7 @@ import com.ghw.minibox.entity.*;
 import com.ghw.minibox.feign.SearchFeignClient;
 import com.ghw.minibox.mapper.MapperUtils;
 import com.ghw.minibox.mapper.MbRoleMapper;
-import com.ghw.minibox.service.impl.GameImpl;
-import com.ghw.minibox.service.impl.ParentMenuImpl;
-import com.ghw.minibox.service.impl.SubMenuImpl;
-import com.ghw.minibox.service.impl.UserImpl;
+import com.ghw.minibox.service.impl.*;
 import com.ghw.minibox.utils.QiNiuUtil;
 import com.qiniu.util.StringUtils;
 import io.swagger.annotations.ApiOperation;
@@ -44,6 +41,8 @@ public class AdminController {
     private UserImpl userImpl;
     @Resource
     private GameImpl gameImpl;
+    @Resource
+    private PostImpl postImpl;
     @Resource
     private SearchFeignClient searchFeignClient;
 
@@ -186,7 +185,7 @@ public class AdminController {
     public ReturnDto upload(@RequestParam MultipartFile multipartFile) throws IOException {
         if (multipartFile.isEmpty())
             return Result.fail("文件为空");
-        String link = qiNiuUtil.syncUpload(IdUtil.fastSimpleUUID(), multipartFile.getBytes());
+        String link = qiNiuUtil.syncUpload(IdUtil.fastSimpleUUID() + multipartFile.getOriginalFilename(), multipartFile.getBytes());
         return Result.success(link);
     }
 
@@ -212,14 +211,42 @@ public class AdminController {
 
     @ApiOperation("删除游戏")
     @GetMapping("delGame")
-    public ReturnDto deleteGame(@RequestParam Long id){
+    public ReturnDto deleteGame(@RequestParam Long id) {
         boolean delete = gameImpl.delete(id);
-        if (delete){
+        if (delete) {
             searchFeignClient.refreshData();
             return Result.success();
         }
         return Result.fail();
     }
 
+    @ApiOperation("帖子列表")
+    @PostMapping("postList")
+    public ReturnDto postList(@RequestBody(required = false) MbPost mbPost) {
+        List<MbPost> posts = postImpl.selectAll(mbPost);
+        return Result.success(posts);
+    }
+
+    @ApiOperation("修改帖子")
+    @PostMapping("modifyPost")
+    public ReturnDto modifyPost(@RequestBody MbPost mbPost) {
+        boolean update = postImpl.update(mbPost);
+        if (update) {
+            searchFeignClient.refreshData();
+            return Result.success();
+        }
+        return Result.fail();
+    }
+
+    @ApiOperation("删除帖子")
+    @GetMapping("delPost")
+    public ReturnDto delPost(@RequestParam Long id) {
+        boolean delete = postImpl.delete(id);
+        if (delete) {
+            searchFeignClient.refreshData();
+            return Result.success();
+        }
+        return Result.fail();
+    }
 
 }

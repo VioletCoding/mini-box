@@ -68,8 +68,8 @@
     <!--通过实体作为筛选条件查询-->
     <select id="queryAll" resultMap="MbPostMap">
         select
-        id, uid, bid, title, content, post_state, create_date, update_date, state, cover_img
-        from minibox.mb_post
+        p.id, p.uid, p.bid, p.title, p.content, p.post_state, p.create_date, p.update_date, p.state, p.cover_img
+        from minibox.mb_post p
         <where>
             <if test="id != null">
                 and id = #{id}
@@ -103,6 +103,77 @@
             </if>
         </where>
         ORDER BY create_date DESC;
+    </select>
+
+
+    <resultMap type="com.ghw.minibox.entity.MbPost" id="MbPostDetailMap">
+        <!--帖子内容，帖子ID、帖子标题、帖子内容、帖子发表时间-->
+        <id property="id" column="id" jdbcType="INTEGER"/>
+        <result property="title" column="title" jdbcType="VARCHAR"/>
+        <result property="content" column="content" jdbcType="VARCHAR"/>
+        <result property="coverImg" column="cover_img" jdbcType="VARCHAR"/>
+        <result property="createDate" column="create_date" jdbcType="TIMESTAMP"/>
+        <result property="countComment" column="countComment" jdbcType="INTEGER"/>
+        <!--是谁发的帖子，作者ID、作者昵称、作者等级-->
+        <association property="mbUser" javaType="com.ghw.minibox.entity.MbUser">
+            <id property="id" column="author_id" jdbcType="INTEGER"/>
+            <result property="nickname" column="author_nickname" jdbcType="VARCHAR"/>
+            <result property="level" column="author_level" jdbcType="VARCHAR"/>
+            <result property="userImg" column="author_photo_link" jdbcType="VARCHAR"/>
+        </association>
+        <!--版块信息-->
+        <association property="mbBlock" javaType="com.ghw.minibox.entity.MbBlock">
+            <id property="id" column="block_id" jdbcType="INTEGER"/>
+            <result property="name" column="block_name" jdbcType="VARCHAR"/>
+        </association>
+    </resultMap>
+
+    <select id="queryAllWithDetail" resultMap="MbPostDetailMap">
+        SELECT p.id,
+        p.title,
+        p.content,
+        p.post_state,
+        p.create_date,
+        p.state,
+        p.cover_img,
+        u.id author_id,
+        u.nickname author_nickname,
+        u.level author_level,
+        u.user_img author_photo_link,
+        (SELECT COUNT(tid) FROM mb_comment forCount WHERE forCount.tid = p.id) countComment,
+        b.id block_id,b.name block_name
+        FROM mb_post p
+        LEFT JOIN mb_user u ON (u.id = p.uid)
+        LEFT JOIN mb_block b ON(b.id = p.bid)
+        <where>
+            <if test="id != null">
+                and p.id = #{id}
+            </if>
+            <if test="uid != null">
+                and p.uid = #{uid}
+            </if>
+            <if test="bid != null">
+                and p.bid = #{bid}
+            </if>
+            <if test="title != null and title != ''">
+                and p.title LIKE CONCAT('%',#{title},'%')
+            </if>
+            <if test="content != null and content != ''">
+                and p.content LIKE CONCAT('%',#{content},'%')
+            </if>
+            <if test="postState != null">
+                and p.post_state = #{postState}
+            </if>
+            <if test="createDate != null">
+                and p.create_date = #{createDate}
+            </if>
+            <if test="updateDate != null">
+                and p.update_date = #{updateDate}
+            </if>
+            <if test="state != null">
+                and p.state = #{state}
+            </if>
+        </where>
     </select>
 
     <!--新增所有列-->

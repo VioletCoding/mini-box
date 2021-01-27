@@ -74,7 +74,6 @@ public class GameImpl implements CommonService<MbGame> {
     @Transactional(rollbackFor = Throwable.class)
     public boolean update(MbGame entity) {
         int update = gameMapper.update(entity);
-
         return update > 0;
     }
 

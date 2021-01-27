@@ -8,7 +8,6 @@ import com.qiniu.storage.Configuration;
 import com.qiniu.storage.Region;
 import com.qiniu.storage.UploadManager;
 import com.qiniu.util.Auth;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
@@ -20,7 +19,6 @@ import java.io.InputStream;
  * @date 2020/11/23
  */
 @Component
-@Slf4j
 public class QiNiuUtil {
     public static final String defaultPhotoLink = "http://qnbtg7yhm.hn-bkt.clouddn.com/default.jpg";
     public static final String qiNiuLink = "http://qnbtg7yhm.hn-bkt.clouddn.com/";

@@ -53,7 +53,7 @@ public class PostImpl implements CommonService<MbPost> {
     @AOPLog("帖子列表")
     @Override
     public List<MbPost> selectAll(MbPost param) {
-        return mapperUtils.queryPost(null);
+        return postMapper.queryAllWithDetail(param);
     }
 
 
@@ -86,16 +86,13 @@ public class PostImpl implements CommonService<MbPost> {
     @AOPLog("文件上传")
     @Transactional(rollbackFor = Throwable.class)
     public Map<String, Object> upload(MultipartFile[] multipartFiles) throws IOException {
-
         if (multipartFiles.length < 1)
             throw new MyException("文件为空");
-
         List<String> links = new ArrayList<>();
-
         for (MultipartFile m : multipartFiles) {
             String fastSimpleUUID = IdUtil.fastSimpleUUID();
             //key是文件名，随机生成，使用字节数组上传可以获取上传进度，以及断点续传
-            String link = qiNiuUtil.syncUpload(fastSimpleUUID, m.getBytes());
+            String link = qiNiuUtil.syncUpload(fastSimpleUUID + m.getOriginalFilename(), m.getBytes());
             links.add(link);
         }
         Map<String, Object> map = new HashMap<>();
@@ -124,12 +121,15 @@ public class PostImpl implements CommonService<MbPost> {
     }
 
     @Override
+    @Transactional(rollbackFor = Throwable.class)
     public boolean update(MbPost entity) {
-        return false;
+        int update = postMapper.update(entity);
+        return update > 0;
     }
 
     @Override
+    @Transactional(rollbackFor = Throwable.class)
     public boolean delete(Long id) {
-        return false;
+        return postMapper.deleteById(id) > 0;
     }
 }

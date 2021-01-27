@@ -48,6 +48,12 @@ public interface MbPostMapper {
     List<MbPost> queryAll(MbPost mbPost);
 
     /**
+     * 查询帖子的详情信息，包括连表数据
+     *
+     */
+    List<MbPost> queryAllWithDetail(MbPost mbPost);
+
+    /**
      * 新增数据
      *
      * @param mbPost 实例对象

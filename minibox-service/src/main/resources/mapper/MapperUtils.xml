@@ -9,9 +9,9 @@
                g.cover_img,
                g.price,
                g.description,
-               (SELECT COUNT(*) FROM mb_order WHERE uid = o.uid) AS game_num
-        FROM mb_game AS g
-                 LEFT JOIN mb_order AS o ON (o.order_game_id = g.id)
+               (SELECT COUNT(*) FROM mb_order WHERE uid = o.uid) game_num
+        FROM mb_game g
+                 LEFT JOIN mb_order o ON (o.order_game_id = g.id)
         WHERE o.uid = #{id}
     </select>
 
@@ -39,15 +39,15 @@
                c.id,
                c.create_date,
 
-               p.id AS post_id,
+               p.id post_id,
                p.cover_img,
                p.uid,
                p.title,
 
                u.nickname
-        FROM mb_comment AS c
-                 LEFT JOIN mb_post AS p ON (p.id = c.tid)
-                 LEFT JOIN mb_user AS u ON (u.id = p.uid)
+        FROM mb_comment c
+                 LEFT JOIN mb_post p ON (p.id = c.tid)
+                 LEFT JOIN mb_user u ON (u.id = p.uid)
         WHERE c.uid = #{uid}
           AND c.type = 'TC';
     </select>
@@ -104,47 +104,47 @@
     <select id="queryPost" resultMap="MbPostMap">
         SELECT mp.id,
         mp.title,
-        mp.content AS post_content,
+        mp.content post_content,
         mp.create_date,
         mp.cover_img,
 
-        author_info.id AS author_id,
-        author_info.nickname AS author_nickname,
-        author_info.LEVEL AS author_level,
-        author_info.user_img AS author_photo_link,
+        author_info.id author_id,
+        author_info.nickname author_nickname,
+        author_info.LEVEL author_level,
+        author_info.user_img author_photo_link,
 
-        comment_list.id AS comment_id,
-        comment_list.content AS comment_content,
-        comment_list.create_date AS comment_date,
+        comment_list.id comment_id,
+        comment_list.content comment_content,
+        comment_list.create_date comment_date,
 
-        comment_list_user.id AS comment_list_user_id,
-        comment_list_user.nickname AS comment_list_user_nickname,
-        comment_list_user.`level` AS comment_list_user_level,
-        comment_list_user.user_img AS comment_list_user_img,
+        comment_list_user.id comment_list_user_id,
+        comment_list_user.nickname comment_list_user_nickname,
+        comment_list_user.`level` comment_list_user_level,
+        comment_list_user.user_img comment_list_user_img,
 
-        comment_list_reply.id AS comment_list_reply_id,
-        comment_list_reply.reply_content AS comment_list_reply_content,
-        comment_list_reply.reply_date AS comment_list_reply_date,
-        comment_list_reply.reply_who AS comment_list_reply_target,
-        comment_list_reply.reply_uid AS comment_list_reply_login_user,
+        comment_list_reply.id comment_list_reply_id,
+        comment_list_reply.reply_content comment_list_reply_content,
+        comment_list_reply.reply_date comment_list_reply_date,
+        comment_list_reply.reply_who comment_list_reply_target,
+        comment_list_reply.reply_uid comment_list_reply_login_user,
 
-        comment_list_reply_user.id AS comment_list_reply_user_id,
-        comment_list_reply_user.nickname AS comment_list_reply_user_nickname,
+        comment_list_reply_user.id comment_list_reply_user_id,
+        comment_list_reply_user.nickname comment_list_reply_user_nickname,
 
-        post_in_block.id AS block_id,
-        post_in_block.`name` AS block_name,
+        post_in_block.id block_id,
+        post_in_block.`name` block_name,
 
-        (SELECT COUNT(tid) FROM mb_comment AS forCount WHERE forCount.tid = mp.id) AS countComment
+        (SELECT COUNT(tid) FROM mb_comment forCount WHERE forCount.tid = mp.id) countComment
 
-        FROM mb_post AS mp
-        LEFT JOIN mb_user AS author_info ON (mp.uid = author_info.id)
-        LEFT JOIN mb_comment AS comment_list ON (comment_list.tid = mp.id)
-        LEFT JOIN mb_user AS comment_list_user ON (comment_list_user.id = comment_list.uid)
-        LEFT JOIN mb_reply AS comment_list_reply ON (comment_list_reply.reply_in_post = mp.id)
+        FROM mb_post mp
+        LEFT JOIN mb_user author_info ON (mp.uid = author_info.id)
+        LEFT JOIN mb_comment comment_list ON (comment_list.tid = mp.id)
+        LEFT JOIN mb_user comment_list_user ON (comment_list_user.id = comment_list.uid)
+        LEFT JOIN mb_reply comment_list_reply ON (comment_list_reply.reply_in_post = mp.id)
         AND (comment_list_reply.reply_in_comment = comment_list.id)
-        LEFT JOIN mb_user AS comment_list_reply_user
+        LEFT JOIN mb_user comment_list_reply_user
         ON (comment_list_reply_user.id = comment_list_reply.reply_uid)
-        LEFT JOIN mb_block AS post_in_block ON (post_in_block.id = mp.bid)
+        LEFT JOIN mb_block post_in_block ON (post_in_block.id = mp.bid)
         <where>
             <if test="id != null">
                 mp.id = #{id}
@@ -162,10 +162,10 @@
     </insert>
 
     <select id="count" resultType="map">
-        SELECT COUNT(*)                          AS post_number,
-               (SELECT COUNT(*) FROM mb_user)    AS user_number,
-               (SELECT COUNT(*) FROM mb_game)    AS game_number,
-               (SELECT COUNT(*) FROM mb_comment) AS comment_number
+        SELECT COUNT(*)                          post_number,
+               (SELECT COUNT(*) FROM mb_user)    user_number,
+               (SELECT COUNT(*) FROM mb_game)    game_number,
+               (SELECT COUNT(*) FROM mb_comment) comment_number
         FROM mb_post
     </select>
 
@@ -175,8 +175,8 @@
     </resultMap>
 
     <select id="echartsPostPerDay" resultMap="echartsPost">
-        SELECT date_format(create_date, '%Y-%m-%d') AS create_date,
-               count(*)                             AS post_number_per_day
+        SELECT date_format(create_date, '%Y-%m-%d') create_date,
+               count(*)                             post_number_per_day
         FROM mb_post
         GROUP BY date_format(create_date, '%Y-%m-%d');
     </select>
@@ -186,10 +186,10 @@
         <result property="gameName" column="name"/>
     </resultMap>
     <select id="gameSalesRankings" resultMap="gameSalesRankingsMap">
-        SELECT COUNT(o.id) AS order_count,
+        SELECT COUNT(o.id) order_count,
                g.`name`
-        FROM mb_order AS o
-                 LEFT JOIN mb_game AS g ON (g.id = o.order_game_id)
+        FROM mb_order o
+                 LEFT JOIN mb_game g ON (g.id = o.order_game_id)
         GROUP BY o.order_game_id
         ORDER BY order_count DESC;
     </select>
@@ -201,9 +201,9 @@
     </resultMap>
 
     <select id="echartsCommentPerDay" resultMap="echartsComment">
-        SELECT DATE_FORMAT(c.create_date, '%Y-%m-%d') AS create_date,
-               COUNT(C.id)                            AS comment_number_per_day
-        FROM mb_comment AS c
+        SELECT DATE_FORMAT(c.create_date, '%Y-%m-%d') create_date,
+               COUNT(C.id)                            comment_number_per_day
+        FROM mb_comment c
         GROUP BY DATE_FORMAT(c.create_date, '%Y-%m-%d');
     </select>
 
