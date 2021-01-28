@@ -43,7 +43,7 @@ public class OrderController {
     public ReturnDto confirmOrder(@RequestBody @Validated MbOrder mbOrder) {
         if (mbOrder.getOrderId() == null)
             return Result.fail();
-        boolean b = (Boolean) order.insert(mbOrder);
+        boolean b = order.insert(mbOrder);
         if (b)
             return Result.success();
         return Result.fail(ResultCode.ORDER_CANCEL);

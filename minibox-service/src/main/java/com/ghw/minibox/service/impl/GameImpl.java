@@ -65,7 +65,7 @@ public class GameImpl implements CommonService<MbGame> {
 
     @Override
     @Transactional(rollbackFor = Throwable.class)
-    public Object insert(MbGame entity) {
+    public boolean insert(MbGame entity) {
         int insert = gameMapper.insert(entity);
         return insert > 0;
     }

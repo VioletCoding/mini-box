@@ -22,7 +22,7 @@ public interface CommonService<T> {
     /**
      * 插入
      */
-    Object insert(T entity);
+    boolean insert(T entity);
 
     /**
      * 更新

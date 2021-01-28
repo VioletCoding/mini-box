@@ -71,7 +71,7 @@ public class PostImpl implements CommonService<MbPost> {
     @AOPLog("发布帖子")
     @Override
     @Transactional(rollbackFor = Throwable.class)
-    public Object insert(MbPost entity) {
+    public boolean insert(MbPost entity) {
         int insert = postMapper.insert(entity);
         return insert > 0;
     }

@@ -1,44 +1,37 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
-<mapper namespace="com.ghw.minibox.mapper.MbParentMenuMapper">
-    <resultMap id="menuMap" type="com.ghw.minibox.entity.MbParentMenu">
-        <id property="id" column="parent_id"/>
-        <result property="menuName" column="parent_name"/>
+<mapper namespace="com.ghw.minibox.mapper.MbMenuMapper">
+    <resultMap id="menuMap" type="com.ghw.minibox.entity.MbMenu">
+        <id property="id" column="id"/>
+        <result property="menuName" column="menu_name"/>
         <result property="menuIcon" column="menu_icon"/>
-        <collection property="subMenuList" ofType="com.ghw.minibox.entity.MbSubMenu">
-            <id property="id" column="sub_id"/>
-            <result property="menuName" column="sub_name"/>
-            <result property="parentMenuId" column="parent_menu_id"/>
-            <result property="url" column="sub_menu_route_url"/>
-        </collection>
+        <result property="menuUrl" column="menu_url"/>
     </resultMap>
 
-
     <select id="queryAll" resultMap="menuMap">
-        SELECT m.id AS parent_id,
-        m.menu_name AS parent_name,
+        SELECT m.id,
+        m.menu_name,
         m.menu_icon,
-        s.id AS sub_id,
-        s.sub_menu_name AS sub_name,
-        s.parent_menu_id,
-        s.sub_menu_route_url
+        m.menu_url
         FROM mb_menu AS m
-        LEFT JOIN mb_sub_menu AS s ON (s.parent_menu_id = m.id)
         <where>
             <if test="id != null">
-                m.id =#{id}
+                and m.id =#{id}
             </if>
             <if test="menuName != null and menuName != '' ">
-                AND m.menu_name LIKE CONCAT('%',#{menuName},'%')
+                and m.menu_name LIKE CONCAT('%',#{menuName},'%')
+            </if>
+            <if test="menuUrl != null and menuUrl != '' ">
+                and m.menu_url = #{menuUrl}
             </if>
         </where>
-        ORDER BY parent_id;
+        ORDER BY m.id;
     </select>
 
     <insert id="saveMenu" useGeneratedKeys="true" keyProperty="id">
-        INSERT INTO mb_menu(menu_name, menu_icon)
-        VALUES (#{menuName}, #{menuIcon})
+        INSERT INTO mb_menu(menu_name, menu_icon, menu_url)
+        VALUES (#{menuName}, #{menuIcon}, #{menuUrl})
     </insert>
 
     <update id="updateMenu" useGeneratedKeys="true">
@@ -49,6 +42,9 @@
             </if>
             <if test="menuIcon != null and menuIcon != '' ">
                 menu_icon = #{menuIcon},
+            </if>
+            <if test="menuUrl != null and menuUrl != '' ">
+                menu_url = #{menuUrl},
             </if>
         </set>
         WHERE id = #{id}

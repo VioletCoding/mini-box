@@ -78,27 +78,26 @@
 
     <!--新增所有列-->
     <insert id="insert" keyProperty="id" useGeneratedKeys="true">
-        insert into minibox.mb_block(name, gid, state, create_time, update_time)
-        values (#{name}, #{gid}, #{state}, #{createTime}, #{updateTime})
+        insert into minibox.mb_block(name, gid)
+        values (#{name}, #{gid})
     </insert>
 
     <insert id="insertBatch" keyProperty="id" useGeneratedKeys="true">
-        insert into minibox.mb_block(name, gid, state, create_time, update_time)
+        insert into minibox.mb_block(name, gid)
         values
         <foreach collection="entities" item="entity" separator=",">
-            (#{entity.name}, #{entity.gid}, #{entity.state}, #{entity.createTime}, #{entity.updateTime})
+            (#{entity.name}, #{entity.gid})
         </foreach>
     </insert>
 
     <insert id="insertOrUpdateBatch" keyProperty="id" useGeneratedKeys="true">
-        insert into minibox.mb_block(name, gid, state, create_time, update_time)
+        insert into minibox.mb_block(name, gid)
         values
         <foreach collection="entities" item="entity" separator=",">
-            (#{entity.name}, #{entity.gid}, #{entity.state}, #{entity.createTime}, #{entity.updateTime})
+            (#{entity.name}, #{entity.gid})
         </foreach>
         on duplicate key update
-        name = values(name) , gid = values(gid) , state = values(state) , create_time = values(create_time) ,
-        update_time = values(update_time)
+        name = values(name) , gid = values(gid)
     </insert>
 
     <!--通过主键修改数据-->
@@ -113,12 +112,6 @@
             </if>
             <if test="state != null">
                 state = #{state},
-            </if>
-            <if test="createTime != null">
-                create_time = #{createTime},
-            </if>
-            <if test="updateTime != null">
-                update_time = #{updateTime},
             </if>
         </set>
         where id = #{id}

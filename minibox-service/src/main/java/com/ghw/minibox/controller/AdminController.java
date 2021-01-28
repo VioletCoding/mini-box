@@ -9,8 +9,8 @@ import com.ghw.minibox.mapper.MapperUtils;
 import com.ghw.minibox.mapper.MbRoleMapper;
 import com.ghw.minibox.service.impl.*;
 import com.ghw.minibox.utils.QiNiuUtil;
-import com.qiniu.util.StringUtils;
 import io.swagger.annotations.ApiOperation;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -28,9 +28,7 @@ import java.util.Map;
 @RequestMapping("admin")
 public class AdminController {
     @Resource
-    private ParentMenuImpl parentMenu;
-    @Resource
-    private SubMenuImpl subMenu;
+    private MenuImpl menuImpl;
     @Resource
     private MapperUtils mapperUtils;
     @Resource
@@ -44,68 +42,36 @@ public class AdminController {
     @Resource
     private PostImpl postImpl;
     @Resource
+    private BlockImpl blockImpl;
+    @Resource
     private SearchFeignClient searchFeignClient;
 
     @ApiOperation("获取菜单列表")
-    @GetMapping("allMenu")
-    public ReturnDto showMenu(@RequestParam(value = "id", required = false) Long id,
-                              @RequestParam(value = "menuName", required = false) String menuName) {
-        MbParentMenu parentMenu = new MbParentMenu();
-        if (id != null)
-            parentMenu.setId(id);
-        if (!StringUtils.isNullOrEmpty(menuName))
-            parentMenu.setMenuName(menuName);
-        List<MbParentMenu> menuList = this.parentMenu.selectAll(parentMenu);
+    @PostMapping("allMenu")
+    public ReturnDto showMenu(@RequestBody(required = false) MbMenu mbMenu) {
+        List<MbMenu> menuList = this.menuImpl.selectAll(mbMenu);
         return Result.success(menuList);
     }
 
-    @ApiOperation("添加父菜单")
-    @PostMapping("addParentMenu")
-    public ReturnDto addParentMenu(@RequestBody MbParentMenu parentMenu) {
-        this.parentMenu.insert(parentMenu);
-        return Result.success();
+    @ApiOperation("添加菜单")
+    @PostMapping("addMenu")
+    public ReturnDto addParentMenu(@RequestBody MbMenu mbMenu) {
+        boolean insert = this.menuImpl.insert(mbMenu);
+        return Result.successFlag(insert);
     }
 
-    @ApiOperation("添加子菜单")
-    @PostMapping("addSubMenu")
-    public ReturnDto addSubMenu(@RequestBody MbSubMenu subMenu) {
-        this.subMenu.insert(subMenu);
-        return Result.success();
-    }
-
-    @ApiOperation("删除父菜单")
-    @GetMapping("delParentMenu")
+    @ApiOperation("删除菜单")
+    @GetMapping("delMenu")
     public ReturnDto delParentMenu(@RequestParam Long id) {
-        List<MbParentMenu> parentMenu = this.parentMenu.selectAll(new MbParentMenu().setId(id));
-        if (parentMenu.get(0).getSubMenuList().size() > 0)
-            return Result.fail("请先删除该菜单下的所有子菜单");
-        this.parentMenu.delete(id);
-        return Result.success();
+        boolean delete = this.menuImpl.delete(id);
+        return Result.successFlag(delete);
     }
 
-    @ApiOperation("删除子菜单")
-    @GetMapping("delSubMenu")
-    public ReturnDto delSubMenu(@RequestParam Long id) {
-        this.subMenu.delete(id);
-        return Result.success();
-    }
-
-    @ApiOperation("修改父菜单信息")
-    @PostMapping("updateParentMenu")
-    public ReturnDto updateParentMenu(@RequestBody MbParentMenu parentMenu) {
-        boolean update = this.parentMenu.update(parentMenu);
-        if (update)
-            return Result.success();
-        return Result.fail();
-    }
-
-    @ApiOperation("修改子菜单信息")
-    @PostMapping("updateSubMenu")
-    public ReturnDto updateSubMenu(@RequestBody MbSubMenu subMenu) {
-        boolean update = this.subMenu.update(subMenu);
-        if (update)
-            return Result.success();
-        return Result.fail();
+    @ApiOperation("修改菜单信息")
+    @PostMapping("updateMenu")
+    public ReturnDto updateParentMenu(@RequestBody MbMenu parentMenu) {
+        boolean update = this.menuImpl.update(parentMenu);
+        return Result.successFlag(update);
     }
 
 
@@ -132,18 +98,14 @@ public class AdminController {
     @PostMapping("updateUser")
     public ReturnDto updateUserInfo(@RequestBody MbUser mbUser) {
         boolean update = userImpl.update(mbUser);
-        if (update)
-            return Result.success();
-        return Result.fail();
+        return Result.successFlag(update);
     }
 
     @ApiOperation("删除用户的管理员角色")
     @GetMapping("deleteRole")
     public ReturnDto updateUserRole(@RequestParam Long userId) {
         int i = mapperUtils.deleteUserAdminRole(userId);
-        if (i > 0)
-            return Result.success();
-        return Result.fail("用户不是管理员，如果要删除USER角色，请直接删除用户");
+        return Result.successFlag(i > 0, "用户不是管理员，如果要删除USER角色，请直接删除用户");
     }
 
     @ApiOperation("添加管理员角色")
@@ -157,9 +119,7 @@ public class AdminController {
                 return Result.fail("用户已经是管理员了");
         }
         int i = mapperUtils.setUserRole(10001L, userId);
-        if (i > 0)
-            return Result.success();
-        return Result.fail();
+        return Result.successFlag(i > 0);
     }
 
     @ApiOperation("角色列表展示")
@@ -186,16 +146,14 @@ public class AdminController {
         if (multipartFile.isEmpty())
             return Result.fail("文件为空");
         String link = qiNiuUtil.syncUpload(IdUtil.fastSimpleUUID() + multipartFile.getOriginalFilename(), multipartFile.getBytes());
-        return Result.success(link);
+        return Result.success((Object) link);
     }
 
     @ApiOperation("更新游戏信息")
     @PostMapping("updateGameInfo")
     public ReturnDto updateGameInfo(@RequestBody MbGame mbGame) {
         boolean update = gameImpl.update(mbGame);
-        if (update)
-            return Result.success();
-        return Result.fail();
+        return Result.successFlag(update);
     }
 
     @ApiOperation("新增游戏")
@@ -247,6 +205,48 @@ public class AdminController {
             return Result.success();
         }
         return Result.fail();
+    }
+
+    @ApiOperation("获取版块信息")
+    @PostMapping("getBlock")
+    public ReturnDto getBlock(@RequestBody(required = false) MbBlock mbBlock) {
+        List<MbBlock> blocks = blockImpl.selectAll(mbBlock);
+        return Result.success(blocks);
+    }
+
+    @ApiOperation("增加版块")
+    @PostMapping("addBlock")
+    public ReturnDto addBlock(@RequestBody @Validated MbBlock mbBlock) {
+        MbGame mbGame = gameImpl.selectOne(mbBlock.getGid());
+        if (mbGame == null)
+            return Result.fail("没有找到对应的游戏");
+        boolean insert = blockImpl.insert(mbBlock);
+        return Result.successFlag(insert);
+    }
+
+    @ApiOperation("更新版块信息")
+    @PostMapping("updateBlock")
+    public ReturnDto updateBlock(@RequestBody MbBlock mbBlock) {
+        boolean update = blockImpl.update(mbBlock);
+        return Result.successFlag(update);
+    }
+
+    @ApiOperation("删除版块")
+    @GetMapping("delBlock")
+    public ReturnDto delBlock(@RequestParam Long id) {
+        MbBlock mbBlock = blockImpl.selectOne(id);
+        if (mbBlock == null)
+            return Result.fail("没有找到该版块");
+        List<MbGame> mbGames = gameImpl.selectAll(new MbGame().setId(mbBlock.getGid()));
+        System.out.println(mbGames.toString());
+        if (mbGames.size() > 0)
+            return Result.fail("该版块下有关联的游戏,请先删除所有关联的游戏再删除该版块");
+        List<MbPost> posts = postImpl.selectAll(new MbPost().setBid(mbBlock.getId()));
+        System.out.println(posts.toString());
+        if (posts.size() > 0)
+            return Result.fail("该版块有关联的帖子，请先删除所有关联的帖子再删除该版块");
+        boolean delete = blockImpl.delete(id);
+        return Result.successFlag(delete);
     }
 
 }

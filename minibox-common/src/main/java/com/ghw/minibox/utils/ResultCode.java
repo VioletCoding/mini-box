@@ -12,7 +12,7 @@ public enum ResultCode {
 
     OK(200, "成功"),
 
-    BAD_REQUEST(400, "错误的请求"),
+    BAD_REQUEST(400, "请求失败，错误的请求"),
 
     UNAUTHORIZED(401, "用户未登录"),
 

@@ -25,15 +25,14 @@ public class MbBlock implements Serializable {
     private static final long serialVersionUID = 820635847901764243L;
 
     @ApiModelProperty(notes = "主键")
-    @NotNull(message = "版块id不能为空")
     private Long id;
 
     @ApiModelProperty(notes = "版块（社区）名称")
-    @NotEmpty(message = "版块名称name不能为空")
+    @NotEmpty(message = "版块名称不能为空")
     private String name;
 
     @ApiModelProperty(notes = "关联的游戏id")
-    @NotNull(message = "版块关联的游戏gid不能为空")
+    @NotNull(message = "版块关联的游戏不能为空")
     private Long gid;
 
     @ApiModelProperty(notes = "记录状态，0有效，1无效")

@@ -1,47 +1,49 @@
 package com.ghw.minibox.mapper;
 
-import com.ghw.minibox.entity.MbSubMenu;
+import com.ghw.minibox.entity.MbMenu;
 
 import java.util.List;
 
 /**
  * @author Violet
- * @description 子菜单Mapper
+ * @description 菜单mapper
  * @date 2021/1/12
  */
 
-public interface MbSubMenuMapper {
+public interface MbMenuMapper {
     /**
      * 根据实例全查
      *
-     * @param mbSubMenu 实例
+     * @param mbMenu 实例
      * @return 菜单列表
      */
-    List<MbSubMenu> queryAll(MbSubMenu mbSubMenu);
+    List<MbMenu> queryAll(MbMenu mbMenu);
 
     /**
      * 新增一个菜单
      *
-     * @param mbSubMenu 实例
+     * @param mbMenu 实例
      * @return 影响行数
      */
-    int saveMenu(MbSubMenu mbSubMenu);
+    int saveMenu(MbMenu mbMenu);
 
 
     /**
      * 更新菜单信息
      *
-     * @param mbSubMenu 实例
+     * @param mbMenu 实例
      * @return 影响行数
      */
-    int updateMenu(MbSubMenu mbSubMenu);
+    int updateMenu(MbMenu mbMenu);
 
 
     /**
-     * 删除菜单
+     * 删除父菜单，那么关联的子菜单也要被删除
      *
      * @param menuId 菜单id
      * @return 影响行数
      */
     int deleteMenu(Long menuId);
+
+
 }

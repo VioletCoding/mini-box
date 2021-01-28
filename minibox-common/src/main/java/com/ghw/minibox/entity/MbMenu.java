@@ -5,21 +5,24 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.experimental.Accessors;
 
+import javax.validation.constraints.NotNull;
+
 /**
  * @author Violet
- * @description 子菜单实例
+ * @description 菜单实体
  * @date 2021/1/12
  */
 @Data
 @Accessors(chain = true)
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class MbSubMenu {
+public class MbMenu {
     @ApiModelProperty("主键")
+    @NotNull(message = "菜单ID不能为空")
     private Long id;
-    @ApiModelProperty("子菜单名称")
+    @ApiModelProperty("菜单名称")
     private String menuName;
-    @ApiModelProperty("子菜单路由")
-    private String url;
-    @ApiModelProperty("父菜单id")
-    private Long parentMenuId;
+    @ApiModelProperty("菜单图片，去Ant的icon组件里面找，写图标名字")
+    private String menuIcon;
+    @ApiModelProperty("菜单URL")
+    private String menuUrl;
 }

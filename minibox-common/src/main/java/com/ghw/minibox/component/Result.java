@@ -13,7 +13,32 @@ import org.springframework.stereotype.Component;
 public class Result {
 
     public static ReturnDto success() {
-        return new ReturnDto(ResultCode.OK.getCode(),ResultCode.OK.getMessage());
+        return new ReturnDto(ResultCode.OK.getCode(), ResultCode.OK.getMessage());
+    }
+
+    public static ReturnDto successFlag(boolean b) {
+        if (b)
+            return new ReturnDto(ResultCode.OK.getCode(), ResultCode.OK.getMessage());
+        else
+            return new ReturnDto(ResultCode.BAD_REQUEST.getCode(), ResultCode.BAD_REQUEST.getMessage());
+    }
+
+    public static ReturnDto successFlag(boolean b, String failMessage) {
+        if (b)
+            return new ReturnDto(ResultCode.OK.getCode(), ResultCode.OK.getMessage());
+        else
+            return new ReturnDto(ResultCode.BAD_REQUEST.getCode(), failMessage);
+    }
+
+    public static ReturnDto successFlag(boolean b, String failMessage, Object data) {
+        if (b)
+            return new ReturnDto(ResultCode.OK.getCode(), ResultCode.OK.getMessage(), data);
+        else
+            return new ReturnDto(ResultCode.BAD_REQUEST.getCode(), failMessage, data);
+    }
+
+    public static ReturnDto success(String message) {
+        return new ReturnDto(ResultCode.OK.getCode(), message);
     }
 
     public static ReturnDto success(Object data) {

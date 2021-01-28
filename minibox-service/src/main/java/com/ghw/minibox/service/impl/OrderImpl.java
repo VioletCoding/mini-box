@@ -114,13 +114,14 @@ public class OrderImpl implements CommonService<MbOrder> {
     @AOPLog("提交订单")
     @Transactional(rollbackFor = Throwable.class)
     @Override
-    public Object insert(MbOrder mbOrder){
+    public boolean insert(MbOrder mbOrder){
 
         //Redis key格式： order:用户id:游戏id:orderId
         String key = RedisUtil.ORDER_PREFIX + mbOrder.getUid() + ":" + mbOrder.getOrderGameId();
         String value = redisUtil.get(key);
 
-        if (StringUtils.isNullOrEmpty(value)) return ResultCode.ORDER_CANCEL.getMessage();
+        if (StringUtils.isNullOrEmpty(value))
+            return false;
 
         mbOrder.setSuccess(orderUtil.SUCCESS);
         //插入订单信息

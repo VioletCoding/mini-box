@@ -6,6 +6,7 @@ import com.ghw.minibox.mapper.MbBlockMapper;
 import com.ghw.minibox.mapper.MbGameMapper;
 import com.ghw.minibox.service.CommonService;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
 import java.util.ArrayList;
@@ -26,7 +27,7 @@ public class BlockImpl implements CommonService<MbBlock> {
     @Override
     public List<MbBlock> selectAll(MbBlock param) {
 
-        List<MbBlock> blocks = blockMapper.queryAll(null);
+        List<MbBlock> blocks = blockMapper.queryAll(param);
         //获取游戏的图片
         List<Long> gidList = new ArrayList<>();
         blocks.forEach(block -> gidList.add(block.getGid()));
@@ -46,21 +47,24 @@ public class BlockImpl implements CommonService<MbBlock> {
 
     @Override
     public MbBlock selectOne(Long id) {
-        return null;
+        return blockMapper.queryById(id);
     }
 
     @Override
-    public Object insert(MbBlock entity) {
-        return false;
+    @Transactional(rollbackFor = Throwable.class)
+    public boolean insert(MbBlock entity) {
+        return blockMapper.insert(entity) > 0;
     }
 
     @Override
+    @Transactional(rollbackFor = Throwable.class)
     public boolean update(MbBlock entity) {
-        return false;
+        return blockMapper.update(entity) > 0;
     }
 
     @Override
+    @Transactional(rollbackFor = Throwable.class)
     public boolean delete(Long id) {
-        return false;
+        return blockMapper.deleteById(id) > 0;
     }
 }
