@@ -146,6 +146,7 @@ public class AdminController {
         if (multipartFile.isEmpty())
             return Result.fail("文件为空");
         String link = qiNiuUtil.syncUpload(IdUtil.fastSimpleUUID() + multipartFile.getOriginalFilename(), multipartFile.getBytes());
+        System.out.println("上传完毕,link=>" + link);
         return Result.success((Object) link);
     }
 
@@ -159,7 +160,7 @@ public class AdminController {
     @ApiOperation("新增游戏")
     @PostMapping("addGame")
     public ReturnDto addNewGame(@RequestBody MbGame mbGame) {
-        boolean insert = (boolean) gameImpl.insert(mbGame);
+        boolean insert = gameImpl.insert(mbGame);
         if (insert) {
             searchFeignClient.refreshData();
             return Result.success();
