@@ -1,5 +1,6 @@
 package com.ghw.minibox.mapper;
 
+import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.ghw.minibox.entity.MbBlock;
 import org.apache.ibatis.annotations.Param;
 
@@ -11,8 +12,7 @@ import java.util.List;
  * @author Violet
  * @since 2021-01-04 20:02:28
  */
-public interface MbBlockMapper {
-
+public interface MbBlockMapper extends BaseMapper<MbBlock> {
     /**
      * 通过ID查询单条数据
      *

@@ -45,7 +45,6 @@
             <groupId>org.springframework.cloud</groupId>
             <artifactId>spring-cloud-starter-openfeign</artifactId>
         </dependency>
-
         <!--Nacos注册中心和配置中心-->
         <dependency>
             <groupId>com.alibaba.cloud</groupId>
@@ -62,8 +61,8 @@
         </dependency>
         <!-- MyBatis starter-->
         <dependency>
-            <groupId>org.mybatis.spring.boot</groupId>
-            <artifactId>mybatis-spring-boot-starter</artifactId>
+            <groupId>com.baomidou</groupId>
+            <artifactId>mybatis-plus-boot-starter</artifactId>
         </dependency>
         <!--Mysql数据库驱动-->
         <dependency>

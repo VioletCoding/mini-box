@@ -26,7 +26,6 @@ public class BlockImpl implements CommonService<MbBlock> {
 
     @Override
     public List<MbBlock> selectAll(MbBlock param) {
-
         List<MbBlock> blocks = blockMapper.queryAll(param);
         //获取游戏的图片
         List<Long> gidList = new ArrayList<>();
