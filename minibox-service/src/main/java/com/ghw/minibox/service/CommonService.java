@@ -8,7 +8,7 @@ import java.util.List;
  * @date 2021/1/4
  */
 
-public interface CommonService<T>{
+public interface CommonService<T> {
     /**
      * 通用列表查找
      */

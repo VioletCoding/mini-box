@@ -1,9 +1,9 @@
 package com.ghw.minibox.controller;
 
 import cn.hutool.core.util.IdUtil;
-import com.ghw.minibox.component.Result;
-import com.ghw.minibox.dto.ReturnDto;
-import com.ghw.minibox.utils.QiNiuUtil;
+import com.ghw.minibox.utils.Result;
+import com.ghw.minibox.vo.ResultVo;
+import com.ghw.minibox.component.QiNiuUtil;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -31,9 +31,10 @@ public class PublicController {
 
     @ApiOperation("上传文件公用接口,可多文件上传,单次单个文件最大3MB,单次全部文件加起来不能超过30MB")
     @PostMapping("upload")
-    public ReturnDto upload(@RequestParam("multipartFile") MultipartFile[] multipartFile) throws IOException {
-        if (multipartFile.length < 1)
+    public ResultVo upload(@RequestParam("multipartFile") MultipartFile[] multipartFile) throws IOException {
+        if (multipartFile.length < 1) {
             return Result.fail("文件列表为空");
+        }
         Map<String, Object> map = new HashMap<>();
         List<String> linkList = new ArrayList<>();
         for (MultipartFile m : multipartFile) {

@@ -12,6 +12,8 @@ import org.springframework.stereotype.Component;
 @Component
 public class SendEmail {
     private static final String AUTH_CODE = "tieqxwykyjedbaif";
+    private static final String AUTHENTICATION = "1054197367@qq.com";
+    private static final String FROM = "MiniboxOfficial";
     public static final String SUBJECT = "Minibox验证码，请注意查收！";
     public static final String LOGIN_MESSAGE = "您正在登陆迷你盒，本次验证码5分钟内有效：";
     public static final String REGISTER_MESSAGE = "您正在注册迷你盒，本次验证码5分钟内有效：";
@@ -40,10 +42,10 @@ public class SendEmail {
      *
      * @param addTo   收件人的邮箱
      * @param subject 发送主题
-     * @param msg     发送内容
+     * @param message     发送内容
      * @throws EmailException 邮箱异常，如果有异常抛出，则发送失败
      */
-    public void createEmail(String addTo, String subject, String msg) throws EmailException {
+    public void createEmail(String addTo, String subject, String message) throws EmailException {
         HtmlEmail email = new HtmlEmail();
         email.setHostName("smtp.qq.com");
         email.setCharset("utf-8");
@@ -51,7 +53,7 @@ public class SendEmail {
         email.setFrom("1054197367@qq.com", "MiniboxOfficial");
         email.setAuthentication("1054197367@qq.com", AUTH_CODE);
         email.setSubject(subject);
-        email.setMsg(msg);
+        email.setMsg(message);
         email.send();
     }
 

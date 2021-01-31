@@ -5,13 +5,13 @@
 
     <select id="countGameNum" resultType="map">
         SELECT g.id,
-               g.`name`,
-               g.cover_img,
-               g.price,
-               g.description,
-               (SELECT COUNT(*) FROM mb_order WHERE uid = o.uid) game_num
+        g.`name`,
+        g.cover_img,
+        g.price,
+        g.description,
+        (SELECT COUNT(*) FROM mb_order WHERE uid = o.uid) game_num
         FROM mb_game g
-                 LEFT JOIN mb_order o ON (o.order_game_id = g.id)
+        LEFT JOIN mb_order o ON (o.order_game_id = g.id)
         WHERE o.uid = #{id}
     </select>
 
@@ -36,20 +36,20 @@
 
     <select id="queryUserAllCommentInPost" resultMap="commentInPostMap">
         SELECT c.content,
-               c.id,
-               c.create_date,
+        c.id,
+        c.create_date,
 
-               p.id post_id,
-               p.cover_img,
-               p.uid,
-               p.title,
+        p.id post_id,
+        p.cover_img,
+        p.uid,
+        p.title,
 
-               u.nickname
+        u.nickname
         FROM mb_comment c
-                 LEFT JOIN mb_post p ON (p.id = c.tid)
-                 LEFT JOIN mb_user u ON (u.id = p.uid)
+        LEFT JOIN mb_post p ON (p.id = c.tid)
+        LEFT JOIN mb_user u ON (u.id = p.uid)
         WHERE c.uid = #{uid}
-          AND c.type = 'TC';
+        AND c.type = 'TC';
     </select>
 
 
@@ -162,10 +162,10 @@
     </insert>
 
     <select id="count" resultType="map">
-        SELECT COUNT(*)                          post_number,
-               (SELECT COUNT(*) FROM mb_user)    user_number,
-               (SELECT COUNT(*) FROM mb_game)    game_number,
-               (SELECT COUNT(*) FROM mb_comment) comment_number
+        SELECT COUNT(*) post_number,
+        (SELECT COUNT(*) FROM mb_user) user_number,
+        (SELECT COUNT(*) FROM mb_game) game_number,
+        (SELECT COUNT(*) FROM mb_comment) comment_number
         FROM mb_post
     </select>
 
@@ -176,7 +176,7 @@
 
     <select id="echartsPostPerDay" resultMap="echartsPost">
         SELECT date_format(create_date, '%Y-%m-%d') create_date,
-               count(*)                             post_number_per_day
+        count(*) post_number_per_day
         FROM mb_post
         GROUP BY date_format(create_date, '%Y-%m-%d');
     </select>
@@ -187,9 +187,9 @@
     </resultMap>
     <select id="gameSalesRankings" resultMap="gameSalesRankingsMap">
         SELECT COUNT(o.id) order_count,
-               g.`name`
+        g.`name`
         FROM mb_order o
-                 LEFT JOIN mb_game g ON (g.id = o.order_game_id)
+        LEFT JOIN mb_game g ON (g.id = o.order_game_id)
         GROUP BY o.order_game_id
         ORDER BY order_count DESC;
     </select>
@@ -202,7 +202,7 @@
 
     <select id="echartsCommentPerDay" resultMap="echartsComment">
         SELECT DATE_FORMAT(c.create_date, '%Y-%m-%d') create_date,
-               COUNT(C.id)                            comment_number_per_day
+        COUNT(C.id) comment_number_per_day
         FROM mb_comment c
         GROUP BY DATE_FORMAT(c.create_date, '%Y-%m-%d');
     </select>
@@ -211,7 +211,7 @@
         DELETE
         FROM mb_user_role
         WHERE uid = #{userId}
-          AND rid = 10001
+        AND rid = 10001
     </delete>
 
     <delete id="deleteUserRole">

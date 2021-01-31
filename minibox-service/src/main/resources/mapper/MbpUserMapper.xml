@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ghw.minibox.mapper.MbpUserMapper">
+    <select id="findUserRoles" resultType="com.ghw.minibox.model.RoleModel">
+        SELECT mr.id, mr.name
+        FROM mb_role mr
+                 LEFT JOIN mb_user_role mur
+                           ON mur.rid = mr.id
+        WHERE mur.uid = #{id}
+    </select>
+
+    <insert id="setUserRoles" useGeneratedKeys="true">
+        INSERT INTO mb_user_role(uid, rid)
+        VALUES (#{id}, #{roleId});
+    </insert>
+</mapper>

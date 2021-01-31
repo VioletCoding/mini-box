@@ -17,6 +17,7 @@ import java.util.List;
  * @author Violet
  * @since 2020-11-19 12:20:16
  */
+@Deprecated
 @Data
 @Accessors(chain = true)
 @JsonInclude(JsonInclude.Include.NON_NULL)

@@ -23,6 +23,7 @@ public interface MbGameMapper {
 
     /**
      * in 查询
+     *
      * @param id 游戏id
      * @return 游戏列表
      */

@@ -23,6 +23,7 @@ public interface MbUserMapper {
 
     /**
      * in查询
+     *
      * @param id 主键
      * @return 实例对象
      */

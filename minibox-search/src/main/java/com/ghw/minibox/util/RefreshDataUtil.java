@@ -7,7 +7,7 @@ import com.ghw.minibox.es.ESMbPost;
 import com.ghw.minibox.feign.SearchFeignClient;
 import com.ghw.minibox.repository.GameSearchRepository;
 import com.ghw.minibox.repository.PostSearchRepository;
-import com.ghw.minibox.utils.GenerateBean;
+import com.ghw.minibox.component.GenerateBean;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 

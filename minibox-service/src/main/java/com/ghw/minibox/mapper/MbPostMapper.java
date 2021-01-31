@@ -49,7 +49,6 @@ public interface MbPostMapper {
 
     /**
      * 查询帖子的详情信息，包括连表数据
-     *
      */
     List<MbPost> queryAllWithDetail(MbPost mbPost);
 

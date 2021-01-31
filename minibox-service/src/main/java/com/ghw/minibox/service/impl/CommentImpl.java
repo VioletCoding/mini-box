@@ -2,11 +2,11 @@ package com.ghw.minibox.service.impl;
 
 import com.ghw.minibox.entity.MbComment;
 import com.ghw.minibox.entity.MbReply;
-import com.ghw.minibox.exception.MyException;
+import com.ghw.minibox.exception.MiniBoxException;
 import com.ghw.minibox.mapper.MbCommentMapper;
 import com.ghw.minibox.mapper.MbReplyMapper;
 import com.ghw.minibox.service.CommonService;
-import com.ghw.minibox.utils.AOPLog;
+import com.ghw.minibox.utils.AopLog;
 import com.ghw.minibox.utils.PostType;
 import com.ghw.minibox.utils.ResultCode;
 import lombok.extern.slf4j.Slf4j;
@@ -41,26 +41,26 @@ public class CommentImpl implements CommonService<MbComment> {
     }
 
 
-    @AOPLog("发表评论")
+    @AopLog("发表评论")
     @Override
     @Transactional(rollbackFor = Throwable.class)
-    public boolean insert(MbComment entity){
+    public boolean insert(MbComment entity) {
 
         boolean isPost = entity.getType().equals(PostType.COMMENT_IN_POST.getType());
         if (isPost)
             if (entity.getTid() == null)
-                throw new MyException(ResultCode.TID_IS_NULL.getMessage());
+                throw new MiniBoxException(ResultCode.TID_IS_NULL.getMessage());
 
         boolean isGame = entity.getType().equals(PostType.COMMENT_IN_GAME.getType());
         if (isGame)
             if (entity.getGid() == null)
-                throw new MyException(ResultCode.GID_IS_NULL.getMessage());
+                throw new MiniBoxException(ResultCode.GID_IS_NULL.getMessage());
 
         int insert = commentMapper.insert(entity);
         return insert > 0;
     }
 
-    @AOPLog("发表回复")
+    @AopLog("发表回复")
     @Transactional(rollbackFor = Throwable.class)
     public boolean Reply(MbReply mbReply) {
 

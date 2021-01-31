@@ -4,8 +4,7 @@ import cn.hutool.core.util.IdUtil;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ghw.minibox.dto.PayloadDto;
-import com.ghw.minibox.exception.MyException;
-import com.ghw.minibox.utils.GenerateBean;
+import com.ghw.minibox.exception.MiniBoxException;
 import com.nimbusds.jose.*;
 import com.nimbusds.jose.crypto.MACSigner;
 import com.nimbusds.jose.crypto.MACVerifier;
@@ -93,7 +92,7 @@ public class NimbusJoseJwt {
         JWSObject jwsObject = JWSObject.parse(token);
         MACVerifier verifier = new MACVerifier(SECRET);
         if (!jwsObject.verify(verifier))
-            throw new MyException("token签名不合法");
+            throw new MiniBoxException("token签名不合法");
         String payload = jwsObject.getPayload().toString();
         ObjectMapper objectMapper = generateBean.getObjectMapper();
         return objectMapper.readValue(payload, PayloadDto.class);

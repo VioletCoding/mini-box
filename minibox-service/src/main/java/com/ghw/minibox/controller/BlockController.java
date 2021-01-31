@@ -1,7 +1,7 @@
 package com.ghw.minibox.controller;
 
-import com.ghw.minibox.component.Result;
-import com.ghw.minibox.dto.ReturnDto;
+import com.ghw.minibox.utils.Result;
+import com.ghw.minibox.vo.ResultVo;
 import com.ghw.minibox.service.impl.BlockImpl;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -25,7 +25,7 @@ public class BlockController {
 
     @ApiOperation("版块列表")
     @GetMapping("all")
-    public ReturnDto showAllBlock(){
+    public ResultVo showAllBlock() {
         return Result.success(block.selectAll(null));
     }
 }

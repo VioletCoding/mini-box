@@ -5,11 +5,13 @@ import cn.hutool.crypto.SecureUtil;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.ghw.minibox.component.GenerateBean;
 import com.ghw.minibox.component.NimbusJoseJwt;
+import com.ghw.minibox.component.QiNiuUtil;
 import com.ghw.minibox.component.RedisUtil;
 import com.ghw.minibox.dto.PayloadDto;
 import com.ghw.minibox.entity.MbUser;
-import com.ghw.minibox.exception.MyException;
+import com.ghw.minibox.exception.MiniBoxException;
 import com.ghw.minibox.mapper.MapperUtils;
 import com.ghw.minibox.mapper.MbUserMapper;
 import com.ghw.minibox.service.CommonService;
@@ -34,6 +36,7 @@ import java.util.*;
  */
 @Service
 @Slf4j
+@Deprecated
 public class UserImpl implements CommonService<MbUser> {
     @Resource
     private SendEmail sendEmail;
@@ -50,7 +53,6 @@ public class UserImpl implements CommonService<MbUser> {
     @Resource
     private GenerateBean generateBean;
 
-    @AOPLog("生成验证码")
     private String generateAuthCode() {
         StringBuilder sb = new StringBuilder();
         Random random = new Random();
@@ -62,7 +64,7 @@ public class UserImpl implements CommonService<MbUser> {
         return sb.toString();
     }
 
-    @AOPLog("发送邮件")
+    @AopLog("发送邮件")
     @Async
     public void sendEmail(String username, String subject, String msg) throws EmailException, JsonProcessingException {
         //小写用户名
@@ -77,7 +79,7 @@ public class UserImpl implements CommonService<MbUser> {
         redisUtil.set(RedisUtil.AUTH_PREFIX + username, json, 300);
     }
 
-    @AOPLog("用户名查重")
+    @AopLog("用户名查重")
     public boolean exist(String username) throws JsonProcessingException {
         //把传进来的邮箱格式化一下，统一小写
         String lowerCase = username.toLowerCase();
@@ -91,7 +93,7 @@ public class UserImpl implements CommonService<MbUser> {
         return false;
     }
 
-    @AOPLog("对应不同业务发送不同邮件")
+    @AopLog("对应不同业务发送不同邮件")
     public void service(String username) throws EmailException, JsonProcessingException {
         String authCode = generateAuthCode();
         String lowerCaseUsername = username.toLowerCase();
@@ -111,7 +113,7 @@ public class UserImpl implements CommonService<MbUser> {
         }
     }
 
-    @AOPLog("校验验证码")
+    @AopLog("校验验证码")
     public boolean authRegCode(String key, String code) throws JsonProcessingException {
         String valueFromRedis = redisUtil.get(RedisUtil.AUTH_PREFIX + key.toLowerCase());
         if (!StringUtils.isNullOrEmpty(valueFromRedis)) {
@@ -123,11 +125,11 @@ public class UserImpl implements CommonService<MbUser> {
                 return true;
             }
         }
-        throw new MyException("验证码已过期");
+        throw new MiniBoxException("验证码已过期");
     }
 
 
-    @AOPLog("自动判断登陆或注册逻辑方法")
+    @AopLog("自动判断登陆或注册逻辑方法")
     @Transactional(rollbackFor = Throwable.class)
     public Object doService(String username, String authCode) throws JsonProcessingException, JOSEException {
         String lowerCaseUsername = username.toLowerCase();
@@ -156,12 +158,12 @@ public class UserImpl implements CommonService<MbUser> {
                 //如果不存在，则自动注册，并且注册成功后也返回token和非敏感信息
                 MbUser mbUser = new MbUser();
                 mbUser.setUsername(username)
-                        .setNickname(DefaultUserInfoEnum.NICKNAME.getMessage())
-                        .setPassword(IdUtil.fastSimpleUUID())
-                        .setUserImg(QiNiuUtil.defaultPhotoLink);
+                        .setNickname(DefaultColumn.NICKNAME.getMessage())
+                        .setPassword(IdUtil.fastSimpleUUID());
+                        //.setUserImg(QiNiuUtil.defaultPhotoLink);
                 int insert = userMapper.insert(mbUser);
                 int setUserRole = mapperUtils.setUserRole(UserRole.USER.getRoleId(), mbUser.getId());
-                if (insert == 0 || setUserRole == 0) throw new MyException("注册时出现异常");
+                if (insert == 0 || setUserRole == 0) throw new MiniBoxException("注册时出现异常");
                 //用于返回，因为当前需求是要一起返回token信息，但是MbUser实体没这个字段，所以转成map，put一个token字段进去
                 MbUser newUser = userMapper.queryById(mbUser.getId());
                 Map<String, Object> map = objectMapper.convertValue(newUser, new TypeReference<Map<String, Object>>() {
@@ -176,7 +178,7 @@ public class UserImpl implements CommonService<MbUser> {
                 redisUtil.remove(remove);
             }
         }
-        throw new MyException("验证码不合法");
+        throw new MiniBoxException("验证码不合法");
     }
 
     @Override
@@ -190,7 +192,7 @@ public class UserImpl implements CommonService<MbUser> {
         return userMapper.queryById(id);
     }
 
-    @AOPLog("查询个人信息，包括游戏信息，游戏数量")
+    @AopLog("查询个人信息，包括游戏信息，游戏数量")
     public Object showUserInfo(Long id) {
         //用户信息
         MbUser mbUser = userMapper.queryById(id);
@@ -207,7 +209,7 @@ public class UserImpl implements CommonService<MbUser> {
         return userMapper.insert(entity) > 0;
     }
 
-    @AOPLog("更新用户信息")
+    @AopLog("更新用户信息")
     @Override
     @Transactional(rollbackFor = Throwable.class)
     public boolean update(MbUser entity) {
@@ -219,19 +221,19 @@ public class UserImpl implements CommonService<MbUser> {
         return false;
     }
 
-    @AOPLog("更新用户头像")
+    @AopLog("更新用户头像")
     @Transactional(rollbackFor = Throwable.class)
     public MbUser updateUserImg(MultipartFile file, Long uid) throws IOException {
         String fastSimpleUUID = IdUtil.fastSimpleUUID();
         String link = qiNiuUtil.syncUpload(fastSimpleUUID, file.getBytes());
         //更新用户信息
-        boolean update = this.update(new MbUser().setUserImg(link).setId(uid));
+        boolean update = this.update(new MbUser().setId(uid));
         if (update)
             return this.selectOne(uid);
-        throw new MyException("更新用户头像出现错误");
+        throw new MiniBoxException("更新用户头像出现错误");
     }
 
-    @AOPLog("更新密码，id、password必传")
+    @AopLog("更新密码，id、password必传")
     @Transactional(rollbackFor = Throwable.class)
     public boolean updatePassword(MbUser mbUser) {
         String md5 = SecureUtil.md5(mbUser.getPassword());
@@ -244,7 +246,7 @@ public class UserImpl implements CommonService<MbUser> {
         return false;
     }
 
-    @AOPLog("登出")
+    @AopLog("登出")
     public void logout(String key) {
         redisUtil.remove(RedisUtil.TOKEN_PREFIX + key.toLowerCase());
     }

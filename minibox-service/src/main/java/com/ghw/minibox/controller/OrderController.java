@@ -1,8 +1,8 @@
 package com.ghw.minibox.controller;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.ghw.minibox.component.Result;
-import com.ghw.minibox.dto.ReturnDto;
+import com.ghw.minibox.utils.Result;
+import com.ghw.minibox.vo.ResultVo;
 import com.ghw.minibox.entity.MbOrder;
 import com.ghw.minibox.service.impl.OrderImpl;
 import com.ghw.minibox.utils.ResultCode;
@@ -28,7 +28,7 @@ public class OrderController {
 
     @ApiOperation("生成订单")
     @PostMapping("generateOrder")
-    public ReturnDto generateOrder(@RequestBody @Validated MbOrder mbOrder) throws JsonProcessingException {
+    public ResultVo generateOrder(@RequestBody @Validated MbOrder mbOrder) throws JsonProcessingException {
         Object generateOrder = order.create(mbOrder);
         if (generateOrder.equals(ResultCode.ORDER_PAYED.getMessage()))
             return Result.fail(ResultCode.ORDER_PAYED);
@@ -40,7 +40,7 @@ public class OrderController {
 
     @ApiOperation("确认订单")
     @PostMapping("confirm")
-    public ReturnDto confirmOrder(@RequestBody @Validated MbOrder mbOrder) {
+    public ResultVo confirmOrder(@RequestBody @Validated MbOrder mbOrder) {
         if (mbOrder.getOrderId() == null)
             return Result.fail();
         boolean b = order.insert(mbOrder);
@@ -51,7 +51,7 @@ public class OrderController {
 
     @ApiOperation("取消订单")
     @PostMapping("cancel")
-    public ReturnDto cancelOrder(@RequestBody @Validated MbOrder mbOrder) {
+    public ResultVo cancelOrder(@RequestBody @Validated MbOrder mbOrder) {
         boolean b = order.cancelOrder(mbOrder);
         if (b)
             return Result.success();

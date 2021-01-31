@@ -1,6 +1,6 @@
-package com.ghw.minibox.utils;
+package com.ghw.minibox.component;
 
-import com.ghw.minibox.component.impl.UpCompletionHandlerImpl;
+import com.ghw.minibox.utils.impl.UpCompletionHandlerImpl;
 import com.qiniu.common.QiniuException;
 import com.qiniu.http.Response;
 import com.qiniu.storage.BucketManager;

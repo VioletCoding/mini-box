@@ -3,7 +3,7 @@ package com.ghw.minibox.service.impl;
 import com.ghw.minibox.entity.*;
 import com.ghw.minibox.mapper.*;
 import com.ghw.minibox.service.CommonService;
-import com.ghw.minibox.utils.AOPLog;
+import com.ghw.minibox.utils.AopLog;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -30,13 +30,13 @@ public class GameImpl implements CommonService<MbGame> {
     @Resource
     private MbTagMapper tagMapper;
 
-    @AOPLog("游戏列表")
+    @AopLog("游戏列表")
     @Override
     public List<MbGame> selectAll(MbGame param) {
         return gameMapper.queryAll(param);
     }
 
-    @AOPLog("游戏详情")
+    @AopLog("游戏详情")
     @Override
     public MbGame selectOne(Long id) {
         //游戏详情

@@ -1,4 +1,4 @@
-package com.ghw.minibox.component.impl;
+package com.ghw.minibox.utils.impl;
 
 import com.qiniu.common.QiniuException;
 import com.qiniu.http.Response;

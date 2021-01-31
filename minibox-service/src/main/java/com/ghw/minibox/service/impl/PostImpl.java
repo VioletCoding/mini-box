@@ -4,14 +4,14 @@ import cn.hutool.core.util.IdUtil;
 import com.ghw.minibox.entity.MbComment;
 import com.ghw.minibox.entity.MbPost;
 import com.ghw.minibox.entity.MbUser;
-import com.ghw.minibox.exception.MyException;
+import com.ghw.minibox.exception.MiniBoxException;
 import com.ghw.minibox.mapper.MapperUtils;
 import com.ghw.minibox.mapper.MbCommentMapper;
 import com.ghw.minibox.mapper.MbPostMapper;
 import com.ghw.minibox.mapper.MbUserMapper;
 import com.ghw.minibox.service.CommonService;
-import com.ghw.minibox.utils.AOPLog;
-import com.ghw.minibox.utils.QiNiuUtil;
+import com.ghw.minibox.utils.AopLog;
+import com.ghw.minibox.component.QiNiuUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -31,6 +31,7 @@ import java.util.Map;
  */
 @Service
 @Slf4j
+@Deprecated
 public class PostImpl implements CommonService<MbPost> {
 
     @Resource
@@ -50,14 +51,14 @@ public class PostImpl implements CommonService<MbPost> {
      * @param param 参数
      * @return 帖子列表
      */
-    @AOPLog("帖子列表")
+    @AopLog("帖子列表")
     @Override
     public List<MbPost> selectAll(MbPost param) {
         return postMapper.queryAllWithDetail(param);
     }
 
 
-    @AOPLog("用户个人信息显示自己的评论，以及评论在哪个帖子下发布的")
+    @AopLog("用户个人信息显示自己的评论，以及评论在哪个帖子下发布的")
     public Object getCommentAndPostByUid(Long uid) {
         return mapperUtils.queryUserAllCommentInPost(uid);
     }
@@ -68,7 +69,7 @@ public class PostImpl implements CommonService<MbPost> {
      * @param entity 实体
      * @return 是否成功
      */
-    @AOPLog("发布帖子")
+    @AopLog("发布帖子")
     @Override
     @Transactional(rollbackFor = Throwable.class)
     public boolean insert(MbPost entity) {
@@ -83,11 +84,11 @@ public class PostImpl implements CommonService<MbPost> {
      * @return map集合，里面有图片的全部链接
      * @throws IOException -
      */
-    @AOPLog("文件上传")
+    @AopLog("文件上传")
     @Transactional(rollbackFor = Throwable.class)
     public Map<String, Object> upload(MultipartFile[] multipartFiles) throws IOException {
         if (multipartFiles.length < 1)
-            throw new MyException("文件为空");
+            throw new MiniBoxException("文件为空");
         List<String> links = new ArrayList<>();
         for (MultipartFile m : multipartFiles) {
             String fastSimpleUUID = IdUtil.fastSimpleUUID();
@@ -106,7 +107,7 @@ public class PostImpl implements CommonService<MbPost> {
      * @param id 帖子id
      * @return 帖子详情
      */
-    @AOPLog("帖子详情")
+    @AopLog("帖子详情")
     @Override
     public MbPost selectOne(Long id) {
         //得到帖子信息

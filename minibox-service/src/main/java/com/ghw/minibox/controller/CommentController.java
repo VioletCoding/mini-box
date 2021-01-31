@@ -1,7 +1,7 @@
 package com.ghw.minibox.controller;
 
-import com.ghw.minibox.component.Result;
-import com.ghw.minibox.dto.ReturnDto;
+import com.ghw.minibox.utils.Result;
+import com.ghw.minibox.vo.ResultVo;
 import com.ghw.minibox.entity.MbComment;
 import com.ghw.minibox.entity.MbReply;
 import com.ghw.minibox.service.impl.CommentImpl;
@@ -29,7 +29,7 @@ public class CommentController {
 
     @ApiOperation("发表评论 -> 必传参数看 入参实体 里的Hibernate-Validator注解")
     @PostMapping("post")
-    public ReturnDto publish(@RequestBody @Validated MbComment mbComment){
+    public ResultVo publish(@RequestBody @Validated MbComment mbComment) {
         boolean insert = (Boolean) comment.insert(mbComment);
         if (insert)
             return Result.success();
@@ -38,7 +38,7 @@ public class CommentController {
 
     @ApiOperation("发表回复 -> 必传参数看 入参实体 里的Hibernate-Validator注解")
     @PostMapping("reply")
-    public ReturnDto reply(@RequestBody @Validated MbReply mbReply) {
+    public ResultVo reply(@RequestBody @Validated MbReply mbReply) {
         boolean reply = comment.Reply(mbReply);
         if (reply)
             return Result.success();

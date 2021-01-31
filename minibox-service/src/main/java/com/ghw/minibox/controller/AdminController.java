@@ -1,14 +1,14 @@
 package com.ghw.minibox.controller;
 
 import cn.hutool.core.util.IdUtil;
-import com.ghw.minibox.component.Result;
-import com.ghw.minibox.dto.ReturnDto;
+import com.ghw.minibox.utils.Result;
+import com.ghw.minibox.vo.ResultVo;
 import com.ghw.minibox.entity.*;
 import com.ghw.minibox.feign.SearchFeignClient;
 import com.ghw.minibox.mapper.MapperUtils;
 import com.ghw.minibox.mapper.MbRoleMapper;
 import com.ghw.minibox.service.impl.*;
-import com.ghw.minibox.utils.QiNiuUtil;
+import com.ghw.minibox.component.QiNiuUtil;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -48,28 +48,28 @@ public class AdminController {
 
     @ApiOperation("获取菜单列表")
     @PostMapping("allMenu")
-    public ReturnDto showMenu(@RequestBody(required = false) MbMenu mbMenu) {
+    public ResultVo showMenu(@RequestBody(required = false) MbMenu mbMenu) {
         List<MbMenu> menuList = this.menuImpl.selectAll(mbMenu);
         return Result.success(menuList);
     }
 
     @ApiOperation("添加菜单")
     @PostMapping("addMenu")
-    public ReturnDto addParentMenu(@RequestBody MbMenu mbMenu) {
+    public ResultVo addParentMenu(@RequestBody MbMenu mbMenu) {
         boolean insert = this.menuImpl.insert(mbMenu);
         return Result.successFlag(insert);
     }
 
     @ApiOperation("删除菜单")
     @GetMapping("delMenu")
-    public ReturnDto delParentMenu(@RequestParam Long id) {
+    public ResultVo delParentMenu(@RequestParam Long id) {
         boolean delete = this.menuImpl.delete(id);
         return Result.successFlag(delete);
     }
 
     @ApiOperation("修改菜单信息")
     @PostMapping("updateMenu")
-    public ReturnDto updateParentMenu(@RequestBody MbMenu parentMenu) {
+    public ResultVo updateParentMenu(@RequestBody MbMenu parentMenu) {
         boolean update = this.menuImpl.update(parentMenu);
         return Result.successFlag(update);
     }
@@ -77,7 +77,7 @@ public class AdminController {
 
     @ApiOperation("获取首页的「帖子数量」「用户数量」「游戏数量」「评论数量」以及echarts图表数据")
     @GetMapping("allCount")
-    public ReturnDto getCountNumber() {
+    public ResultVo getCountNumber() {
         Map<String, Object> countMap = mapperUtils.count();
         List<Map<String, Object>> postsPerDay = mapperUtils.echartsPostPerDay();
         List<Map<String, Object>> gameSalesRankings = mapperUtils.gameSalesRankings();
@@ -90,27 +90,27 @@ public class AdminController {
 
     @ApiOperation("获取用户列表里的所有数据")
     @PostMapping("userList")
-    public ReturnDto getUserList(@RequestBody(required = false) MbUser mbUser) {
+    public ResultVo getUserList(@RequestBody(required = false) MbUser mbUser) {
         return Result.success(userImpl.selectAll(mbUser));
     }
 
     @ApiOperation("更新用户信息")
     @PostMapping("updateUser")
-    public ReturnDto updateUserInfo(@RequestBody MbUser mbUser) {
+    public ResultVo updateUserInfo(@RequestBody MbUser mbUser) {
         boolean update = userImpl.update(mbUser);
         return Result.successFlag(update);
     }
 
     @ApiOperation("删除用户的管理员角色")
     @GetMapping("deleteRole")
-    public ReturnDto updateUserRole(@RequestParam Long userId) {
+    public ResultVo updateUserRole(@RequestParam Long userId) {
         int i = mapperUtils.deleteUserAdminRole(userId);
         return Result.successFlag(i > 0, "用户不是管理员，如果要删除USER角色，请直接删除用户");
     }
 
     @ApiOperation("添加管理员角色")
     @GetMapping("addRole")
-    public ReturnDto giveAdminRole(@RequestParam Long userId) {
+    public ResultVo giveAdminRole(@RequestParam Long userId) {
         List<MbUser> users = userImpl.selectAll(new MbUser().setId(userId));
         MbUser mbUser = users.get(0);
         List<MbRole> roleList = mbUser.getRoleList();
@@ -124,25 +124,25 @@ public class AdminController {
 
     @ApiOperation("角色列表展示")
     @PostMapping("showRoles")
-    public ReturnDto showRoleList(@RequestBody(required = false) MbRole mbRole) {
+    public ResultVo showRoleList(@RequestBody(required = false) MbRole mbRole) {
         return Result.success(roleMapper.queryAll(mbRole));
     }
 
     @ApiOperation("删除用户")
     @GetMapping("deleteUser")
-    public ReturnDto deleteUserById(@RequestParam Long id) {
+    public ResultVo deleteUserById(@RequestParam Long id) {
         return Result.success(userImpl.delete(id));
     }
 
     @ApiOperation("游戏列表")
     @PostMapping("gameList")
-    public ReturnDto getGameList(@RequestBody(required = false) MbGame mbGame) {
+    public ResultVo getGameList(@RequestBody(required = false) MbGame mbGame) {
         return Result.success(gameImpl.selectAll(mbGame));
     }
 
     @ApiOperation("上传文件")
     @PostMapping("upload")
-    public ReturnDto upload(@RequestParam MultipartFile multipartFile) throws IOException {
+    public ResultVo upload(@RequestParam MultipartFile multipartFile) throws IOException {
         if (multipartFile.isEmpty())
             return Result.fail("文件为空");
         String link = qiNiuUtil.syncUpload(IdUtil.fastSimpleUUID() + multipartFile.getOriginalFilename(), multipartFile.getBytes());
@@ -152,14 +152,14 @@ public class AdminController {
 
     @ApiOperation("更新游戏信息")
     @PostMapping("updateGameInfo")
-    public ReturnDto updateGameInfo(@RequestBody MbGame mbGame) {
+    public ResultVo updateGameInfo(@RequestBody MbGame mbGame) {
         boolean update = gameImpl.update(mbGame);
         return Result.successFlag(update);
     }
 
     @ApiOperation("新增游戏")
     @PostMapping("addGame")
-    public ReturnDto addNewGame(@RequestBody MbGame mbGame) {
+    public ResultVo addNewGame(@RequestBody MbGame mbGame) {
         boolean insert = gameImpl.insert(mbGame);
         if (insert) {
             searchFeignClient.refreshData();
@@ -170,7 +170,7 @@ public class AdminController {
 
     @ApiOperation("删除游戏")
     @GetMapping("delGame")
-    public ReturnDto deleteGame(@RequestParam Long id) {
+    public ResultVo deleteGame(@RequestParam Long id) {
         boolean delete = gameImpl.delete(id);
         if (delete) {
             searchFeignClient.refreshData();
@@ -181,14 +181,14 @@ public class AdminController {
 
     @ApiOperation("帖子列表")
     @PostMapping("postList")
-    public ReturnDto postList(@RequestBody(required = false) MbPost mbPost) {
+    public ResultVo postList(@RequestBody(required = false) MbPost mbPost) {
         List<MbPost> posts = postImpl.selectAll(mbPost);
         return Result.success(posts);
     }
 
     @ApiOperation("修改帖子")
     @PostMapping("modifyPost")
-    public ReturnDto modifyPost(@RequestBody MbPost mbPost) {
+    public ResultVo modifyPost(@RequestBody MbPost mbPost) {
         boolean update = postImpl.update(mbPost);
         if (update) {
             searchFeignClient.refreshData();
@@ -199,7 +199,7 @@ public class AdminController {
 
     @ApiOperation("删除帖子")
     @GetMapping("delPost")
-    public ReturnDto delPost(@RequestParam Long id) {
+    public ResultVo delPost(@RequestParam Long id) {
         boolean delete = postImpl.delete(id);
         if (delete) {
             searchFeignClient.refreshData();
@@ -210,14 +210,14 @@ public class AdminController {
 
     @ApiOperation("获取版块信息")
     @PostMapping("getBlock")
-    public ReturnDto getBlock(@RequestBody(required = false) MbBlock mbBlock) {
+    public ResultVo getBlock(@RequestBody(required = false) MbBlock mbBlock) {
         List<MbBlock> blocks = blockImpl.selectAll(mbBlock);
         return Result.success(blocks);
     }
 
     @ApiOperation("增加版块")
     @PostMapping("addBlock")
-    public ReturnDto addBlock(@RequestBody @Validated MbBlock mbBlock) {
+    public ResultVo addBlock(@RequestBody @Validated MbBlock mbBlock) {
         MbGame mbGame = gameImpl.selectOne(mbBlock.getGid());
         if (mbGame == null)
             return Result.fail("没有找到对应的游戏");
@@ -227,14 +227,14 @@ public class AdminController {
 
     @ApiOperation("更新版块信息")
     @PostMapping("updateBlock")
-    public ReturnDto updateBlock(@RequestBody MbBlock mbBlock) {
+    public ResultVo updateBlock(@RequestBody MbBlock mbBlock) {
         boolean update = blockImpl.update(mbBlock);
         return Result.successFlag(update);
     }
 
     @ApiOperation("删除版块")
     @GetMapping("delBlock")
-    public ReturnDto delBlock(@RequestParam Long id) {
+    public ResultVo delBlock(@RequestParam Long id) {
         MbBlock mbBlock = blockImpl.selectOne(id);
         if (mbBlock == null)
             return Result.fail("没有找到该版块");

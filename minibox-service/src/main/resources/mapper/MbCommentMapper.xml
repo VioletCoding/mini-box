@@ -18,15 +18,15 @@
     <!--查询单个-->
     <select id="queryById" resultMap="MbCommentMap">
         select id,
-               state,
-               content,
-               type,
-               tid,
-               uid,
-               gid,
-               score,
-               create_date,
-               update_date
+        state,
+        content,
+        type,
+        tid,
+        uid,
+        gid,
+        score,
+        create_date,
+        update_date
         from minibox.mb_comment
         where id = #{id}
     </select>
@@ -35,15 +35,15 @@
     <!--查询指定行数据-->
     <select id="queryAllByLimit" resultMap="MbCommentMap">
         select id,
-               state,
-               content,
-               type,
-               tid,
-               uid,
-               gid,
-               score,
-               create_date,
-               update_date
+        state,
+        content,
+        type,
+        tid,
+        uid,
+        gid,
+        score,
+        create_date,
+        update_date
         from minibox.mb_comment
         limit #{offset}, #{limit}
     </select>

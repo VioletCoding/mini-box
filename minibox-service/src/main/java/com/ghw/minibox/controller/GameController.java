@@ -1,7 +1,7 @@
 package com.ghw.minibox.controller;
 
-import com.ghw.minibox.component.Result;
-import com.ghw.minibox.dto.ReturnDto;
+import com.ghw.minibox.utils.Result;
+import com.ghw.minibox.vo.ResultVo;
 import com.ghw.minibox.service.impl.GameImpl;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -26,13 +26,13 @@ public class GameController {
 
     @ApiOperation("游戏列表")
     @GetMapping("all")
-    public ReturnDto showAllGame() {
+    public ResultVo showAllGame() {
         return Result.success(game.selectAll(null));
     }
 
     @ApiOperation("游戏详情 -> 传入游戏id")
     @GetMapping("detail")
-    public ReturnDto showGameDetail(@RequestParam Long id) {
+    public ResultVo showGameDetail(@RequestParam Long id) {
         return Result.success(game.selectOne(id));
     }
 

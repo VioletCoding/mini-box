@@ -12,9 +12,9 @@ public enum ResultCode {
 
     OK(200, "成功"),
 
-    BAD_REQUEST(400, "请求失败，错误的请求"),
+    BAD_REQUEST(400, "失败"),
 
-    UNAUTHORIZED(401, "用户未登录"),
+    UNAUTHORIZED(401, "未授权"),
 
     AUTH_CODE_ERROR(402, "验证码错误"),
 
@@ -32,9 +32,9 @@ public enum ResultCode {
 
     ORDER_CANCEL(1004, "订单已被取消"),
 
-    ORDER_PAYED(1005,"您已拥有此游戏"),
+    ORDER_PAYED(1005, "您已拥有此游戏"),
 
-    GAME_CANT_BE_BUY(1006,"游戏暂时不可购买");
+    GAME_CANT_BE_BUY(1006, "游戏暂时不可购买");
 
 
     private final int code;

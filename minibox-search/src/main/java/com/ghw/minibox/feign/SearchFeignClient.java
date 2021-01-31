@@ -1,6 +1,6 @@
 package com.ghw.minibox.feign;
 
-import com.ghw.minibox.dto.ReturnDto;
+import com.ghw.minibox.vo.ResultVo;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
 
@@ -18,7 +18,7 @@ public interface SearchFeignClient {
      * @return 帖子列表
      */
     @GetMapping("/post/all")
-    ReturnDto getDataFromService();
+    ResultVo getDataFromService();
 
     /**
      * 获取全部游戏列表
@@ -26,7 +26,7 @@ public interface SearchFeignClient {
      * @return 游戏列表
      */
     @GetMapping("/game/all")
-    ReturnDto getDataFromServiceGame();
+    ResultVo getDataFromServiceGame();
 
 
 }

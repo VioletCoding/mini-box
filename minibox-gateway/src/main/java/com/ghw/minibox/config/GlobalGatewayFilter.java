@@ -1,10 +1,10 @@
 package com.ghw.minibox.config;
 
-import com.ghw.minibox.component.Result;
+import com.ghw.minibox.utils.Result;
 import com.ghw.minibox.component.NimbusJoseJwt;
 import com.ghw.minibox.component.RedisUtil;
 import com.ghw.minibox.dto.PayloadDto;
-import com.ghw.minibox.dto.ReturnDto;
+import com.ghw.minibox.vo.ResultVo;
 import com.ghw.minibox.utils.ResultCode;
 import com.qiniu.util.Json;
 import com.qiniu.util.StringUtils;
@@ -122,7 +122,7 @@ public class GlobalGatewayFilter implements GlobalFilter, Ordered {
      * @param r                  自定义返回
      * @return Mono
      */
-    private Mono<Void> getVoidMono(ServerHttpResponse serverHttpResponse, ReturnDto r) {
+    private Mono<Void> getVoidMono(ServerHttpResponse serverHttpResponse, ResultVo r) {
         serverHttpResponse.getHeaders().add("Content-Type", "application/json;charset=UTF-8");
         DataBuffer dataBuffer = serverHttpResponse.bufferFactory().wrap(Json.encode(r).getBytes(StandardCharsets.UTF_8));
         return serverHttpResponse.writeWith(Flux.just(dataBuffer));

@@ -13,10 +13,10 @@
     <!--查询单个-->
     <select id="queryById" resultMap="MbRoleMap">
         select id,
-               name,
-               state,
-               create_date,
-               update_date
+        name,
+        state,
+        create_date,
+        update_date
         from minibox.mb_role
         where id = #{id}
     </select>
@@ -24,10 +24,10 @@
     <!--查询指定行数据-->
     <select id="queryAllByLimit" resultMap="MbRoleMap">
         select id,
-               name,
-               state,
-               create_date,
-               update_date
+        name,
+        state,
+        create_date,
+        update_date
         from minibox.mb_role
         limit #{offset}, #{limit}
     </select>

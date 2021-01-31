@@ -1,7 +1,7 @@
 package com.ghw.minibox.controller;
 
-import com.ghw.minibox.component.Result;
-import com.ghw.minibox.dto.ReturnDto;
+import com.ghw.minibox.utils.Result;
+import com.ghw.minibox.vo.ResultVo;
 import com.ghw.minibox.es.ESMbGame;
 import com.ghw.minibox.es.ESMbPost;
 import com.ghw.minibox.service.impl.GameSearchImpl;
@@ -41,9 +41,9 @@ public class SearchController {
      * @return 搜索结果
      */
     @GetMapping("simple")
-    public ReturnDto search(@RequestParam(required = false) String title,
-                                    @RequestParam(required = false, defaultValue = "0") Integer pageNum,
-                                    @RequestParam(required = false, defaultValue = "5") Integer pageSize) {
+    public ResultVo search(@RequestParam(required = false) String title,
+                           @RequestParam(required = false, defaultValue = "0") Integer pageNum,
+                           @RequestParam(required = false, defaultValue = "5") Integer pageSize) {
         Page<ESMbPost> postPage = postSearch.search(title, pageNum, pageSize);
         Page<ESMbGame> gamePage = gameSearch.search(title, pageNum, pageSize);
         Map<String, Object> allData = new HashMap<>();
@@ -58,7 +58,7 @@ public class SearchController {
      * @return 是否成功
      */
     @GetMapping("refresh")
-    public ReturnDto refreshData() {
+    public ResultVo refreshData() {
         refreshDataUtil.refresh();
         return Result.success();
     }

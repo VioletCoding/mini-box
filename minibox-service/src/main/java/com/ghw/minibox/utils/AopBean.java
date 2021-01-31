@@ -12,7 +12,7 @@ import lombok.experimental.Accessors;
 @Data
 @Accessors(chain = true)
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class AOPBean {
+public class AopBean {
     private String operation;
     private Long time;
     private String method;

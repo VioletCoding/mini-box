@@ -18,15 +18,15 @@
     <!--查询单个-->
     <select id="queryById" resultMap="MbPostMap">
         select id,
-               uid,
-               bid,
-               title,
-               content,
-               post_state,
-               create_date,
-               update_date,
-               state,
-               cover_img
+        uid,
+        bid,
+        title,
+        content,
+        post_state,
+        create_date,
+        update_date,
+        state,
+        cover_img
         from minibox.mb_post
         where id = #{id}
     </select>
@@ -52,15 +52,15 @@
     <!--查询指定行数据-->
     <select id="queryAllByLimit" resultMap="MbPostMap">
         select id,
-               uid,
-               bid,
-               title,
-               content,
-               post_state,
-               create_date,
-               update_date,
-               state,
-               cover_img
+        uid,
+        bid,
+        title,
+        content,
+        post_state,
+        create_date,
+        update_date,
+        state,
+        cover_img
         from minibox.mb_post
         limit #{offset}, #{limit}
     </select>

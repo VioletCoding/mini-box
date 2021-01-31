@@ -6,9 +6,9 @@ package com.ghw.minibox.exception;
  * @date 2021/1/11
  */
 
-public class MyException extends RuntimeException {
+public class MiniBoxException extends RuntimeException {
 
-    public MyException(String message) {
+    public MiniBoxException(String message) {
         super(message);
     }
 }

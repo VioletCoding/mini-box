@@ -7,12 +7,11 @@
         <result property="nickname" column="nickname" jdbcType="VARCHAR"/>
         <result property="username" column="username" jdbcType="VARCHAR"/>
         <result property="description" column="description" jdbcType="VARCHAR"/>
-        <result property="level" column="level" jdbcType="INTEGER"/>
         <result property="userState" column="user_state" jdbcType="VARCHAR"/>
         <result property="createDate" column="create_date" jdbcType="TIMESTAMP"/>
         <result property="updateDate" column="update_date" jdbcType="TIMESTAMP"/>
         <result property="state" column="state" jdbcType="OTHER"/>
-        <result property="userImg" column="user_img" jdbcType="VARCHAR"/>
+        <result property="photoLink" column="user_img" jdbcType="VARCHAR"/>
         <collection property="roleList" ofType="com.ghw.minibox.entity.MbRole">
             <result property="id" column="role_id"/>
             <result property="name" column="role_name"/>
@@ -25,15 +24,15 @@
     <!--查询单个-->
     <select id="queryById" resultMap="MbUserMap">
         SELECT id,
-               nickname,
-               username,
-               description,
-               level,
-               user_state,
-               create_date,
-               update_date,
-               state,
-               user_img
+        nickname,
+        username,
+        description,
+        level,
+        user_state,
+        create_date,
+        update_date,
+        state,
+        user_img
         FROM minibox.mb_user
         WHERE id = #{id}
     </select>
@@ -61,15 +60,15 @@
     <!--查询指定行数据-->
     <select id="queryAllByLimit" resultMap="MbUserMap">
         SELECT id,
-               nickname,
-               username,
-               description,
-               level,
-               user_state,
-               create_date,
-               update_date,
-               state,
-               user_img
+        nickname,
+        username,
+        description,
+        level,
+        user_state,
+        create_date,
+        update_date,
+        state,
+        user_img
         FROM mb_user
         LIMIT #{offset}, #{limit}
     </select>

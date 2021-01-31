@@ -8,8 +8,8 @@ import com.ghw.minibox.entity.MbOrder;
 import com.ghw.minibox.mapper.MbGameMapper;
 import com.ghw.minibox.mapper.MbOrderMapper;
 import com.ghw.minibox.service.CommonService;
-import com.ghw.minibox.utils.AOPLog;
-import com.ghw.minibox.utils.GenerateBean;
+import com.ghw.minibox.utils.AopLog;
+import com.ghw.minibox.component.GenerateBean;
 import com.ghw.minibox.utils.OrderUtil;
 import com.ghw.minibox.utils.ResultCode;
 import com.qiniu.util.StringUtils;
@@ -60,7 +60,7 @@ public class OrderImpl implements CommonService<MbOrder> {
      * @param userId      用户id
      * @param successFlag 订单是否成功
      */
-    @AOPLog("检查是否购买过此游戏")
+    @AopLog("检查是否购买过此游戏")
     public boolean buyFlag(Long userId, Long gameId, Integer successFlag) {
         MbOrder mbOrder = new MbOrder();
         mbOrder.setUid(userId).setOrderGameId(gameId).setSuccess(successFlag);
@@ -75,7 +75,7 @@ public class OrderImpl implements CommonService<MbOrder> {
      * @param mbOrder 实例
      * @return 是否成功
      */
-    @AOPLog("生成订单")
+    @AopLog("生成订单")
     public Object create(MbOrder mbOrder) throws JsonProcessingException {
         //检测下是否已经购买过了
         if (this.buyFlag(mbOrder.getUid(), mbOrder.getOrderGameId(), orderUtil.SUCCESS))
@@ -111,10 +111,10 @@ public class OrderImpl implements CommonService<MbOrder> {
      * @param mbOrder 实例
      * @return 是否成功
      */
-    @AOPLog("提交订单")
+    @AopLog("提交订单")
     @Transactional(rollbackFor = Throwable.class)
     @Override
-    public boolean insert(MbOrder mbOrder){
+    public boolean insert(MbOrder mbOrder) {
 
         //Redis key格式： order:用户id:游戏id:orderId
         String key = RedisUtil.ORDER_PREFIX + mbOrder.getUid() + ":" + mbOrder.getOrderGameId();

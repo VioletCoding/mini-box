@@ -1,4 +1,4 @@
-package com.ghw.minibox.dto;
+package com.ghw.minibox.vo;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import io.swagger.annotations.ApiModelProperty;
@@ -16,7 +16,7 @@ import lombok.experimental.Accessors;
 @NoArgsConstructor
 @AllArgsConstructor
 @Accessors(chain = true)
-public class ReturnDto {
+public class ResultVo {
 
     @ApiModelProperty("响应码")
     private int code;
@@ -28,7 +28,7 @@ public class ReturnDto {
     @JsonInclude(JsonInclude.Include.NON_NULL)
     private Object data;
 
-    public ReturnDto(int code, String message) {
+    public ResultVo(int code, String message) {
         this.code = code;
         this.message = message;
     }

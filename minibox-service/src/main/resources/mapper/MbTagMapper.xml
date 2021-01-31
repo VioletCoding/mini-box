@@ -14,11 +14,11 @@
     <!--查询单个-->
     <select id="queryById" resultMap="MbTagMap">
         select id,
-               tag_name,
-               gid,
-               state,
-               create_date,
-               update_date
+        tag_name,
+        gid,
+        state,
+        create_date,
+        update_date
         from minibox.mb_tag
         where id = #{id}
     </select>
@@ -26,11 +26,11 @@
     <!--查询指定行数据-->
     <select id="queryAllByLimit" resultMap="MbTagMap">
         select id,
-               tag_name,
-               gid,
-               state,
-               create_date,
-               update_date
+        tag_name,
+        gid,
+        state,
+        create_date,
+        update_date
         from minibox.mb_tag
         limit #{offset}, #{limit}
     </select>

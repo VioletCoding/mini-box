@@ -26,7 +26,7 @@ public class LogAspect {
     /**
      * AOP切入点的集合
      */
-    @Pointcut("@annotation(com.ghw.minibox.utils.AOPLog)")
+    @Pointcut("@annotation(com.ghw.minibox.utils.AopLog)")
     public void pointcut() {
     }
 
@@ -78,12 +78,13 @@ public class LogAspect {
 
         log.info("开始执行{}方法", methodName);
         //自定义Bean，保存操作信息
-        AOPBean aopBean = new AOPBean();
+        AopBean aopBean = new AopBean();
         //获取注解，AOPLog为自定义注解
-        AOPLog annotation = method.getAnnotation(AOPLog.class);
+        AopLog annotation = method.getAnnotation(AopLog.class);
         //获取默认值
-        if (annotation != null)
+        if (annotation != null) {
             aopBean.setOperation(annotation.value());
+        }
         //获取类名
         String className = joinPoint.getTarget().getClass().getName();
         //将方法的全类名保存
@@ -97,7 +98,7 @@ public class LogAspect {
         if (args != null && paramNames != null) {
             StringBuilder params = new StringBuilder();
             for (int i = 0; i < args.length; i++) {
-                params.append("  ").append(paramNames[i]).append(": ").append(args[i]);
+                params.append("  ").append(paramNames[i]).append(" : ").append(args[i]);
             }
             aopBean.setParam(params.toString());
         }

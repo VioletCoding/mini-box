@@ -18,15 +18,15 @@
     <!--查询单个-->
     <select id="queryById" resultMap="MbReplyMap">
         select id,
-               type,
-               reply_who,
-               reply_content,
-               reply_date,
-               reply_uid,
-               reply_in_post,
-               reply_in_comment,
-               reply_in_game,
-               status
+        type,
+        reply_who,
+        reply_content,
+        reply_date,
+        reply_uid,
+        reply_in_post,
+        reply_in_comment,
+        reply_in_game,
+        status
         from minibox.mb_reply
         where id = #{id}
     </select>
@@ -44,15 +44,15 @@
     <!--查询指定行数据-->
     <select id="queryAllByLimit" resultMap="MbReplyMap">
         select id,
-               type,
-               reply_who,
-               reply_content,
-               reply_date,
-               reply_uid,
-               reply_in_post,
-               reply_in_comment,
-               reply_in_game,
-               status
+        type,
+        reply_who,
+        reply_content,
+        reply_date,
+        reply_uid,
+        reply_in_post,
+        reply_in_comment,
+        reply_in_game,
+        status
         from minibox.mb_reply
         limit #{offset}, #{limit}
     </select>
@@ -100,7 +100,7 @@
     <!--新增所有列-->
     <insert id="insert" keyProperty="id" useGeneratedKeys="true">
         insert into minibox.mb_reply(type, reply_who, reply_content, reply_uid, reply_in_post,
-                                     reply_in_comment, reply_in_game)
+        reply_in_comment, reply_in_game)
         values (#{type}, #{replyWho}, #{replyContent}, #{replyUid}, #{replyInPost}, #{replyInComment}, #{replyInGame})
     </insert>
 

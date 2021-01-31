@@ -14,11 +14,11 @@
     <!--查询单个-->
     <select id="queryById" resultMap="MbBlockMap">
         select id,
-               name,
-               gid,
-               state,
-               create_time,
-               update_time
+        name,
+        gid,
+        state,
+        create_time,
+        update_time
         from minibox.mb_block
         where id = #{id}
     </select>
@@ -40,11 +40,11 @@
     <!--查询指定行数据-->
     <select id="queryAllByLimit" resultMap="MbBlockMap">
         select id,
-               name,
-               gid,
-               state,
-               create_time,
-               update_time
+        name,
+        gid,
+        state,
+        create_time,
+        update_time
         from minibox.mb_block
         limit #{offset}, #{limit}
     </select>

@@ -17,14 +17,14 @@
     <!--查询单个-->
     <select id="queryById" resultMap="MbOrderMap">
         select id,
-               order_id,
-               order_game_id,
-               create_date,
-               update_date,
-               status,
-               is_success,
-               order_cost,
-               uid
+        order_id,
+        order_game_id,
+        create_date,
+        update_date,
+        status,
+        is_success,
+        order_cost,
+        uid
         from minibox.mb_order
         where id = #{id}
     </select>
@@ -32,14 +32,14 @@
     <!--查询指定行数据-->
     <select id="queryAllByLimit" resultMap="MbOrderMap">
         select id,
-               order_id,
-               order_game_id,
-               create_date,
-               update_date,
-               status,
-               is_success,
-               order_cost,
-               uid
+        order_id,
+        order_game_id,
+        create_date,
+        update_date,
+        status,
+        is_success,
+        order_cost,
+        uid
         from minibox.mb_order
         limit #{offset}, #{limit}
     </select>
