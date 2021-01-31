@@ -1,43 +1,45 @@
-package com.ghw.minibox.entity;
+package com.ghw.minibox.model;
 
+import com.baomidou.mybatisplus.annotation.TableName;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.experimental.Accessors;
 
-import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 import java.util.Date;
-import java.util.List;
 
 /**
- * (MbBlock)实体类
- *
  * @author Violet
- * @since 2020-11-19 12:20:08
+ * @description 版块实体
+ * @date 2021/2/1
  */
-@Deprecated
 @Data
 @Accessors(chain = true)
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class MbBlock implements Serializable {
+@TableName("mb_block")
+public class BlockModel implements Serializable {
     private static final long serialVersionUID = 820635847901764243L;
 
     @ApiModelProperty(notes = "主键")
     private Long id;
 
     @ApiModelProperty(notes = "版块（社区）名称")
-    @NotEmpty(message = "版块名称不能为空")
+    @NotBlank(message = "版块名称不能为空")
     private String name;
+
+    @NotBlank(message = "版块图片不能为空")
+    private String photoLink;
 
     @ApiModelProperty(notes = "关联的游戏id")
     @NotNull(message = "版块关联的游戏不能为空")
-    private Long gid;
+    private Long gameId;
 
     @ApiModelProperty(notes = "记录状态，0有效，1无效")
-    private Integer state;
+    private String state;
 
     @ApiModelProperty(notes = "创建时间")
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
@@ -46,10 +48,4 @@ public class MbBlock implements Serializable {
     @ApiModelProperty(notes = "更新时间")
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     private Date updateTime;
-
-    @ApiModelProperty(notes = "一个版块对应一个游戏，否则就是杂谈")
-    private MbGame mbGame;
-
-    @ApiModelProperty(notes = "一个版块下多篇帖子")
-    private List<MbPost> postList;
 }

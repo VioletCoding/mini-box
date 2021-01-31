@@ -24,7 +24,7 @@ import java.util.Map;
  * @date 2021/1/28
  */
 @RestController
-@RequestMapping("public")
+@RequestMapping("publicApi")
 public class PublicController {
     @Resource
     private QiNiuUtil qiNiuUtil;

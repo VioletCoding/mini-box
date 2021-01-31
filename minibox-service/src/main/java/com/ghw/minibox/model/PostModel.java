@@ -32,11 +32,9 @@ public class PostModel implements Serializable {
     private Long authorId;
 
     @ApiModelProperty("作者昵称")
-    @NotBlank(message = "作者昵称不能为空")
     private String authorNickname;
 
     @ApiModelProperty("作者头像链接")
-    @NotBlank(message = "作者头像不能为空")
     private String authorPhotoLink;
 
     @ApiModelProperty("版块ID")
@@ -44,7 +42,6 @@ public class PostModel implements Serializable {
     private Long blockId;
 
     @ApiModelProperty("版块名称")
-    @NotBlank(message = "版块名称不能为空")
     private String blockName;
 
     @ApiModelProperty(notes = "帖子标题")

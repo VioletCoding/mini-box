@@ -1,8 +1,12 @@
 package com.ghw.minibox.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.ghw.minibox.component.NimbusJoseJwt;
+import com.ghw.minibox.dto.PayloadDto;
 import com.ghw.minibox.mapper.MbpPostMapper;
+import com.ghw.minibox.mapper.MbpUserMapper;
 import com.ghw.minibox.model.PostModel;
+import com.ghw.minibox.model.UserModel;
 import com.ghw.minibox.service.BaseService;
 import com.ghw.minibox.utils.DefaultColumn;
 import org.springframework.stereotype.Service;
@@ -20,11 +24,31 @@ import java.util.List;
 public class MbpPostServiceImpl implements BaseService<PostModel> {
     @Resource
     private MbpPostMapper mbpPostMapper;
+    @Resource
+    private MbpUserMapper mbpUserMapper;
+    @Resource
+    private NimbusJoseJwt nimbusJoseJwt;
+
+    public boolean beforeSave(PostModel postModel,String token) throws Exception {
+        PayloadDto payloadDto = nimbusJoseJwt.verifyTokenByHMAC(token);
+        if (payloadDto == null){
+            return false;
+        }
+        QueryWrapper<UserModel> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("username",payloadDto.getUsername());
+        UserModel userModel = mbpUserMapper.selectOne(queryWrapper);
+        if (userModel == null){
+            return false;
+        }
+        postModel.setAuthorNickname(userModel.getNickname());
+        postModel.setAuthorPhotoLink(userModel.getPhotoLink());
+        postModel.setState(DefaultColumn.STATE.getMessage());
+        return save(postModel);
+    }
 
     @Override
     @Transactional(rollbackFor = Throwable.class)
     public boolean save(PostModel model) {
-        model.setState(DefaultColumn.STATE.getMessage());
         return mbpPostMapper.insert(model) > 0;
     }
 

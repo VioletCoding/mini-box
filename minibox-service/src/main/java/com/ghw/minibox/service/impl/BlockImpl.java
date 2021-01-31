@@ -17,6 +17,7 @@ import java.util.List;
  * @description
  * @date 2021/1/4
  */
+@Deprecated
 @Service
 public class BlockImpl implements CommonService<MbBlock> {
     @Resource

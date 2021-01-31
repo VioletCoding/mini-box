@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 
 /**
@@ -30,9 +31,9 @@ public class MbpPostController {
     }
 
     @PostMapping("add")
-    public ResultVo postAdd(@RequestBody PostModel postModel){
-        boolean save = postService.save(postModel);
-        return Result.successFlag(save);
+    public ResultVo postAdd(@RequestBody PostModel postModel, HttpServletRequest request) throws Exception {
+        boolean beforeSave = postService.beforeSave(postModel, request.getHeader("accessToken"));
+        return Result.successFlag(beforeSave);
     }
 
 }
