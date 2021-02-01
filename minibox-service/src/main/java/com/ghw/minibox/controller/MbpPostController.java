@@ -5,10 +5,7 @@ import com.ghw.minibox.service.impl.MbpPostServiceImpl;
 import com.ghw.minibox.utils.Result;
 import com.ghw.minibox.vo.ResultVo;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
@@ -29,6 +26,12 @@ public class MbpPostController {
     public ResultVo postList(@RequestBody(required = false) PostModel postModel){
         List<PostModel> postModelList = postService.findByModel(postModel);
         return Result.success(postModelList);
+    }
+
+    @GetMapping("detail")
+    public ResultVo detail(@RequestParam Long id){
+        PostModel postModel = postService.findOneById(id);
+        return Result.success(postModel);
     }
 
     @PostMapping("add")

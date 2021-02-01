@@ -66,7 +66,9 @@ public class MbpPostServiceImpl implements BaseService<PostModel> {
 
     @Override
     public PostModel findOneById(Long id) {
-        return null;
+        QueryWrapper<PostModel> wrapper = new QueryWrapper<>();
+        wrapper.eq("id", id);
+        return mbpPostMapper.selectOne(wrapper);
     }
 
     @Override
