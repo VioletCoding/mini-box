@@ -4,6 +4,7 @@ import com.ghw.minibox.model.PostModel;
 import com.ghw.minibox.service.impl.MbpPostServiceImpl;
 import com.ghw.minibox.utils.Result;
 import com.ghw.minibox.vo.ResultVo;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -31,7 +32,7 @@ public class MbpPostController {
     }
 
     @PostMapping("add")
-    public ResultVo postAdd(@RequestBody PostModel postModel, HttpServletRequest request) throws Exception {
+    public ResultVo postAdd(@RequestBody @Validated PostModel postModel, HttpServletRequest request) throws Exception {
         boolean beforeSave = postService.beforeSave(postModel, request.getHeader("accessToken"));
         return Result.successFlag(beforeSave);
     }

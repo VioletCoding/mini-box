@@ -1,6 +1,7 @@
 package com.ghw.minibox.mapper;
 
 import com.ghw.minibox.entity.MbPost;
+import lombok.Data;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
@@ -11,6 +12,7 @@ import java.util.List;
  * @author Violet
  * @since 2021-01-04 19:36:27
  */
+@Deprecated
 public interface MbPostMapper {
 
     /**

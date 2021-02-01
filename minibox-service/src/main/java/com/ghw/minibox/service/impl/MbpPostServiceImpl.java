@@ -29,15 +29,15 @@ public class MbpPostServiceImpl implements BaseService<PostModel> {
     @Resource
     private NimbusJoseJwt nimbusJoseJwt;
 
-    public boolean beforeSave(PostModel postModel,String token) throws Exception {
+    public boolean beforeSave(PostModel postModel, String token) throws Exception {
         PayloadDto payloadDto = nimbusJoseJwt.verifyTokenByHMAC(token);
-        if (payloadDto == null){
+        if (payloadDto == null) {
             return false;
         }
         QueryWrapper<UserModel> queryWrapper = new QueryWrapper<>();
-        queryWrapper.eq("username",payloadDto.getUsername());
+        queryWrapper.eq("username", payloadDto.getUsername());
         UserModel userModel = mbpUserMapper.selectOne(queryWrapper);
-        if (userModel == null){
+        if (userModel == null) {
             return false;
         }
         postModel.setAuthorNickname(userModel.getNickname());
@@ -76,13 +76,8 @@ public class MbpPostServiceImpl implements BaseService<PostModel> {
 
     @Override
     public List<PostModel> findByModel(PostModel model) {
-        List<PostModel> postModels;
-        if (model != null) {
-            QueryWrapper<PostModel> queryWrapper = new QueryWrapper<>(model);
-            postModels = mbpPostMapper.selectList(queryWrapper);
-        } else {
-            postModels = mbpPostMapper.selectList(null);
-        }
-        return postModels;
+        QueryWrapper<PostModel> queryWrapper = new QueryWrapper<>(model);
+        queryWrapper.orderByDesc("create_date");
+        return mbpPostMapper.selectList(queryWrapper);
     }
 }

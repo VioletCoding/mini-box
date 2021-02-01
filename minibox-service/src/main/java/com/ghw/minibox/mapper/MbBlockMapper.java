@@ -12,6 +12,7 @@ import java.util.List;
  * @author Violet
  * @since 2021-01-04 20:02:28
  */
+@Deprecated
 public interface MbBlockMapper extends BaseMapper<MbBlock> {
     /**
      * 通过ID查询单条数据

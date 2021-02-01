@@ -11,6 +11,7 @@ import java.util.List;
  * @author Violet
  * @since 2021-01-04 22:08:17
  */
+@Deprecated
 public interface MbUserMapper {
 
     /**
