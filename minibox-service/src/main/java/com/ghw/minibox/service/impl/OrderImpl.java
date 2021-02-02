@@ -27,6 +27,7 @@ import java.util.List;
  */
 @Service
 @Slf4j
+@Deprecated
 public class OrderImpl implements CommonService<MbOrder> {
 
 
@@ -78,7 +79,7 @@ public class OrderImpl implements CommonService<MbOrder> {
     @AopLog("生成订单")
     public Object create(MbOrder mbOrder) throws JsonProcessingException {
         //检测下是否已经购买过了
-        if (this.buyFlag(mbOrder.getUid(), mbOrder.getOrderGameId(), orderUtil.SUCCESS))
+        if (this.buyFlag(mbOrder.getUid(), mbOrder.getOrderGameId(), Integer.parseInt(orderUtil.SUCCESS)))
             return ResultCode.ORDER_PAYED.getMessage();
 
         //是否创建了订单，超时时间5分钟，如果创建了就直接return订单信息
@@ -99,7 +100,7 @@ public class OrderImpl implements CommonService<MbOrder> {
         //Redis key格式： order:用户id:游戏id:orderId
         String key = RedisUtil.ORDER_PREFIX + mbOrder.getUid() + ":" + mbOrder.getOrderGameId();
         //但是此时订单未完成
-        mbOrder.setSuccess(orderUtil.NOT_SUCCESS);
+        mbOrder.setSuccess(Integer.parseInt(orderUtil.NOT_SUCCESS));
         String orderJson = om.writeValueAsString(mbOrder);
         redisUtil.set(key, orderJson, 300L);
         return mbOrder;
@@ -123,7 +124,7 @@ public class OrderImpl implements CommonService<MbOrder> {
         if (StringUtils.isNullOrEmpty(value))
             return false;
 
-        mbOrder.setSuccess(orderUtil.SUCCESS);
+        mbOrder.setSuccess(Integer.parseInt(orderUtil.SUCCESS));
         //插入订单信息
         int insert = orderMapper.insert(mbOrder);
         if (insert > 0) {

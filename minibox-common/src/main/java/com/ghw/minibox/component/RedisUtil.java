@@ -50,8 +50,8 @@ public class RedisUtil {
         stringRedisTemplate.expire(key, expire, TimeUnit.SECONDS);
     }
 
-    public void remove(String key) {
-        stringRedisTemplate.delete(key);
+    public boolean remove(String key) {
+        return stringRedisTemplate.delete(key);
     }
 
     public void remove(List<String> key) {

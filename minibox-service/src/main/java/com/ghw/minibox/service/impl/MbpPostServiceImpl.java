@@ -37,9 +37,6 @@ public class MbpPostServiceImpl implements BaseService<PostModel> {
 
     public boolean beforeSave(PostModel postModel, String token) throws Exception {
         PayloadDto payloadDto = nimbusJoseJwt.verifyTokenByHMAC(token);
-        if (payloadDto == null) {
-            return false;
-        }
         QueryWrapper<UserModel> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq("username", payloadDto.getUsername());
         UserModel userModel = mbpUserMapper.selectOne(queryWrapper);
@@ -91,7 +88,7 @@ public class MbpPostServiceImpl implements BaseService<PostModel> {
         //评论信息
         CommentModel commentModel = new CommentModel().setPostId(postModel.getId());
         List<CommentModel> commentAndReplyByPostId = mbpCommentMapper.findCommentAndReplyByModel(commentModel);
-        map.put("commentInfo",commentAndReplyByPostId);
+        map.put("commentInfo", commentAndReplyByPostId);
         return map;
     }
 

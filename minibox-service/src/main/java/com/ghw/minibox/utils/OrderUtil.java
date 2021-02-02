@@ -14,8 +14,8 @@ import java.util.Random;
 @Slf4j
 public class OrderUtil {
 
-    public final Integer SUCCESS = 0;
-    public final Integer NOT_SUCCESS = 1;
+    public final String SUCCESS = "1";
+    public final String NOT_SUCCESS = "0";
 
     /**
      * 获取8位订单号

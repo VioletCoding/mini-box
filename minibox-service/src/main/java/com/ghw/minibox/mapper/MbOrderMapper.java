@@ -11,6 +11,7 @@ import java.util.List;
  * @author Violet
  * @since 2021-01-09 20:23:22
  */
+@Deprecated
 public interface MbOrderMapper {
 
     /**

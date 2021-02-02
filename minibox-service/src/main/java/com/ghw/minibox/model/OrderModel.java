@@ -1,5 +1,6 @@
-package com.ghw.minibox.entity;
+package com.ghw.minibox.model;
 
+import com.baomidou.mybatisplus.annotation.TableName;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import io.swagger.annotations.ApiModelProperty;
@@ -7,42 +8,40 @@ import lombok.Data;
 import lombok.experimental.Accessors;
 
 import javax.validation.constraints.NotNull;
-import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.Date;
 
 /**
- * (MbOrder)实体类
- *
  * @author Violet
- * @since 2020-12-31 15:43:24
+ * @description 订单实体
+ * @date 2021/2/2
  */
 @Data
 @Accessors(chain = true)
 @JsonInclude(JsonInclude.Include.NON_NULL)
-@Deprecated
-public class MbOrder implements Serializable {
+@TableName("mb_order")
+public class OrderModel {
     private static final long serialVersionUID = 623067205908153350L;
 
-    @ApiModelProperty(notes = "主键")
+    @ApiModelProperty("主键")
     private Long id;
 
-    @ApiModelProperty(notes = "用户id")
+    @ApiModelProperty("用户id")
     @NotNull(message = "用户id不能为空")
-    private Long uid;
+    private Long userId;
 
-    @ApiModelProperty(notes = "订单号")
+    @ApiModelProperty("订单号")
     private Long orderId;
 
-    @ApiModelProperty(notes = "游戏id")
+    @ApiModelProperty("游戏id")
     @NotNull(message = "游戏id不能为空")
-    private Long orderGameId;
+    private Long gameId;
 
-    @ApiModelProperty(notes = "交易金额")
+    @ApiModelProperty("交易金额")
     @NotNull(message = "交易金额不能为空")
     private BigDecimal orderCost;
 
-    @ApiModelProperty(notes = "订单创建时间")
+    @ApiModelProperty("订单创建时间")
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     private Date createDate;
 
@@ -51,12 +50,8 @@ public class MbOrder implements Serializable {
     private Date updateDate;
 
     @ApiModelProperty(notes = "数据状态，0可用，1禁用")
-    private Integer status;
+    private String state;
 
-    @ApiModelProperty(notes = "订单是否交易成功")
-    private Integer success;
-
-    @ApiModelProperty(notes = "订单包含的商品，本项目是游戏")
-    private MbGame mbGame;
-
+    @ApiModelProperty("订单是否交易成功")
+    private String successFlag;
 }
