@@ -14,7 +14,7 @@ import java.util.Date;
 
 /**
  * @author Violet
- * @description
+ * @description 回复 实体
  * @date 2021/2/2
  */
 @Data

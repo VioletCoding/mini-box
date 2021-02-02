@@ -6,6 +6,7 @@
         <id property="id" column="id"/>
         <result property="content" column="content"/>
         <result property="createDate" column="create_date"/>
+        <result property="score" column="score"/>
         <association property="userModel" javaType="com.ghw.minibox.model.UserModel">
             <id property="id" column="comment_user_id"/>
             <result property="nickname" column="comment_user_nickname"/>
@@ -21,21 +22,30 @@
         </collection>
     </resultMap>
 
-    <select id="findCommentAndReplyByPostId" resultMap="commentAndReply">
+    <select id="findCommentAndReplyByModel" resultMap="commentAndReply">
         SELECT mc.id,
-               mc.content,
-               mc.create_date,
-               mu.id             comment_user_id,
-               mu.nickname       comment_user_nickname,
-               mu.photo_Link     comment_user_photo_link,
-               mr.id             reply_id,
-               mr.content        reply_content,
-               reply_mu.id       reply_user_id,
-               reply_mu.nickname reply_user_nickname
+        mc.content,
+        mc.create_date,
+        mc.score,
+        mu.id comment_user_id,
+        mu.nickname comment_user_nickname,
+        mu.photo_Link comment_user_photo_link,
+        mr.id reply_id,
+        mr.content reply_content,
+        reply_mu.id reply_user_id,
+        reply_mu.nickname reply_user_nickname
         FROM mb_comment mc
-                 LEFT JOIN mb_user mu ON mu.id = mc.user_id
-                 LEFT JOIN mb_reply mr ON mr.comment_id = mc.id
-                 LEFT JOIN mb_user reply_mu ON reply_mu.id = mr.user_id
-        WHERE mc.post_id = #{id};
+        LEFT JOIN mb_user mu ON mu.id = mc.user_id
+        LEFT JOIN mb_reply mr ON mr.comment_id = mc.id
+        LEFT JOIN mb_user reply_mu ON reply_mu.id = mr.user_id
+        <where>
+            <if test="postId != null">
+                AND mc.post_id = #{postId}
+            </if>
+            <if test="gameId != null">
+                AND mc.game_id = #{gameId}
+            </if>
+        </where>
     </select>
+
 </mapper>

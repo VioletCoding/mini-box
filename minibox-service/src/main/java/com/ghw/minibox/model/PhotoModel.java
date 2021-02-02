@@ -1,42 +1,40 @@
-package com.ghw.minibox.entity;
+package com.ghw.minibox.model;
 
+import com.baomidou.mybatisplus.annotation.TableName;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.experimental.Accessors;
 
-import javax.validation.constraints.NotEmpty;
-import javax.validation.constraints.NotNull;
+import javax.validation.constraints.NotBlank;
 import java.io.Serializable;
 import java.util.Date;
 
 /**
- * (MbPhoto)实体类
- *
  * @author Violet
- * @since 2020-11-19 12:20:13
+ * @description 游戏 一对多 图片 实体
+ * @date 2021/2/2
  */
 @Data
 @Accessors(chain = true)
 @JsonInclude(JsonInclude.Include.NON_NULL)
-@Deprecated
-public class MbPhoto implements Serializable {
+@TableName("mb_photo")
+public class PhotoModel implements Serializable {
     private static final long serialVersionUID = -65749688597497972L;
 
-    @ApiModelProperty(notes = "主键")
-    @NotNull(message = "图片id不能为空")
+    @ApiModelProperty("主键")
     private Long id;
 
-    @ApiModelProperty(notes = "图片链接")
-    @NotEmpty(message = "图片链接photoLink不能为空")
+    @ApiModelProperty("图片链接")
+    @NotBlank(message = "图片链接photoLink不能为空")
     private String photoLink;
 
-    @ApiModelProperty(notes = "游戏id")
-    private Long gid;
+    @ApiModelProperty("游戏id")
+    private Long gameId;
 
-    @ApiModelProperty(notes = "状态，记录该条状态是否有效,0有效，1无效")
-    private Integer state;
+    @ApiModelProperty("状态，记录该条状态是否有效,1有效，0无效")
+    private String state;
 
     @ApiModelProperty(notes = "创建时间")
     @JsonFormat(pattern = "yyyy-MM-dd", timezone = "GMT+8")
@@ -45,8 +43,4 @@ public class MbPhoto implements Serializable {
     @ApiModelProperty(notes = "更新时间")
     @JsonFormat(pattern = "yyyy-MM-dd", timezone = "GMT+8")
     private Date updateDate;
-
-    @ApiModelProperty(notes = "一张图片对应一个用户头像")
-    private MbUser mbUser;
-
 }

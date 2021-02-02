@@ -22,6 +22,7 @@ import java.util.List;
 @Data
 @Accessors(chain = true)
 @JsonInclude(JsonInclude.Include.NON_NULL)
+@Deprecated
 public class MbGame implements Serializable {
     private static final long serialVersionUID = -20810077618725182L;
 

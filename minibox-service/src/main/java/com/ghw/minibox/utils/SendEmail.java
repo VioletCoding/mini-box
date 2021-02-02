@@ -50,7 +50,7 @@ public class SendEmail {
         email.setHostName("smtp.qq.com");
         email.setCharset("utf-8");
         email.addTo(addTo);
-        email.setFrom("1054197367@qq.com", "MiniboxOfficial");
+        email.setFrom(AUTHENTICATION, FROM);
         email.setAuthentication("1054197367@qq.com", AUTH_CODE);
         email.setSubject(subject);
         email.setMsg(message);

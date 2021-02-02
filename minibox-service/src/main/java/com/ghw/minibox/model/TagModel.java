@@ -1,5 +1,6 @@
-package com.ghw.minibox.entity;
+package com.ghw.minibox.model;
 
+import com.baomidou.mybatisplus.annotation.TableName;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -9,16 +10,15 @@ import java.io.Serializable;
 import java.util.Date;
 
 /**
- * (MbTag)实体类
- *
  * @author Violet
- * @since 2020-11-19 12:20:19
+ * @description 标签 实体
+ * @date 2021/2/2
  */
 @Data
 @Accessors(chain = true)
 @JsonInclude(JsonInclude.Include.NON_NULL)
-@Deprecated
-public class MbTag implements Serializable {
+@TableName("mb_tag")
+public class TagModel implements Serializable {
     private static final long serialVersionUID = -76639098783076019L;
 
     @ApiModelProperty(notes = "主键")
@@ -28,16 +28,14 @@ public class MbTag implements Serializable {
     private String tagName;
 
     @ApiModelProperty(notes = "关联的游戏ID")
-    private Long gid;
+    private Long gameId;
 
-    @ApiModelProperty(notes = "状态，记录当前记录是否有效，0有效，1无效")
-    private Integer state;
+    @ApiModelProperty(notes = "状态，记录当前记录是否有效，1有效，0无效")
+    private String state;
 
     @ApiModelProperty(notes = "创建时间")
     private Date createDate;
 
     @ApiModelProperty(notes = "更新时间")
     private Date updateDate;
-
-
 }

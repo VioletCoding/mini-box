@@ -89,7 +89,8 @@ public class MbpPostServiceImpl implements BaseService<PostModel> {
         UserModel authorInfo = mbpUserMapper.selectOne(userWrapper);
         map.put("authorInfo", authorInfo);
         //评论信息
-        List<CommentModel> commentAndReplyByPostId = mbpCommentMapper.findCommentAndReplyByPostId(postModel.getId());
+        CommentModel commentModel = new CommentModel().setPostId(postModel.getId());
+        List<CommentModel> commentAndReplyByPostId = mbpCommentMapper.findCommentAndReplyByModel(commentModel);
         map.put("commentInfo",commentAndReplyByPostId);
         return map;
     }

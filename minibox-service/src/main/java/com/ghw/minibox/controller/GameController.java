@@ -20,6 +20,7 @@ import javax.annotation.Resource;
 @Api("游戏控制层")
 @RestController
 @RequestMapping("game")
+@Deprecated
 public class GameController {
     @Resource
     private GameImpl game;

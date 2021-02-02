@@ -76,7 +76,6 @@ public class GlobalGatewayFilter implements GlobalFilter, Ordered {
         String path = exchange.getRequest().getURI().getRawPath();
         //如果在忽略的url里，则跳过
         if (checkUrl(path)) {
-            log.warn("请求的URL=>{} 在忽略列表里,直接跳过", path);
             return chain.filter(exchange);
         }
 
@@ -85,7 +84,6 @@ public class GlobalGatewayFilter implements GlobalFilter, Ordered {
         String token = request.getHeaders().getFirst("accessToken");
         //校验token字符串
         if (StringUtils.isNullOrEmpty(token)) {
-            log.error("从请求头获取的token为空");
             response.setStatusCode(HttpStatus.UNAUTHORIZED);
             return getVoidMono(response, Result.fail(ResultCode.UNAUTHORIZED));
         }
@@ -96,12 +94,10 @@ public class GlobalGatewayFilter implements GlobalFilter, Ordered {
             String tokenInRedis = redisUtil.get(RedisUtil.TOKEN_PREFIX + username);
 
             if (StringUtils.isNullOrEmpty(tokenInRedis)) {
-                log.error("从Redis获取到的token为空");
                 response.setStatusCode(HttpStatus.UNAUTHORIZED);
                 return getVoidMono(response, Result.fail(ResultCode.UNAUTHORIZED));
             }
             if (!tokenInRedis.equals(token)) {
-                log.error("token不合法!");
                 response.setStatusCode(HttpStatus.UNAUTHORIZED);
                 return getVoidMono(response, Result.fail(ResultCode.UNAUTHORIZED));
             }
