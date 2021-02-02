@@ -31,18 +31,9 @@ public class PostModel implements Serializable {
     @NotNull(message = "作者ID不能为空")
     private Long authorId;
 
-    @ApiModelProperty("作者昵称")
-    private String authorNickname;
-
-    @ApiModelProperty("作者头像链接")
-    private String authorPhotoLink;
-
     @ApiModelProperty("版块ID")
     @NotNull(message = "版块ID不能为空")
     private Long blockId;
-
-    @ApiModelProperty("版块名称")
-    private String blockName;
 
     @ApiModelProperty(notes = "帖子标题")
     @NotBlank(message = "帖子标题不能为空")

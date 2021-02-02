@@ -23,6 +23,7 @@ import javax.annotation.Resource;
 @RestController
 @RequestMapping("comment")
 @Api("评论控制层")
+@Deprecated
 public class CommentController {
     @Resource
     private CommentImpl comment;

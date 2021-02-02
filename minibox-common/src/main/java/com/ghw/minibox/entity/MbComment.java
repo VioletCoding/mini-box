@@ -21,6 +21,7 @@ import java.util.List;
 @Data
 @Accessors(chain = true)
 @JsonInclude(JsonInclude.Include.NON_NULL)
+@Deprecated
 public class MbComment implements Serializable {
     private static final long serialVersionUID = -88043199982765063L;
 

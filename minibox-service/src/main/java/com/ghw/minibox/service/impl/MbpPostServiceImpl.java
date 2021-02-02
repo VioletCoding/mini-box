@@ -3,8 +3,10 @@ package com.ghw.minibox.service.impl;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.ghw.minibox.component.NimbusJoseJwt;
 import com.ghw.minibox.dto.PayloadDto;
+import com.ghw.minibox.mapper.MbpCommentMapper;
 import com.ghw.minibox.mapper.MbpPostMapper;
 import com.ghw.minibox.mapper.MbpUserMapper;
+import com.ghw.minibox.model.CommentModel;
 import com.ghw.minibox.model.PostModel;
 import com.ghw.minibox.model.UserModel;
 import com.ghw.minibox.service.BaseService;
@@ -13,7 +15,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author Violet
@@ -26,6 +30,8 @@ public class MbpPostServiceImpl implements BaseService<PostModel> {
     private MbpPostMapper mbpPostMapper;
     @Resource
     private MbpUserMapper mbpUserMapper;
+    @Resource
+    private MbpCommentMapper mbpCommentMapper;
     @Resource
     private NimbusJoseJwt nimbusJoseJwt;
 
@@ -40,8 +46,6 @@ public class MbpPostServiceImpl implements BaseService<PostModel> {
         if (userModel == null) {
             return false;
         }
-        postModel.setAuthorNickname(userModel.getNickname());
-        postModel.setAuthorPhotoLink(userModel.getPhotoLink());
         postModel.setState(DefaultColumn.STATE.getMessage());
         return save(postModel);
     }
@@ -62,6 +66,32 @@ public class MbpPostServiceImpl implements BaseService<PostModel> {
     @Transactional(rollbackFor = Throwable.class)
     public boolean remove(Long id) {
         return false;
+    }
+
+    /**
+     * 组装帖子里所有相关信息
+     *
+     * @param id 帖子id
+     * @return 帖子详细信息，包括帖子内容，作者，评论，回复
+     */
+    public Map<String, Object> postDetail(Long id) {
+        Map<String, Object> map = new HashMap<>();
+        //帖子信息
+        QueryWrapper<PostModel> postWrapper = new QueryWrapper<>();
+        postWrapper.select("photo_link", "title", "content", "create_date", "id", "author_id")
+                .eq("id", id);
+        PostModel postModel = mbpPostMapper.selectOne(postWrapper);
+        map.put("postInfo", postModel);
+        //作者信息
+        QueryWrapper<UserModel> userWrapper = new QueryWrapper<>();
+        userWrapper.select("id", "nickname", "description", "photo_link")
+                .eq("id", postModel.getAuthorId());
+        UserModel authorInfo = mbpUserMapper.selectOne(userWrapper);
+        map.put("authorInfo", authorInfo);
+        //评论信息
+        List<CommentModel> commentAndReplyByPostId = mbpCommentMapper.findCommentAndReplyByPostId(postModel.getId());
+        map.put("commentInfo",commentAndReplyByPostId);
+        return map;
     }
 
     @Override

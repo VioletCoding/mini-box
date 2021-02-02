@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ghw.minibox.mapper.MbpCommentMapper">
+
+    <resultMap id="commentAndReply" type="com.ghw.minibox.model.CommentModel">
+        <id property="id" column="id"/>
+        <result property="content" column="content"/>
+        <result property="createDate" column="create_date"/>
+        <association property="userModel" javaType="com.ghw.minibox.model.UserModel">
+            <id property="id" column="comment_user_id"/>
+            <result property="nickname" column="comment_user_nickname"/>
+            <result property="photoLink" column="comment_user_photo_link"/>
+        </association>
+        <collection property="replyModel" ofType="com.ghw.minibox.model.ReplyModel">
+            <id property="id" column="reply_id"/>
+            <result property="content" column="reply_content"/>
+            <association property="userModel" javaType="com.ghw.minibox.model.UserModel">
+                <id property="id" column="reply_user_id"/>
+                <id property="nickname" column="reply_user_nickname"/>
+            </association>
+        </collection>
+    </resultMap>
+
+    <select id="findCommentAndReplyByPostId" resultMap="commentAndReply">
+        SELECT mc.id,
+               mc.content,
+               mc.create_date,
+               mu.id             comment_user_id,
+               mu.nickname       comment_user_nickname,
+               mu.photo_Link     comment_user_photo_link,
+               mr.id             reply_id,
+               mr.content        reply_content,
+               reply_mu.id       reply_user_id,
+               reply_mu.nickname reply_user_nickname
+        FROM mb_comment mc
+                 LEFT JOIN mb_user mu ON mu.id = mc.user_id
+                 LEFT JOIN mb_reply mr ON mr.comment_id = mc.id
+                 LEFT JOIN mb_user reply_mu ON reply_mu.id = mr.user_id
+        WHERE mc.post_id = #{id};
+    </select>
+</mapper>

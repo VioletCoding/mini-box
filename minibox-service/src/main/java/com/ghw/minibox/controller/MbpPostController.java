@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author Violet
@@ -30,8 +31,8 @@ public class MbpPostController {
 
     @GetMapping("detail")
     public ResultVo detail(@RequestParam Long id){
-        PostModel postModel = postService.findOneById(id);
-        return Result.success(postModel);
+        Map<String, Object> postDetail = postService.postDetail(id);
+        return Result.success(postDetail);
     }
 
     @PostMapping("add")

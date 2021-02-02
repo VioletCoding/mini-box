@@ -142,6 +142,7 @@ public class GlobalExceptionHandler {
         return Result.fail(ResultCode.BAD_REQUEST, "文件大小超出限制，总文件大小最大30MB");
     }
 
+
     /**
      * 运行时异常，开发时记得打印栈信息，不然被捕获了出问题了都不知道怎么查
      */
