@@ -10,7 +10,6 @@ import com.ghw.minibox.exception.MiniBoxException;
 import com.ghw.minibox.mapper.MbpUserMapper;
 import com.ghw.minibox.model.RoleModel;
 import com.ghw.minibox.model.UserModel;
-import com.ghw.minibox.service.BaseService;
 import com.ghw.minibox.utils.AopLog;
 import com.ghw.minibox.utils.DefaultColumn;
 import com.ghw.minibox.utils.SendEmail;
@@ -36,7 +35,7 @@ import java.util.stream.Collectors;
  */
 @Service
 @Slf4j
-public class MbpUserServiceImpl implements BaseService<UserModel> {
+public class MbpUserServiceImpl {
     @Resource
     private MbpUserMapper mbpUserMapper;
     @Resource
@@ -166,39 +165,16 @@ public class MbpUserServiceImpl implements BaseService<UserModel> {
         }
     }
 
-    @Override
     @Transactional(rollbackFor = Throwable.class)
     public boolean save(UserModel model) {
         int insert = mbpUserMapper.insert(model);
         return insert > 0;
     }
 
-    @Override
-    @Transactional(rollbackFor = Throwable.class)
-    public boolean modify(UserModel model) {
-        return false;
-    }
-
-    @Override
-    @Transactional(rollbackFor = Throwable.class)
-    public boolean remove(Long id) {
-        return false;
-    }
-
-    @Override
-    public UserModel findOneById(Long id) {
-        return null;
-    }
-
-    @Override
     public UserModel findOne(String column, Object value) {
         QueryWrapper<UserModel> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq(column, value);
         return mbpUserMapper.selectOne(queryWrapper);
     }
 
-    @Override
-    public List<UserModel> findByModel(UserModel model) {
-        return null;
-    }
 }

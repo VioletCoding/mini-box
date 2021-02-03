@@ -9,7 +9,6 @@ import com.ghw.minibox.model.CommentModel;
 import com.ghw.minibox.model.GameModel;
 import com.ghw.minibox.model.PhotoModel;
 import com.ghw.minibox.model.TagModel;
-import com.ghw.minibox.service.BaseService;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -23,7 +22,7 @@ import java.util.Map;
  * @date 2021/2/2
  */
 @Service
-public class MbpGameServiceImpl implements BaseService<GameModel> {
+public class MbpGameServiceImpl{
     @Resource
     private MbpGameMapper mbpGameMapper;
     @Resource
@@ -63,32 +62,7 @@ public class MbpGameServiceImpl implements BaseService<GameModel> {
         return map;
     }
 
-    @Override
-    public boolean save(GameModel model) {
-        return false;
-    }
 
-    @Override
-    public boolean modify(GameModel model) {
-        return false;
-    }
-
-    @Override
-    public boolean remove(Long id) {
-        return false;
-    }
-
-    @Override
-    public GameModel findOneById(Long id) {
-        return null;
-    }
-
-    @Override
-    public GameModel findOne(String column, Object value) {
-        return null;
-    }
-
-    @Override
     public List<GameModel> findByModel(GameModel model) {
         QueryWrapper<GameModel> wrapper = new QueryWrapper<>(model);
         wrapper.select("id", "name", "price", "description", "origin_price", "photo_link");

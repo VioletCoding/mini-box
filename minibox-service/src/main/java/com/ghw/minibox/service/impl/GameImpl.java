@@ -17,6 +17,7 @@ import java.util.List;
  * @date 2021/1/5
  */
 @Service
+@Deprecated
 public class GameImpl implements CommonService<MbGame> {
 
     @Resource

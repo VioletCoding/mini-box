@@ -3,13 +3,11 @@ package com.ghw.minibox.service.impl;
 import com.ghw.minibox.exception.MiniBoxException;
 import com.ghw.minibox.mapper.MbpCommentMapper;
 import com.ghw.minibox.model.CommentModel;
-import com.ghw.minibox.service.BaseService;
 import com.ghw.minibox.utils.DefaultColumn;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
-import java.util.List;
 
 /**
  * @author Violet
@@ -17,11 +15,10 @@ import java.util.List;
  * @date 2021/2/2
  */
 @Service
-public class MbpCommentServiceImpl implements BaseService<CommentModel> {
+public class MbpCommentServiceImpl {
     @Resource
     private MbpCommentMapper mbpCommentMapper;
 
-    @Override
     @Transactional(rollbackFor = Throwable.class)
     public boolean save(CommentModel model) {
 
@@ -40,30 +37,4 @@ public class MbpCommentServiceImpl implements BaseService<CommentModel> {
         return mbpCommentMapper.insert(model) > 0;
     }
 
-    @Override
-    @Transactional(rollbackFor = Throwable.class)
-    public boolean modify(CommentModel model) {
-        return false;
-    }
-
-    @Override
-    @Transactional(rollbackFor = Throwable.class)
-    public boolean remove(Long id) {
-        return false;
-    }
-
-    @Override
-    public CommentModel findOneById(Long id) {
-        return null;
-    }
-
-    @Override
-    public CommentModel findOne(String column, Object value) {
-        return null;
-    }
-
-    @Override
-    public List<CommentModel> findByModel(CommentModel model) {
-        return null;
-    }
 }

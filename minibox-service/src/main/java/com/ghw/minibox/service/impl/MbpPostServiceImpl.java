@@ -9,7 +9,6 @@ import com.ghw.minibox.mapper.MbpUserMapper;
 import com.ghw.minibox.model.CommentModel;
 import com.ghw.minibox.model.PostModel;
 import com.ghw.minibox.model.UserModel;
-import com.ghw.minibox.service.BaseService;
 import com.ghw.minibox.utils.DefaultColumn;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -25,7 +24,7 @@ import java.util.Map;
  * @date 2021/2/1
  */
 @Service
-public class MbpPostServiceImpl implements BaseService<PostModel> {
+public class MbpPostServiceImpl{
     @Resource
     private MbpPostMapper mbpPostMapper;
     @Resource
@@ -47,22 +46,9 @@ public class MbpPostServiceImpl implements BaseService<PostModel> {
         return save(postModel);
     }
 
-    @Override
     @Transactional(rollbackFor = Throwable.class)
     public boolean save(PostModel model) {
         return mbpPostMapper.insert(model) > 0;
-    }
-
-    @Override
-    @Transactional(rollbackFor = Throwable.class)
-    public boolean modify(PostModel model) {
-        return false;
-    }
-
-    @Override
-    @Transactional(rollbackFor = Throwable.class)
-    public boolean remove(Long id) {
-        return false;
     }
 
     /**
@@ -92,19 +78,14 @@ public class MbpPostServiceImpl implements BaseService<PostModel> {
         return map;
     }
 
-    @Override
+
     public PostModel findOneById(Long id) {
         QueryWrapper<PostModel> wrapper = new QueryWrapper<>();
         wrapper.eq("id", id);
         return mbpPostMapper.selectOne(wrapper);
     }
 
-    @Override
-    public PostModel findOne(String column, Object value) {
-        return null;
-    }
 
-    @Override
     public List<PostModel> findByModel(PostModel model) {
         QueryWrapper<PostModel> queryWrapper = new QueryWrapper<>(model);
         queryWrapper.orderByDesc("create_date");
