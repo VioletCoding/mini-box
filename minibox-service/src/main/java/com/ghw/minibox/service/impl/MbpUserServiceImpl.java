@@ -7,7 +7,11 @@ import com.ghw.minibox.component.NimbusJoseJwt;
 import com.ghw.minibox.component.RedisUtil;
 import com.ghw.minibox.dto.PayloadDto;
 import com.ghw.minibox.exception.MiniBoxException;
+import com.ghw.minibox.mapper.MbpCommentMapper;
+import com.ghw.minibox.mapper.MbpPostMapper;
 import com.ghw.minibox.mapper.MbpUserMapper;
+import com.ghw.minibox.model.CommentModel;
+import com.ghw.minibox.model.PostModel;
 import com.ghw.minibox.model.RoleModel;
 import com.ghw.minibox.model.UserModel;
 import com.ghw.minibox.utils.AopLog;
@@ -38,6 +42,10 @@ import java.util.stream.Collectors;
 public class MbpUserServiceImpl {
     @Resource
     private MbpUserMapper mbpUserMapper;
+    @Resource
+    private MbpPostMapper mbpPostMapper;
+    @Resource
+    private MbpCommentMapper mbpCommentMapper;
     @Resource
     private SendEmail sendEmail;
     @Resource
@@ -103,6 +111,7 @@ public class MbpUserServiceImpl {
      * @param authCode 验证码
      */
     @AopLog("注册或登录")
+    @Transactional(rollbackFor = Throwable.class)
     public boolean registerOrLogin(String username, String authCode) {
         String lowerCase = username.toLowerCase();
         String value = redisUtil.get(RedisUtil.AUTH_PREFIX + lowerCase);
@@ -133,18 +142,16 @@ public class MbpUserServiceImpl {
         }
     }
 
-    @AopLog("执行service方法")
+    @AopLog("service方法")
     public Map<String, Object> service(String username, String authCode) throws JsonProcessingException, JOSEException {
         boolean b = registerOrLogin(username, authCode);
         if (b) {
             //返回部分用户信息
             String lowerCase = username.toLowerCase();
-            UserModel userModel = findOne("username", lowerCase);
-            userModel.setPassword(null);
-            userModel.setUserState(null);
-            userModel.setState(null);
-            userModel.setCreateDate(null);
-            userModel.setUpdateDate(null);
+            QueryWrapper<UserModel> userWrapper = new QueryWrapper<>();
+            userWrapper.select("id", "nickname", "description", "photo_link")
+                    .eq("username", lowerCase);
+            UserModel userModel = mbpUserMapper.selectOne(userWrapper);
             HashMap<String, Object> map = new HashMap<>();
             map.put("userInfo", userModel);
             //获取角色列表，为了组建token
@@ -165,16 +172,35 @@ public class MbpUserServiceImpl {
         }
     }
 
-    @Transactional(rollbackFor = Throwable.class)
-    public boolean save(UserModel model) {
-        int insert = mbpUserMapper.insert(model);
-        return insert > 0;
+    /**
+     * 查找用户的详细信息，在 「我」的页面
+     *
+     * @param id 用户ID
+     */
+    public UserModel findUserDetail(Long id) {
+        return mbpUserMapper.findUserDetail(id);
     }
 
-    public UserModel findOne(String column, Object value) {
-        QueryWrapper<UserModel> queryWrapper = new QueryWrapper<>();
-        queryWrapper.eq(column, value);
-        return mbpUserMapper.selectOne(queryWrapper);
+    /**
+     * 查找该用户发布的所有帖子
+     *
+     * @param id 用户id
+     */
+    public List<PostModel> findUserAllPost(Long id) {
+        //帖子信息
+        QueryWrapper<PostModel> postWrapper = new QueryWrapper<>();
+        postWrapper.select("id", "title", "photo_link")
+                .eq("author_id", id);
+        return mbpPostMapper.selectList(postWrapper);
+    }
+
+    /**
+     * 查找该用户发表的所有评论 以及在哪个帖子下发的评论
+     *
+     * @param id 用户id
+     */
+    public List<CommentModel> findUserAllComment(Long id) {
+        return mbpCommentMapper.findCommentAndLocationByUserId(id);
     }
 
 }

@@ -30,4 +30,13 @@ public interface MbpUserMapper extends BaseMapper<UserModel> {
      * @return
      */
     int setUserRoles(@Param("id") Long id, @Param("roleId") Long roleId);
+
+    /**
+     * 查找用户详细信息，包括拥有的游戏
+     * @param id 用户id
+     * @return
+     */
+    UserModel findUserDetail(Long id);
+
+
 }

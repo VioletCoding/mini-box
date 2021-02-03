@@ -62,6 +62,13 @@ public class CommentModel implements Serializable {
     private UserModel userModel;
 
     @TableField(exist = false)
+    private PostModel postModel;
+
+    @TableField(exist = false)
+    private GameModel gameModel;
+
+    @TableField(exist = false)
     private List<ReplyModel> replyModel;
+
 
 }

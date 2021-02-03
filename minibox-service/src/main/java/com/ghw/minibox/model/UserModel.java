@@ -1,5 +1,6 @@
 package com.ghw.minibox.model;
 
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -12,6 +13,7 @@ import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.Size;
 import java.io.Serializable;
 import java.util.Date;
+import java.util.List;
 
 /**
  * @author Violet
@@ -60,4 +62,7 @@ public class UserModel implements Serializable {
 
     @ApiModelProperty(notes = "状态，记录当前记录是否有效，0有效，1无效")
     private String state;
+
+    @TableField(exist = false)
+    private List<GameModel> gameModelList;
 }

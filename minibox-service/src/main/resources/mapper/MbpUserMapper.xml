@@ -13,4 +13,36 @@
         INSERT INTO mb_user_role(uid, rid)
         VALUES (#{id}, #{roleId});
     </insert>
+
+
+    <resultMap id="userDetail" type="com.ghw.minibox.model.UserModel">
+        <id property="id" column="id"/>
+        <result property="photoLink" column="photo_link"/>
+        <result property="nickname" column="nickname"/>
+        <result property="description" column="description"/>
+        <collection property="gameModelList" ofType="com.ghw.minibox.model.GameModel">
+            <id property="id" column="game_id"/>
+            <result property="name" column="game_name"/>
+            <result property="price" column="success_price"/>
+            <result property="description" column="game_description"/>
+            <result property="photoLink" column="game_photo_link"/>
+        </collection>
+    </resultMap>
+
+    <select id="findUserDetail" resultMap="userDetail">
+        SELECT mu.id,
+               mu.nickname,
+               mu.description,
+               mu.photo_link,
+               mg.id          game_id,
+               mg.photo_link  game_photo_link,
+               mg.description game_description,
+               mg.name        game_name,
+               mo.order_cost  success_price
+        FROM mb_user mu
+                 LEFT JOIN mb_order mo ON mo.user_id = mu.id
+                 LEFT JOIN mb_game mg ON mg.id = mo.game_id
+        WHERE mu.id = #{id}
+        ORDER BY mo.create_date DESC;
+    </select>
 </mapper>
