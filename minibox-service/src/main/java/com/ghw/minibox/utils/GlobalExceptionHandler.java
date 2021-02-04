@@ -47,7 +47,7 @@ public class GlobalExceptionHandler {
         log.error("异常=>{}", new Date().toString());
         e.printStackTrace();
         ObjectError objectError = e.getBindingResult().getAllErrors().get(0);
-        return Result.custom(ResultCode.BAD_REQUEST.getCode(), objectError.getDefaultMessage());
+        return Result.fail(objectError.getDefaultMessage());
     }
 
 
@@ -59,7 +59,7 @@ public class GlobalExceptionHandler {
     public ResultVo emailException(EmailException e) {
         log.error("异常=>{}", new Date().toString());
         e.printStackTrace();
-        return Result.custom(ResultCode.BAD_REQUEST.getCode(), "该邮箱不存在");
+        return Result.fail( "该邮箱不存在");
     }
 
     /**
@@ -81,7 +81,7 @@ public class GlobalExceptionHandler {
     public ResultVo jsonProcessingException(JsonProcessingException e) {
         log.error("异常=>{}", new Date().toString());
         e.printStackTrace();
-        return Result.custom(ResultCode.BAD_REQUEST.getCode(), "Json解析失败");
+        return Result.fail("Json解析失败");
     }
 
     /**
@@ -94,7 +94,7 @@ public class GlobalExceptionHandler {
     public ResultVo jOSEException(JOSEException e) {
         log.error("异常=>{}", new Date().toString());
         e.printStackTrace();
-        return Result.custom(ResultCode.BAD_REQUEST.getCode(), "jwt签发失败");
+        return Result.fail("jwt签发失败");
     }
 
 
@@ -105,7 +105,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(QiniuException.class)
     public ResultVo qiNiuException(QiniuException e) {
         log.error("异常=>{}", e.response.toString());
-        return Result.custom(ResultCode.BAD_REQUEST.getCode(), "文件上传失败");
+        return Result.fail("文件上传失败");
     }
 
     /**
@@ -116,7 +116,7 @@ public class GlobalExceptionHandler {
     public ResultVo unSupportedEncodingException(UnsupportedEncodingException e) {
         log.error("异常=>{}", new Date().toString());
         e.printStackTrace();
-        return Result.custom(ResultCode.BAD_REQUEST.getCode(), "文件编码解析失败");
+        return Result.fail("文件编码解析失败");
     }
 
 
@@ -128,7 +128,7 @@ public class GlobalExceptionHandler {
     public ResultVo fileSizeLimitExceededException(FileSizeLimitExceededException e) {
         log.error("异常=>{}", new Date().toString());
         e.printStackTrace();
-        return Result.custom(ResultCode.BAD_REQUEST.getCode(), "文件大小超出限制，单个文件最大3MB");
+        return Result.fail("文件大小超出限制，单个文件最大3MB");
     }
 
     /**
@@ -139,19 +139,9 @@ public class GlobalExceptionHandler {
     public ResultVo maxUploadSizeExceededException(MaxUploadSizeExceededException e) {
         log.error("异常=>{}", new Date().toString());
         e.printStackTrace();
-        return Result.fail(ResultCode.BAD_REQUEST, "文件大小超出限制，总文件大小最大30MB");
+        return Result.fail("文件大小超出限制，总文件大小最大30MB");
     }
 
-
-    /**
-     * 运行时异常，开发时记得打印栈信息，不然被捕获了出问题了都不知道怎么查
-     */
-    //@ExceptionHandler(RuntimeException.class)
-    //public ReturnDto buyFlagException(RuntimeException e) {
-    //    log.error("异常=>{}", new Date().toString());
-    //    e.printStackTrace();
-    //    return Result.custom(ResultCode.BAD_REQUEST.getCode(), e.getMessage());
-    //}
     @ExceptionHandler(MiniBoxException.class)
     public ResultVo miniBoxException(MiniBoxException e) {
         log.error("异常=>{}", new Date().toString());

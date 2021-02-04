@@ -28,7 +28,7 @@ public class MbpCommentController {
     private MbpReplyServiceImpl replyService;
 
     @PostMapping("add")
-    public ResultVo publishComment(@RequestBody CommentModel commentModel) {
+    public ResultVo publishComment(@RequestBody @Validated CommentModel commentModel) {
         boolean save = commentService.save(commentModel);
         return Result.successFlag(save);
     }

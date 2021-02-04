@@ -1,9 +1,9 @@
 package com.ghw.minibox.controller;
 
 import cn.hutool.core.util.IdUtil;
+import com.ghw.minibox.component.QiNiuUtil;
 import com.ghw.minibox.utils.Result;
 import com.ghw.minibox.vo.ResultVo;
-import com.ghw.minibox.component.QiNiuUtil;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;

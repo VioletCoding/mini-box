@@ -9,7 +9,7 @@ import lombok.Data;
 import lombok.experimental.Accessors;
 
 import javax.validation.constraints.Email;
-import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
 import java.io.Serializable;
 import java.util.Date;
@@ -38,12 +38,12 @@ public class UserModel implements Serializable {
 
     @ApiModelProperty(notes = "用户名，本系统是邮箱，需要程序校验")
     @Email(message = "邮箱格式不正确")
-    @NotEmpty(message = "用户名不能为空")
+    @NotBlank(message = "用户名不能为空")
     private String username;
 
     @ApiModelProperty(notes = "密码，MD5加密")
-    @NotEmpty(message = "密码不能为空")
-    @Size(min = 8, max = 16)
+    @NotBlank(message = "密码不能为空")
+    @Size(max = 16)
     private String password;
 
     @ApiModelProperty(notes = "个人简介")

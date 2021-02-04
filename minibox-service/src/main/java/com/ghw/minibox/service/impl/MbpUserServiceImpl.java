@@ -1,7 +1,9 @@
 package com.ghw.minibox.service.impl;
 
 import cn.hutool.core.util.StrUtil;
+import cn.hutool.crypto.SecureUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.ghw.minibox.component.NimbusJoseJwt;
 import com.ghw.minibox.component.RedisUtil;
@@ -89,12 +91,12 @@ public class MbpUserServiceImpl {
      *
      * @param username 用户名
      */
-    @AopLog("发送邮件")
+    @AopLog("发送验证码")
     @Async
     public void sendAuthCode(String username) throws EmailException {
         String lowerCase = username.toLowerCase();
         String authCode = authCode();
-        redisUtil.set(RedisUtil.AUTH_PREFIX + lowerCase, String.valueOf(authCode), 300L);
+        redisUtil.set(RedisUtil.AUTH_PREFIX + lowerCase, authCode, 300L);
         if (exist(lowerCase)) {
             sendEmail.createEmail(lowerCase, SendEmail.SUBJECT, SendEmail.LOGIN_MESSAGE + authCode);
         } else {
@@ -201,6 +203,70 @@ public class MbpUserServiceImpl {
      */
     public List<CommentModel> findUserAllComment(Long id) {
         return mbpCommentMapper.findCommentAndLocationByUserId(id);
+    }
+
+    /**
+     * 修改用户个人信息
+     *
+     * @param userModel 实体
+     */
+    @Transactional(rollbackFor = Throwable.class)
+    public UserModel updateUserInfo(UserModel userModel) {
+        UpdateWrapper<UserModel> userWrapper = new UpdateWrapper<>();
+        userWrapper.eq("id", userModel.getId());
+        int update = mbpUserMapper.update(userModel, userWrapper);
+        if (update > 0) {
+            QueryWrapper<UserModel> userModelQueryWrapperWrapper = new QueryWrapper<>();
+            userModelQueryWrapperWrapper.select("id", "nickname", "description", "photo_link")
+                    .eq("id", userModel.getId());
+            return mbpUserMapper.selectOne(userModelQueryWrapperWrapper);
+        }
+        throw new MiniBoxException("用户信息更新失败");
+    }
+
+    /**
+     * 更新密码，因为默认是使用验证码注册，所以只能先更新密码，再使用密码登陆
+     *
+     * @param id       用户id
+     * @param password 新密码
+     */
+    @Transactional(rollbackFor = Throwable.class)
+    public boolean updatePassword(Long id, String password) {
+        String md5 = SecureUtil.md5(password);
+        UpdateWrapper<UserModel> wrapper = new UpdateWrapper<UserModel>()
+                .set("password", md5)
+                .eq("id", id);
+        return mbpUserMapper.update(null, wrapper) > 0;
+    }
+
+    /**
+     * 用户名或密码登陆
+     *
+     * @param username 用户名
+     * @param password 密码
+     */
+    public HashMap<String, Object> usingPasswordLogin(String username, String password) throws JsonProcessingException, JOSEException {
+        String md5 = SecureUtil.md5(password);
+        QueryWrapper<UserModel> wrapper = new QueryWrapper<>();
+        wrapper.select("username", "password", "id", "nickname", "description", "photo_link")
+                .eq("username", username);
+        UserModel userModel = mbpUserMapper.selectOne(wrapper);
+        if (userModel == null) {
+            throw new MiniBoxException("用户名不存在");
+        }
+        if (userModel.getPassword().equals(md5)) {
+            HashMap<String, Object> map = new HashMap<>();
+            map.put("userInfo", userModel);
+            List<RoleModel> roles = mbpUserMapper.findUserRoles(userModel.getId());
+            List<String> roleNames = roles.stream().map(RoleModel::getName).collect(Collectors.toList());
+            PayloadDto payloadDto = nimbusJoseJwt.buildToken(userModel.getUsername(), 604800L, roleNames);
+            String token = nimbusJoseJwt.generateTokenByHMAC(payloadDto);
+            redisUtil.set(RedisUtil.TOKEN_PREFIX + userModel.getUsername(), token, 604800);
+            map.put("token", token);
+            return map;
+        } else {
+            throw new MiniBoxException("密码不正确");
+        }
     }
 
 }
