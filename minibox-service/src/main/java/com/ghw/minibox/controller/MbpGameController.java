@@ -21,12 +21,24 @@ public class MbpGameController {
     @Resource
     private MbpGameServiceImpl gameService;
 
+    /**
+     * 游戏列表，可以条件查询
+     *
+     * @param gameModel 游戏列表
+     * @return 游戏列表
+     */
     @PostMapping("list")
     public ResultVo gameList(@RequestBody(required = false) GameModel gameModel) {
         List<GameModel> gameModels = gameService.findByModel(gameModel);
         return Result.success(gameModels);
     }
 
+    /**
+     * 游戏详情
+     *
+     * @param id 游戏id
+     * @return 游戏详情
+     */
     @GetMapping("detail")
     public ResultVo gameDetail(@RequestParam Long id) {
         Map<String, Object> gameDetail = gameService.gameDetail(id);

@@ -27,12 +27,24 @@ public class MbpCommentController {
     @Resource
     private MbpReplyServiceImpl replyService;
 
+    /**
+     * 发表评论
+     *
+     * @param commentModel 实体
+     * @return 是否成功
+     */
     @PostMapping("add")
     public ResultVo publishComment(@RequestBody @Validated CommentModel commentModel) {
         boolean save = commentService.save(commentModel);
         return Result.successFlag(save);
     }
 
+    /**
+     * 回复评论
+     *
+     * @param replyModel 实体
+     * @return 是否成功
+     */
     @PostMapping("reply")
     public ResultVo publishReply(@RequestBody @Validated ReplyModel replyModel) {
         boolean save = replyService.save(replyModel);

@@ -18,6 +18,12 @@ public class MbpBlockServiceImpl {
     @Resource
     private MbpBlockMapper mbpBlockMapper;
 
+    /**
+     * 条件或全查版块
+     *
+     * @param model 实体
+     * @return 版块列表
+     */
     public List<BlockModel> findByModel(BlockModel model) {
         List<BlockModel> blockModelList;
         if (model == null) {

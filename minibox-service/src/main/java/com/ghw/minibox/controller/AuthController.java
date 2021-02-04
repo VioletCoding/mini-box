@@ -59,12 +59,21 @@ public class AuthController {
         return Result.success(service);
     }
 
+    /**
+     * 密码登陆
+     *
+     * @param userModel username | password
+     * @return 登陆成功后，返回用户信息
+     */
     @PostMapping("passwordLogin")
     public ResultVo usernameAndPasswordLogin(@RequestBody UserModel userModel) throws JsonProcessingException, JOSEException {
         HashMap<String, Object> map = userService.usingPasswordLogin(userModel.getUsername(), userModel.getPassword());
         return Result.success(map);
     }
 
+    /**
+     * 登出
+     */
     @GetMapping("logout")
     public ResultVo logout(HttpServletRequest request) throws Exception {
         String accessToken = request.getHeader("accessToken");

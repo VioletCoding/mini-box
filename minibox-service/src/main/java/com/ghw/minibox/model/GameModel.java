@@ -32,7 +32,7 @@ public class GameModel implements Serializable {
     @NotBlank(message = "游戏名称不能为空")
     private String name;
 
-    @ApiModelProperty(notes = "游戏现价格，保留两位小数，注意默认是0.00，否则会在加减乘除上带来转换问题")
+    @ApiModelProperty("游戏现价格，保留两位小数，注意默认是0.00，否则会在加减乘除上带来转换问题")
     @JsonFormat(shape = JsonFormat.Shape.NUMBER_FLOAT)
     private BigDecimal price;
 
@@ -52,23 +52,23 @@ public class GameModel implements Serializable {
     @ApiModelProperty("游戏封面图")
     private String photoLink;
 
-    @ApiModelProperty(notes = "发布时间")
+    @ApiModelProperty("发布时间")
     @JsonFormat(pattern = "yyyy-MM-dd", timezone = "GMT+8")
     private Date releaseTime;
 
-    @ApiModelProperty(notes = "开发商")
+    @ApiModelProperty("开发商")
     @NotBlank(message = "游戏开发商developer不能为空")
     private String developer;
 
-    @ApiModelProperty(notes = "发行商")
+    @ApiModelProperty("发行商")
     @NotBlank(message = "游戏发行商publisher不能为空")
     private String publisher;
 
-    @ApiModelProperty(notes = "创建时间")
+    @ApiModelProperty("创建时间")
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     private Date createDate;
 
-    @ApiModelProperty(notes = "更新时间")
+    @ApiModelProperty("更新时间")
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     private Date updateDate;
 }

@@ -24,22 +24,22 @@ import java.util.Date;
 public class RoleModel implements Serializable {
     private static final long serialVersionUID = 297485414723529586L;
 
-    @ApiModelProperty(notes = "主键")
+    @ApiModelProperty("主键")
     @NotNull(message = "角色id不能为空")
     private Long id;
 
-    @ApiModelProperty(notes = "角色名称，枚举值USER | ADMIN")
+    @ApiModelProperty("角色名称，枚举值USER | ADMIN")
     @NotEmpty(message = "角色名称不能为空")
     private String name;
 
-    @ApiModelProperty(notes = "状态，记录当前记录是否有效，0有效，1无效")
+    @ApiModelProperty("状态，记录当前记录是否有效，0有效，1无效")
     private Integer state;
 
-    @ApiModelProperty(notes = "创建时间")
+    @ApiModelProperty("创建时间")
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     private Date createDate;
 
-    @ApiModelProperty(notes = "更新时间")
+    @ApiModelProperty("更新时间")
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     private Date updateDate;
 }

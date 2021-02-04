@@ -17,7 +17,6 @@ public class RedisUtil {
 
     public static final String AUTH_PREFIX = "auth_code:";
     public static final String TOKEN_PREFIX = "auth_token:";
-    public static final String LOGIN_FLAG = "login:";
     public static final String ORDER_PREFIX = "order:";
     public static final String REDIS_PREFIX = "minibox:";
     public static final String POST_PREFIX = "post:";
@@ -50,7 +49,7 @@ public class RedisUtil {
         stringRedisTemplate.expire(key, expire, TimeUnit.SECONDS);
     }
 
-    public boolean remove(String key) {
+    public Boolean remove(String key) {
         return stringRedisTemplate.delete(key);
     }
 

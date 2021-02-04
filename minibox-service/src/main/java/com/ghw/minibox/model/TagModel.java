@@ -21,21 +21,21 @@ import java.util.Date;
 public class TagModel implements Serializable {
     private static final long serialVersionUID = -76639098783076019L;
 
-    @ApiModelProperty(notes = "主键")
+    @ApiModelProperty("主键")
     private Long id;
 
-    @ApiModelProperty(notes = "标签名称")
+    @ApiModelProperty("标签名称")
     private String tagName;
 
-    @ApiModelProperty(notes = "关联的游戏ID")
+    @ApiModelProperty("关联的游戏ID")
     private Long gameId;
 
-    @ApiModelProperty(notes = "状态，记录当前记录是否有效，1有效，0无效")
+    @ApiModelProperty("状态，记录当前记录是否有效，1有效，0无效")
     private String state;
 
-    @ApiModelProperty(notes = "创建时间")
+    @ApiModelProperty("创建时间")
     private Date createDate;
 
-    @ApiModelProperty(notes = "更新时间")
+    @ApiModelProperty("更新时间")
     private Date updateDate;
 }

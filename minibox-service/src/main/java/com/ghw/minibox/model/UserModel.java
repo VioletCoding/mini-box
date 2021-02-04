@@ -27,40 +27,40 @@ import java.util.List;
 public class UserModel implements Serializable {
     private static final long serialVersionUID = -71315955846878471L;
 
-    @ApiModelProperty(notes = "主键")
+    @ApiModelProperty("主键")
     private Long id;
 
     @ApiModelProperty("用户头像")
     private String photoLink;
 
-    @ApiModelProperty(notes = "昵称")
+    @ApiModelProperty("昵称")
     private String nickname;
 
-    @ApiModelProperty(notes = "用户名，本系统是邮箱，需要程序校验")
+    @ApiModelProperty("用户名，本系统是邮箱，需要程序校验")
     @Email(message = "邮箱格式不正确")
     @NotBlank(message = "用户名不能为空")
     private String username;
 
-    @ApiModelProperty(notes = "密码，MD5加密")
+    @ApiModelProperty("密码，MD5加密")
     @NotBlank(message = "密码不能为空")
     @Size(max = 16)
     private String password;
 
-    @ApiModelProperty(notes = "个人简介")
+    @ApiModelProperty("个人简介")
     private String description;
 
-    @ApiModelProperty(notes = "用户状态，枚举 默认是NORMAL（正常），INVALID（失效），BANNED（非法，被封禁）")
+    @ApiModelProperty("用户状态，枚举 默认是NORMAL（正常），INVALID（失效），BANNED（非法，被封禁）")
     private String userState;
 
-    @ApiModelProperty(notes = "用户创建日期")
+    @ApiModelProperty("用户创建日期")
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     private Date createDate;
 
-    @ApiModelProperty(notes = "字段更新时间，修改该条记录则自动更新这个字段")
+    @ApiModelProperty("字段更新时间，修改该条记录则自动更新这个字段")
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     private Date updateDate;
 
-    @ApiModelProperty(notes = "状态，记录当前记录是否有效，0有效，1无效")
+    @ApiModelProperty("状态，记录当前记录是否有效，0有效，1无效")
     private String state;
 
     @TableField(exist = false)

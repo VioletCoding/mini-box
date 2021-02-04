@@ -23,18 +23,34 @@ public class MbpPostController {
     @Resource
     private MbpPostServiceImpl postService;
 
+    /**
+     * 帖子列表，条件查询
+     *
+     * @param postModel 实体
+     */
     @PostMapping("list")
-    public ResultVo postList(@RequestBody(required = false) PostModel postModel){
+    public ResultVo postList(@RequestBody(required = false) PostModel postModel) {
         List<PostModel> postModelList = postService.findByModel(postModel);
         return Result.success(postModelList);
     }
 
+    /**
+     * 帖子详情
+     *
+     * @param id 帖子id
+     */
     @GetMapping("detail")
-    public ResultVo detail(@RequestParam Long id){
+    public ResultVo detail(@RequestParam Long id) {
         Map<String, Object> postDetail = postService.postDetail(id);
         return Result.success(postDetail);
     }
 
+    /**
+     * 发表帖子
+     *
+     * @param postModel 实体
+     * @param request   为了拿token
+     */
     @PostMapping("add")
     public ResultVo postAdd(@RequestBody @Validated PostModel postModel, HttpServletRequest request) throws Exception {
         boolean beforeSave = postService.beforeSave(postModel, request.getHeader("accessToken"));

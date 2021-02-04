@@ -14,11 +14,16 @@ import javax.annotation.Resource;
  * @date 2021/2/2
  */
 @Service
-public class MbpReplyServiceImpl{
+public class MbpReplyServiceImpl {
 
     @Resource
     private MbpReplyMapper mbpReplyMapper;
 
+    /**
+     * 发表回复
+     *
+     * @param model 实体
+     */
     @Transactional(rollbackFor = Throwable.class)
     public boolean save(ReplyModel model) {
         model.setState(DefaultColumn.STATE.getMessage());

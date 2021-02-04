@@ -22,7 +22,7 @@ import java.util.Map;
  * @date 2021/2/2
  */
 @Service
-public class MbpGameServiceImpl{
+public class MbpGameServiceImpl {
     @Resource
     private MbpGameMapper mbpGameMapper;
     @Resource
@@ -54,7 +54,7 @@ public class MbpGameServiceImpl{
         QueryWrapper<TagModel> tagWrapper = new QueryWrapper<>();
         tagWrapper.select("tag_name").eq("game_id", gameModel.getId());
         List<TagModel> tagModels = mbpTagMapper.selectList(tagWrapper);
-        map.put("tags",tagModels);
+        map.put("tags", tagModels);
         //游戏评论
         CommentModel commentModel = new CommentModel().setGameId(gameModel.getId());
         List<CommentModel> commentInfo = mbpCommentMapper.findCommentAndReplyByModel(commentModel);
@@ -63,6 +63,12 @@ public class MbpGameServiceImpl{
     }
 
 
+    /**
+     * 游戏 条件查询
+     *
+     * @param model 实体
+     * @return 游戏列表
+     */
     public List<GameModel> findByModel(GameModel model) {
         QueryWrapper<GameModel> wrapper = new QueryWrapper<>(model);
         wrapper.select("id", "name", "price", "description", "origin_price", "photo_link");

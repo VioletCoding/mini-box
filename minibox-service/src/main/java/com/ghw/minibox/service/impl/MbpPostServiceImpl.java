@@ -34,6 +34,12 @@ public class MbpPostServiceImpl{
     @Resource
     private NimbusJoseJwt nimbusJoseJwt;
 
+    /**
+     * 发表帖子之前
+     * @param postModel 实体
+     * @param token token
+     */
+    @Transactional(rollbackFor = Throwable.class)
     public boolean beforeSave(PostModel postModel, String token) throws Exception {
         PayloadDto payloadDto = nimbusJoseJwt.verifyTokenByHMAC(token);
         QueryWrapper<UserModel> queryWrapper = new QueryWrapper<>();
@@ -43,12 +49,7 @@ public class MbpPostServiceImpl{
             return false;
         }
         postModel.setState(DefaultColumn.STATE.getMessage());
-        return save(postModel);
-    }
-
-    @Transactional(rollbackFor = Throwable.class)
-    public boolean save(PostModel model) {
-        return mbpPostMapper.insert(model) > 0;
+        return mbpPostMapper.insert(postModel) > 0;
     }
 
     /**
@@ -78,14 +79,10 @@ public class MbpPostServiceImpl{
         return map;
     }
 
-
-    public PostModel findOneById(Long id) {
-        QueryWrapper<PostModel> wrapper = new QueryWrapper<>();
-        wrapper.eq("id", id);
-        return mbpPostMapper.selectOne(wrapper);
-    }
-
-
+    /**
+     * 实体查询
+     * @param model 实体
+     */
     public List<PostModel> findByModel(PostModel model) {
         QueryWrapper<PostModel> queryWrapper = new QueryWrapper<>(model);
         queryWrapper.orderByDesc("create_date");

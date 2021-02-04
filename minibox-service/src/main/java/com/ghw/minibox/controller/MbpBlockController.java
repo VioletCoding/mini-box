@@ -14,7 +14,7 @@ import java.util.List;
 
 /**
  * @author Violet
- * @description
+ * @description 版块控制层
  * @date 2021/2/1
  */
 @RestController
@@ -23,6 +23,12 @@ public class MbpBlockController {
     @Resource
     private MbpBlockServiceImpl blockService;
 
+    /**
+     * 版块列表，可以条件查询
+     *
+     * @param blockModel 实体
+     * @return 版块列表
+     */
     @PostMapping("list")
     public ResultVo list(@RequestBody(required = false) BlockModel blockModel) {
         List<BlockModel> blockModelList = blockService.findByModel(blockModel);

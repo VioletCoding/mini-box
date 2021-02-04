@@ -44,7 +44,6 @@ public class MbpOrderServiceImpl {
      * @param userId      用户id
      * @param gameId      游戏id
      * @param successFlag 是否成功
-     * @return
      */
     public boolean buyFlag(Long userId, Long gameId, String successFlag) {
         OrderModel mbOrder = new OrderModel();
@@ -107,7 +106,6 @@ public class MbpOrderServiceImpl {
      */
     @Transactional(rollbackFor = Throwable.class)
     public boolean submit(OrderModel orderModel) {
-
         //Redis key格式： order:用户id:游戏id:orderId
         String key = RedisUtil.ORDER_PREFIX + orderModel.getUserId() + ":" + orderModel.getGameId();
         String value = redisUtil.get(key);

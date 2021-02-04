@@ -24,28 +24,28 @@ import java.util.Date;
 public class BlockModel implements Serializable {
     private static final long serialVersionUID = 820635847901764243L;
 
-    @ApiModelProperty(notes = "主键")
+    @ApiModelProperty("主键")
     private Long id;
 
-    @ApiModelProperty(notes = "版块（社区）名称")
+    @ApiModelProperty("版块（社区）名称")
     @NotBlank(message = "版块名称不能为空")
     private String name;
 
     @NotBlank(message = "版块图片不能为空")
     private String photoLink;
 
-    @ApiModelProperty(notes = "关联的游戏id")
+    @ApiModelProperty("关联的游戏id")
     @NotNull(message = "版块关联的游戏不能为空")
     private Long gameId;
 
-    @ApiModelProperty(notes = "记录状态，0有效，1无效")
+    @ApiModelProperty("记录状态，0有效，1无效")
     private String state;
 
-    @ApiModelProperty(notes = "创建时间")
+    @ApiModelProperty("创建时间")
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     private Date createTime;
 
-    @ApiModelProperty(notes = "更新时间")
+    @ApiModelProperty("更新时间")
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     private Date updateTime;
 }

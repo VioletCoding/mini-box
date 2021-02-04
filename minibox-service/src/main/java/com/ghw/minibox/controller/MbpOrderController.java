@@ -25,6 +25,12 @@ public class MbpOrderController {
     @Resource
     private MbpOrderServiceImpl orderService;
 
+    /**
+     * 生成订单
+     *
+     * @param orderModel 实体
+     * @return 订单信息
+     */
     @ApiOperation("生成订单")
     @PostMapping("add")
     public ResultVo generateOrder(@RequestBody @Validated OrderModel orderModel) throws JsonProcessingException {
@@ -32,6 +38,12 @@ public class MbpOrderController {
         return Result.success(generateOrder);
     }
 
+    /**
+     * 下单、确认订单
+     *
+     * @param orderModel 实体
+     * @return 是否成功
+     */
     @ApiOperation("确认订单")
     @PostMapping("confirm")
     public ResultVo confirmOrder(@RequestBody @Validated OrderModel orderModel) {
@@ -42,6 +54,12 @@ public class MbpOrderController {
         return Result.successFlag(b);
     }
 
+    /**
+     * 取消订单
+     *
+     * @param orderModel 实体
+     * @return 是否成功
+     */
     @ApiOperation("取消订单")
     @PostMapping("cancel")
     public ResultVo cancelOrder(@RequestBody @Validated OrderModel orderModel) {

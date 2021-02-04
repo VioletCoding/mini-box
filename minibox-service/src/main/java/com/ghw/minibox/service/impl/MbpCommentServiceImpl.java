@@ -19,6 +19,12 @@ public class MbpCommentServiceImpl {
     @Resource
     private MbpCommentMapper mbpCommentMapper;
 
+    /**
+     * 发表评论
+     *
+     * @param model 实体
+     * @return 是否成功
+     */
     @Transactional(rollbackFor = Throwable.class)
     public boolean save(CommentModel model) {
 

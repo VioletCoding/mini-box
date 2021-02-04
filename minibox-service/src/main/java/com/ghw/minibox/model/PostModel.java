@@ -24,7 +24,7 @@ import java.util.Date;
 public class PostModel implements Serializable {
     private static final long serialVersionUID = -34132088850314000L;
 
-    @ApiModelProperty(notes = "主键")
+    @ApiModelProperty("主键")
     private Long id;
 
     @ApiModelProperty("作者ID")
@@ -35,26 +35,26 @@ public class PostModel implements Serializable {
     @NotNull(message = "版块ID不能为空")
     private Long blockId;
 
-    @ApiModelProperty(notes = "帖子标题")
+    @ApiModelProperty("帖子标题")
     @NotBlank(message = "帖子标题不能为空")
     private String title;
 
-    @ApiModelProperty(notes = "帖子内容")
+    @ApiModelProperty("帖子内容")
     @NotBlank(message = "帖子内容不能为空")
     private String content;
 
-    @ApiModelProperty(notes = "帖子封面图")
+    @ApiModelProperty("帖子封面图")
     @NotBlank(message = "帖子封面图不能为空")
     private String photoLink;
 
-    @ApiModelProperty(notes = "创建时间")
+    @ApiModelProperty("创建时间")
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     private Date createDate;
 
-    @ApiModelProperty(notes = "更新时间")
+    @ApiModelProperty("更新时间")
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     private Date updateDate;
 
-    @ApiModelProperty(notes = "状态，记录该条状态是否有效,1有效，0无效")
+    @ApiModelProperty("状态，记录该条状态是否有效,1有效，0无效")
     private String state;
 }

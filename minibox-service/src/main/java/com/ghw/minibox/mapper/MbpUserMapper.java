@@ -9,7 +9,7 @@ import java.util.List;
 
 /**
  * @author Violet
- * @description
+ * @description 用户 mapper
  * @date 2021/1/31
  */
 
@@ -25,16 +25,15 @@ public interface MbpUserMapper extends BaseMapper<UserModel> {
     /**
      * 设置用户的角色
      *
-     * @param id      用户id
+     * @param id     用户id
      * @param roleId 角色的id列表
-     * @return
      */
     int setUserRoles(@Param("id") Long id, @Param("roleId") Long roleId);
 
     /**
      * 查找用户详细信息，包括拥有的游戏
+     *
      * @param id 用户id
-     * @return
      */
     UserModel findUserDetail(Long id);
 
