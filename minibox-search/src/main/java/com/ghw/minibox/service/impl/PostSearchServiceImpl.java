@@ -1,8 +1,8 @@
 package com.ghw.minibox.service.impl;
 
-import com.ghw.minibox.es.ESMbPost;
+import com.ghw.minibox.es.ESPostModel;
 import com.ghw.minibox.repository.PostSearchRepository;
-import com.ghw.minibox.service.CommonService;
+import com.ghw.minibox.service.BaseService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -18,7 +18,7 @@ import javax.annotation.Resource;
  */
 @Service
 @Slf4j
-public class PostSearchImpl implements CommonService<ESMbPost> {
+public class PostSearchServiceImpl implements BaseService<ESPostModel> {
     @Resource
     private PostSearchRepository postSearchRepository;
 
@@ -31,7 +31,7 @@ public class PostSearchImpl implements CommonService<ESMbPost> {
      * @return 分页后的帖子数
      */
     @Override
-    public Page<ESMbPost> search(String title, Integer pageNum, Integer pageSize) {
+    public Page<ESPostModel> search(String title, Integer pageNum, Integer pageSize) {
         Pageable pageable = PageRequest.of(pageNum, pageSize);
         return postSearchRepository.findByTitleOrContent(title, title, pageable);
     }

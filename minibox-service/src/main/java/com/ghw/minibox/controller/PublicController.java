@@ -2,13 +2,11 @@ package com.ghw.minibox.controller;
 
 import cn.hutool.core.util.IdUtil;
 import com.ghw.minibox.component.QiNiuUtil;
+import com.ghw.minibox.service.impl.MbpEchartsServiceImpl;
 import com.ghw.minibox.utils.Result;
 import com.ghw.minibox.vo.ResultVo;
 import io.swagger.annotations.ApiOperation;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
@@ -28,6 +26,8 @@ import java.util.Map;
 public class PublicController {
     @Resource
     private QiNiuUtil qiNiuUtil;
+    @Resource
+    private MbpEchartsServiceImpl echartsService;
 
     @ApiOperation("上传文件公用接口,可多文件上传,单次单个文件最大3MB,单次全部文件加起来不能超过30MB")
     @PostMapping("upload")
@@ -45,5 +45,12 @@ public class PublicController {
         }
         map.put("images", linkList);
         return Result.success(map);
+    }
+
+    @ApiOperation("echarts数据接口")
+    @GetMapping("echarts")
+    public ResultVo echartsData() {
+        Map<String, Object> build = echartsService.build();
+        return Result.success(build);
     }
 }

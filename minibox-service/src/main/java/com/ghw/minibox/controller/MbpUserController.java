@@ -82,4 +82,64 @@ public class MbpUserController {
         return Result.successFlag(b);
     }
 
+    /**
+     * 用户列表
+     *
+     * @param userModel 实体
+     * @return 用户列表
+     */
+    @PostMapping("list")
+    public ResultVo userList(@RequestBody(required = false) UserModel userModel) {
+        List<UserModel> userModels = userService.userList(userModel);
+        return Result.success(userModels);
+    }
+
+    /**
+     * 查找用户以及每个用户的所有角色
+     *
+     * @param userModel 实例
+     * @return 列表
+     */
+    @PostMapping("withRoles")
+    public ResultVo userListWithRoles(@RequestBody(required = false) UserModel userModel) {
+        List<UserModel> userModels = userService.userListWithRoles(userModel);
+        return Result.success(userModels);
+    }
+
+    /**
+     * 赋予用户管理员角色
+     *
+     * @param id 用户id
+     * @return 用户列表
+     */
+    @GetMapping("addAdmin")
+    public ResultVo addUserAdmin(@RequestParam Long id) {
+        boolean b = userService.addUserAdminRole(id);
+        return Result.successFlag(b);
+    }
+
+    /**
+     * 删除用户管理员角色
+     *
+     * @param id 用户id
+     * @return 用户列表
+     */
+    @GetMapping("deleteAdmin")
+    public ResultVo deleteUserRoles(@RequestParam Long id) {
+        boolean b = userService.deleteUserAdmin(id);
+        return Result.successFlag(b);
+    }
+
+    /**
+     * 删除用户
+     *
+     * @param id 用户id
+     * @return 用户列表
+     */
+    @GetMapping("delete")
+    public ResultVo deleteUser(@RequestParam Long id) {
+        List<UserModel> userModels = userService.deleteUser(id);
+        return Result.success(userModels);
+    }
+
 }

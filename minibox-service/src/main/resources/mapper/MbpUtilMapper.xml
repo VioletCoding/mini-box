@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ghw.minibox.mapper.MbpUtilMapper">
+
+    <select id="commentPerDay" resultType="map">
+        SELECT DATE_FORMAT(c.create_date, '%Y-%m-%d') AS createDate,
+               COUNT(*)                               AS commentPerDay
+        FROM mb_comment AS c
+        GROUP BY DATE_FORMAT(c.create_date, '%Y-%m-%d');
+    </select>
+
+    <select id="postPerDay" resultType="map">
+        SELECT date_format(create_date, '%Y-%m-%d') AS createDate,
+               count(*)                             AS postPerDay
+        FROM mb_post
+        GROUP BY date_format(create_date, '%Y-%m-%d');
+    </select>
+
+    <select id="gameSalesRankings" resultType="map">
+        SELECT COUNT(mo.id) AS order_count,
+               mg.`name`
+        FROM mb_game mg
+                 LEFT JOIN mb_order mo ON mo.game_id = mg.id
+        GROUP BY mo.game_id
+        ORDER BY order_count DESC
+        LIMIT 10;
+    </select>
+
+
+</mapper>

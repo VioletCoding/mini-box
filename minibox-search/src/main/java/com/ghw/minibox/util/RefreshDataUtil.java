@@ -2,12 +2,13 @@ package com.ghw.minibox.util;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.ghw.minibox.es.ESMbGame;
-import com.ghw.minibox.es.ESMbPost;
+import com.ghw.minibox.es.ESGameModel;
+import com.ghw.minibox.es.ESPostModel;
 import com.ghw.minibox.feign.SearchFeignClient;
 import com.ghw.minibox.repository.GameSearchRepository;
 import com.ghw.minibox.repository.PostSearchRepository;
 import com.ghw.minibox.component.GenerateBean;
+import com.ghw.minibox.vo.ResultVo;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
@@ -37,15 +38,15 @@ public class RefreshDataUtil {
             postSearchRepository.deleteAll();
             gameSearchRepository.deleteAll();
 
-            Object posts = searchFeignClient.getDataFromService().getData();
-            Object games = searchFeignClient.getDataFromServiceGame().getData();
+            ResultVo postData = searchFeignClient.getPostData();
+            ResultVo gameData = searchFeignClient.getGameData();
 
             ObjectMapper objectMapper = generateBean.getObjectMapper();
-            List<ESMbPost> mbPosts = objectMapper.convertValue(posts, new TypeReference<List<ESMbPost>>() {
+            List<ESPostModel> mbPosts = objectMapper.convertValue(postData.getData(), new TypeReference<List<ESPostModel>>() {
             });
             postSearchRepository.saveAll(mbPosts);
             log.info("帖子的数据已更新完成!");
-            List<ESMbGame> mbGames = objectMapper.convertValue(games, new TypeReference<List<ESMbGame>>() {
+            List<ESGameModel> mbGames = objectMapper.convertValue(gameData.getData(), new TypeReference<List<ESGameModel>>() {
             });
             gameSearchRepository.saveAll(mbGames);
             log.info("游戏数据已更新完成!");

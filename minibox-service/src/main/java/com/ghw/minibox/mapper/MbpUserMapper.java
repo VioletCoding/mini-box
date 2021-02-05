@@ -23,12 +23,36 @@ public interface MbpUserMapper extends BaseMapper<UserModel> {
     List<RoleModel> findUserRoles(Long id);
 
     /**
+     * 查找用户以及每个用户的所有角色
+     *
+     * @param userModel 实例
+     * @return 列表
+     */
+    List<UserModel> findUserAndEveryUserRoles(UserModel userModel);
+
+    /**
      * 设置用户的角色
      *
      * @param id     用户id
      * @param roleId 角色的id列表
      */
     int setUserRoles(@Param("id") Long id, @Param("roleId") Long roleId);
+
+    /**
+     * 删除用户的角色
+     *
+     * @param userId 用户id
+     * @return 影响行数
+     */
+    int deleteUserRoles(Long userId);
+
+    /**
+     * 删除用户的管理员角色
+     *
+     * @param userId 用户id
+     * @return 影响行数
+     */
+    int deleteUserAdmin(Long userId);
 
     /**
      * 查找用户详细信息，包括拥有的游戏

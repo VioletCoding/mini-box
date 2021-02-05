@@ -1,6 +1,6 @@
 package com.ghw.minibox.repository;
 
-import com.ghw.minibox.es.ESMbPost;
+import com.ghw.minibox.es.ESPostModel;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.elasticsearch.repository.ElasticsearchRepository;
@@ -11,6 +11,6 @@ import org.springframework.data.elasticsearch.repository.ElasticsearchRepository
  * @date 2021/1/4
  */
 
-public interface PostSearchRepository extends ElasticsearchRepository<ESMbPost, Long> {
-    Page<ESMbPost> findByTitleOrContent(String title, String content, Pageable pageable);
+public interface PostSearchRepository extends ElasticsearchRepository<ESPostModel, Long> {
+    Page<ESPostModel> findByTitleOrContent(String title, String content, Pageable pageable);
 }

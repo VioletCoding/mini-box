@@ -65,4 +65,7 @@ public class UserModel implements Serializable {
 
     @TableField(exist = false)
     private List<GameModel> gameModelList;
+
+    @TableField(exist = false)
+    private List<RoleModel> roleModelList;
 }

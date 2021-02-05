@@ -59,7 +59,7 @@ public class GlobalExceptionHandler {
     public ResultVo emailException(EmailException e) {
         log.error("异常=>{}", new Date().toString());
         e.printStackTrace();
-        return Result.fail( "该邮箱不存在");
+        return Result.fail("该邮箱不存在");
     }
 
     /**
@@ -128,7 +128,7 @@ public class GlobalExceptionHandler {
     public ResultVo fileSizeLimitExceededException(FileSizeLimitExceededException e) {
         log.error("异常=>{}", new Date().toString());
         e.printStackTrace();
-        return Result.fail("文件大小超出限制，单个文件最大3MB");
+        return Result.fail("单个文件最大3MB,总文件大小最大30MB");
     }
 
     /**
@@ -139,7 +139,7 @@ public class GlobalExceptionHandler {
     public ResultVo maxUploadSizeExceededException(MaxUploadSizeExceededException e) {
         log.error("异常=>{}", new Date().toString());
         e.printStackTrace();
-        return Result.fail("文件大小超出限制，总文件大小最大30MB");
+        return Result.fail("单个文件最大3MB,总文件大小最大30MB");
     }
 
     @ExceptionHandler(MiniBoxException.class)

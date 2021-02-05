@@ -1,13 +1,18 @@
 package com.ghw.minibox.service.impl;
 
+import cn.hutool.core.util.StrUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.ghw.minibox.component.NimbusJoseJwt;
 import com.ghw.minibox.dto.PayloadDto;
+import com.ghw.minibox.exception.MiniBoxException;
 import com.ghw.minibox.mapper.MbpCommentMapper;
 import com.ghw.minibox.mapper.MbpPostMapper;
+import com.ghw.minibox.mapper.MbpReplyMapper;
 import com.ghw.minibox.mapper.MbpUserMapper;
 import com.ghw.minibox.model.CommentModel;
 import com.ghw.minibox.model.PostModel;
+import com.ghw.minibox.model.ReplyModel;
 import com.ghw.minibox.model.UserModel;
 import com.ghw.minibox.utils.DefaultColumn;
 import org.springframework.stereotype.Service;
@@ -24,7 +29,7 @@ import java.util.Map;
  * @date 2021/2/1
  */
 @Service
-public class MbpPostServiceImpl{
+public class MbpPostServiceImpl {
     @Resource
     private MbpPostMapper mbpPostMapper;
     @Resource
@@ -32,12 +37,15 @@ public class MbpPostServiceImpl{
     @Resource
     private MbpCommentMapper mbpCommentMapper;
     @Resource
+    private MbpReplyMapper mbpReplyMapper;
+    @Resource
     private NimbusJoseJwt nimbusJoseJwt;
 
     /**
      * 发表帖子之前
+     *
      * @param postModel 实体
-     * @param token token
+     * @param token     token
      */
     @Transactional(rollbackFor = Throwable.class)
     public boolean beforeSave(PostModel postModel, String token) throws Exception {
@@ -81,11 +89,60 @@ public class MbpPostServiceImpl{
 
     /**
      * 实体查询
+     *
      * @param model 实体
      */
     public List<PostModel> findByModel(PostModel model) {
+        String title = model.getTitle();
+        model.setTitle(null);
         QueryWrapper<PostModel> queryWrapper = new QueryWrapper<>(model);
+        if (!StrUtil.isBlank(title)) {
+            queryWrapper.like("title", title);
+        }
         queryWrapper.orderByDesc("create_date");
         return mbpPostMapper.selectList(queryWrapper);
+    }
+
+    /**
+     * 修改帖子信息
+     *
+     * @param postModel 实体
+     * @return 新的帖子列表
+     */
+    public List<PostModel> modifyPost(PostModel postModel) {
+        UpdateWrapper<PostModel> wrapper = new UpdateWrapper<>();
+        wrapper.eq("id", postModel.getId());
+        int update = mbpPostMapper.update(postModel, wrapper);
+        if (update > 0) {
+            return findByModel(new PostModel());
+        }
+        throw new MiniBoxException("修改失败");
+    }
+
+    /**
+     * 删除帖子，要把对应的评论和回复也删了
+     *
+     * @param id 帖子id
+     * @return 成功后返回新的帖子列表
+     */
+    @Transactional(rollbackFor = Throwable.class)
+    public List<PostModel> removePost(Long id) {
+        //帖子
+        QueryWrapper<PostModel> wrapper = new QueryWrapper<>();
+        wrapper.eq("id", id);
+        //评论
+        QueryWrapper<CommentModel> commentWrapper = new QueryWrapper<>();
+        commentWrapper.eq("post_id", id);
+        List<CommentModel> commentModels = mbpCommentMapper.selectList(commentWrapper);
+        //如果有评论，才删
+        if (commentModels.size() > 0) {
+            //回复
+            QueryWrapper<ReplyModel> replyWrapper = new QueryWrapper<>();
+            replyWrapper.eq("comment_id", commentModels.get(0).getId());
+            mbpReplyMapper.delete(replyWrapper);
+            mbpCommentMapper.delete(commentWrapper);
+        }
+        mbpPostMapper.delete(wrapper);
+        return findByModel(new PostModel());
     }
 }

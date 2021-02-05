@@ -5,12 +5,12 @@
         SELECT mr.id, mr.name
         FROM mb_role mr
                  LEFT JOIN mb_user_role mur
-                           ON mur.rid = mr.id
-        WHERE mur.uid = #{id}
+                           ON mur.roleId = mr.id
+        WHERE mur.userId = #{id}
     </select>
 
     <insert id="setUserRoles" useGeneratedKeys="true">
-        INSERT INTO mb_user_role(uid, rid)
+        INSERT INTO mb_user_role(userId, roleId)
         VALUES (#{id}, #{roleId});
     </insert>
 
@@ -45,4 +45,64 @@
         WHERE mu.id = #{id}
         ORDER BY mo.create_date DESC;
     </select>
+
+    <resultMap id="userAndRoles" type="com.ghw.minibox.model.UserModel">
+        <id property="id" column="id"/>
+        <result property="photoLink" column="photo_link"/>
+        <result property="nickname" column="nickname"/>
+        <result property="description" column="description"/>
+        <result property="username" column="username"/>
+        <result property="userState" column="user_state"/>
+        <result property="createDate" column="create_date"/>
+        <result property="updateDate" column="update_date"/>
+        <result property="state" column="state"/>
+        <collection property="roleModelList" ofType="com.ghw.minibox.model.RoleModel">
+            <id property="id" column="role_id"/>
+            <result property="name" column="role_name"/>
+        </collection>
+    </resultMap>
+
+    <select id="findUserAndEveryUserRoles" resultMap="userAndRoles">
+        SELECT mu.id,
+        mu.photo_link,
+        mu.nickname,
+        mu.description,
+        mu.username,
+        mu.user_state,
+        mu.create_date,
+        mu.update_date,
+        mu.state,
+        mr.id role_id,
+        mr.name role_name
+        FROM mb_user mu
+        LEFT JOIN mb_user_role mur ON mur.userId = mu.id
+        LEFT JOIN mb_role mr ON mr.id = mur.roleId
+        <where>
+            <if test="id != null">
+                AND mu.id = #{id}
+            </if>
+            <if test="nickname != null and nickname != '' ">
+                AND mu.nickname LIKE CONCAT('%',#{nickname},'%')
+            </if>
+            <if test="username != null and username != '' ">
+                AND mu.username = #{username}
+            </if>
+            <if test="userState != null and userState != '' ">
+                AND mu.user_state = #{userState}
+            </if>
+        </where>
+    </select>
+
+    <delete id="deleteUserRoles">
+        DELETE
+        FROM mb_user_role
+        WHERE userId = #{id}
+    </delete>
+
+    <delete id="deleteUserAdmin">
+        DELETE
+        FROM mb_user_role
+        WHERE userId = #{id}
+          AND roleId = 10001
+    </delete>
 </mapper>

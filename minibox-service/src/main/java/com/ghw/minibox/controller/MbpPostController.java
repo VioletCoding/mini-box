@@ -57,4 +57,28 @@ public class MbpPostController {
         return Result.successFlag(beforeSave);
     }
 
+    /**
+     * 修改帖子
+     *
+     * @param postModel 帖子实体
+     * @return 新的帖子列表
+     */
+    @PostMapping("modify")
+    public ResultVo postModify(@RequestBody PostModel postModel) {
+        List<PostModel> postModels = postService.modifyPost(postModel);
+        return Result.success(postModels);
+    }
+
+    /**
+     * 删除帖子
+     *
+     * @param id 帖子id
+     * @return 更新后的帖子信息
+     */
+    @GetMapping("del")
+    public ResultVo postDel(@RequestParam Long id) {
+        List<PostModel> postModels = postService.removePost(id);
+        return Result.success(postModels);
+    }
+
 }

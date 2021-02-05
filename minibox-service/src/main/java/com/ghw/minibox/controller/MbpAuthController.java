@@ -24,7 +24,7 @@ import java.util.Map;
  */
 @RestController
 @RequestMapping("authApi")
-public class AuthController {
+public class MbpAuthController {
     @Resource
     private MbpUserServiceImpl userService;
     @Resource

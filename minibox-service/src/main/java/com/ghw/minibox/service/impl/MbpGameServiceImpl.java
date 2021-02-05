@@ -1,15 +1,13 @@
 package com.ghw.minibox.service.impl;
 
+import cn.hutool.core.util.StrUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.ghw.minibox.mapper.MbpCommentMapper;
-import com.ghw.minibox.mapper.MbpGameMapper;
-import com.ghw.minibox.mapper.MbpPhotoMapper;
-import com.ghw.minibox.mapper.MbpTagMapper;
-import com.ghw.minibox.model.CommentModel;
-import com.ghw.minibox.model.GameModel;
-import com.ghw.minibox.model.PhotoModel;
-import com.ghw.minibox.model.TagModel;
+import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
+import com.ghw.minibox.exception.MiniBoxException;
+import com.ghw.minibox.mapper.*;
+import com.ghw.minibox.model.*;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
 import java.util.HashMap;
@@ -31,6 +29,8 @@ public class MbpGameServiceImpl {
     private MbpTagMapper mbpTagMapper;
     @Resource
     private MbpCommentMapper mbpCommentMapper;
+    @Resource
+    private MbpBlockMapper mbpBlockMapper;
 
     /**
      * 游戏详情里的内容，包括游戏信息、评分信息、评论信息
@@ -70,8 +70,53 @@ public class MbpGameServiceImpl {
      * @return 游戏列表
      */
     public List<GameModel> findByModel(GameModel model) {
+        String name = null;
+        if (model != null) {
+            name = model.getName();
+            model.setName(null);
+        }
         QueryWrapper<GameModel> wrapper = new QueryWrapper<>(model);
-        wrapper.select("id", "name", "price", "description", "origin_price", "photo_link");
+        if (!StrUtil.isBlank(name)) {
+            wrapper.like("name", name);
+        }
         return mbpGameMapper.selectList(wrapper);
+    }
+
+    /**
+     * 添加游戏
+     *
+     * @param gameModel 实体
+     * @return 返回游戏列表
+     */
+    @Transactional(rollbackFor = Throwable.class)
+    public List<GameModel> addGame(GameModel gameModel) {
+        int insert = mbpGameMapper.insert(gameModel);
+        if (insert > 0) {
+            return findByModel(null);
+        }
+        throw new MiniBoxException("添加失败");
+    }
+
+    @Transactional(rollbackFor = Throwable.class)
+    public List<GameModel> modifyGame(GameModel gameModel) {
+        if (gameModel.getId() == null) {
+            throw new MiniBoxException("游戏ID为空");
+        }
+        UpdateWrapper<GameModel> wrapper = new UpdateWrapper<>();
+        wrapper.eq("id", gameModel.getId());
+        int update = mbpGameMapper.update(gameModel, wrapper);
+        if (update > 0) {
+            return findByModel(null);
+        }
+        throw new MiniBoxException("更新失败");
+    }
+
+    @Transactional(rollbackFor = Throwable.class)
+    public List<GameModel> removeGame(Long id) {
+        int i = mbpGameMapper.deleteById(id);
+        if (i > 0) {
+            return findByModel(null);
+        }
+        throw new MiniBoxException("删除失败");
     }
 }

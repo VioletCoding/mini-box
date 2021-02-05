@@ -1,6 +1,6 @@
 package com.ghw.minibox.repository;
 
-import com.ghw.minibox.es.ESMbGame;
+import com.ghw.minibox.es.ESGameModel;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.elasticsearch.repository.ElasticsearchRepository;
@@ -11,6 +11,6 @@ import org.springframework.data.elasticsearch.repository.ElasticsearchRepository
  * @date 2021/1/8
  */
 
-public interface GameSearchRepository extends ElasticsearchRepository<ESMbGame, Long> {
-    Page<ESMbGame> findByName(String name, Pageable pageable);
+public interface GameSearchRepository extends ElasticsearchRepository<ESGameModel, Long> {
+    Page<ESGameModel> findByName(String name, Pageable pageable);
 }

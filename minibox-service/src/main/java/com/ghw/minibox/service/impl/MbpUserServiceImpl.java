@@ -9,13 +9,8 @@ import com.ghw.minibox.component.NimbusJoseJwt;
 import com.ghw.minibox.component.RedisUtil;
 import com.ghw.minibox.dto.PayloadDto;
 import com.ghw.minibox.exception.MiniBoxException;
-import com.ghw.minibox.mapper.MbpCommentMapper;
-import com.ghw.minibox.mapper.MbpPostMapper;
-import com.ghw.minibox.mapper.MbpUserMapper;
-import com.ghw.minibox.model.CommentModel;
-import com.ghw.minibox.model.PostModel;
-import com.ghw.minibox.model.RoleModel;
-import com.ghw.minibox.model.UserModel;
+import com.ghw.minibox.mapper.*;
+import com.ghw.minibox.model.*;
 import com.ghw.minibox.utils.AopLog;
 import com.ghw.minibox.utils.DefaultColumn;
 import com.ghw.minibox.utils.SendEmail;
@@ -28,10 +23,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Random;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -47,6 +39,8 @@ public class MbpUserServiceImpl {
     @Resource
     private MbpPostMapper mbpPostMapper;
     @Resource
+    private MbpReplyMapper mbpReplyMapper;
+    @Resource
     private MbpCommentMapper mbpCommentMapper;
     @Resource
     private SendEmail sendEmail;
@@ -54,6 +48,8 @@ public class MbpUserServiceImpl {
     private RedisUtil redisUtil;
     @Resource
     private NimbusJoseJwt nimbusJoseJwt;
+    @Resource
+    private MbpOrderMapper mbpOrderMapper;
 
     /**
      * 校验这个用户名是否已经被注册
@@ -248,7 +244,7 @@ public class MbpUserServiceImpl {
     public HashMap<String, Object> usingPasswordLogin(String username, String password) throws JsonProcessingException, JOSEException {
         String md5 = SecureUtil.md5(password);
         QueryWrapper<UserModel> wrapper = new QueryWrapper<>();
-        wrapper.select("username", "password", "id", "nickname", "description", "photo_link")
+        wrapper.select("password", "id", "nickname", "description", "photo_link")
                 .eq("username", username);
         UserModel userModel = mbpUserMapper.selectOne(wrapper);
         if (userModel == null) {
@@ -256,9 +252,12 @@ public class MbpUserServiceImpl {
         }
         if (userModel.getPassword().equals(md5)) {
             HashMap<String, Object> map = new HashMap<>();
+            userModel.setPassword(null);
             map.put("userInfo", userModel);
             List<RoleModel> roles = mbpUserMapper.findUserRoles(userModel.getId());
             List<String> roleNames = roles.stream().map(RoleModel::getName).collect(Collectors.toList());
+            boolean admin = roleNames.stream().anyMatch(role -> role.equals("ADMIN"));
+            map.put("adminFlag", admin);
             PayloadDto payloadDto = nimbusJoseJwt.buildToken(userModel.getUsername(), 604800L, roleNames);
             String token = nimbusJoseJwt.generateTokenByHMAC(payloadDto);
             redisUtil.set(RedisUtil.TOKEN_PREFIX + userModel.getUsername(), token, 604800);
@@ -267,6 +266,89 @@ public class MbpUserServiceImpl {
         } else {
             throw new MiniBoxException("密码不正确");
         }
+    }
+
+    /**
+     * 用户列表
+     *
+     * @param userModel 实体
+     * @return 用户列表
+     */
+    public List<UserModel> userList(UserModel userModel) {
+        QueryWrapper<UserModel> wrapper = new QueryWrapper<>(userModel);
+        return mbpUserMapper.selectList(wrapper);
+    }
+
+    /**
+     * 查找用户以及每个用户的所有角色
+     *
+     * @param userModel 实例
+     * @return 列表
+     */
+    public List<UserModel> userListWithRoles(UserModel userModel) {
+        return mbpUserMapper.findUserAndEveryUserRoles(userModel);
+    }
+
+    /**
+     * 赋予用户管理员角色
+     *
+     * @param userId 用户id
+     * @return 用户列表
+     */
+    @Transactional(rollbackFor = Throwable.class)
+    public boolean addUserAdminRole(Long userId) {
+        List<RoleModel> userRoles = mbpUserMapper.findUserRoles(userId);
+        boolean anyMatch = userRoles.stream().anyMatch(roleModel -> roleModel.getName().equals(UserRole.ADMIN.getRole()));
+        if (anyMatch) {
+            throw new MiniBoxException("该用户已经是管理员");
+        }
+        return mbpUserMapper.setUserRoles(userId, UserRole.ADMIN.getRoleId()) > 0;
+    }
+
+    /**
+     * 删除用户管理员角色
+     *
+     * @param userId 用户id
+     * @return 用户列表
+     */
+    public boolean deleteUserAdmin(Long userId) {
+        return mbpUserMapper.deleteUserAdmin(userId) > 0;
+    }
+
+    /**
+     * 删除用户以及所有相关内容
+     *
+     * @param id 用户id
+     * @return 用户列表
+     */
+    @Transactional(rollbackFor = Throwable.class)
+    public List<UserModel> deleteUser(Long id) {
+        UserModel userModel = mbpUserMapper.selectById(id);
+        if (userModel != null) {
+            //删回复
+            QueryWrapper<ReplyModel> roleWrapper = new QueryWrapper<>();
+            roleWrapper.eq("user_id", id);
+            int deleteReply = mbpReplyMapper.delete(roleWrapper);
+            //删评论
+            QueryWrapper<CommentModel> commentWrapper = new QueryWrapper<>();
+            commentWrapper.eq("user_id", id);
+            int deleteComment = mbpCommentMapper.delete(commentWrapper);
+            //删帖子
+            QueryWrapper<PostModel> postWrapper = new QueryWrapper<>();
+            postWrapper.eq("author_id", id);
+            int deletePost = mbpPostMapper.delete(postWrapper);
+            //删订单
+            QueryWrapper<OrderModel> orderWrapper = new QueryWrapper<>();
+            orderWrapper.eq("user_id", id);
+            int deleteOrder = mbpOrderMapper.delete(orderWrapper);
+            //删角色
+            int deleteUserRoles = mbpUserMapper.deleteUserRoles(id);
+            if (deleteReply > 0 && deleteComment > 0 && deletePost > 0 && deleteOrder > 0 && deleteUserRoles > 0) {
+                return userList(null);
+            }
+            throw new MiniBoxException("删除失败");
+        }
+        throw new MiniBoxException("未找到该用户");
     }
 
 }
