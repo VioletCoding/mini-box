@@ -68,17 +68,15 @@ public class GlobalGatewayFilter implements GlobalFilter, Ordered {
     public Mono<Void> filter(ServerWebExchange exchange, GatewayFilterChain chain) {
         //如果未启用网关验证，则跳过
         if (!enableAuth.isEnableAuth()) {
-            log.error("没有开启网关鉴权,请求将直接放行,是否配置错误?");
+            log.error("没有开启网关鉴权,所有请求将直接放行,是否配置错误?");
             return chain.filter(exchange);
         }
-
         //类似于/user/xxx这样的路径
         String path = exchange.getRequest().getURI().getRawPath();
         //如果在忽略的url里，则跳过
         if (checkUrl(path)) {
             return chain.filter(exchange);
         }
-
         ServerHttpRequest request = exchange.getRequest();
         ServerHttpResponse response = exchange.getResponse();
         String token = request.getHeaders().getFirst("accessToken");
@@ -92,7 +90,6 @@ public class GlobalGatewayFilter implements GlobalFilter, Ordered {
             PayloadDto payloadDto = jwt.verifyTokenByHMAC(token);
             String username = payloadDto.getUsername();
             String tokenInRedis = redisUtil.get(RedisUtil.TOKEN_PREFIX + username);
-
             if (StringUtils.isNullOrEmpty(tokenInRedis)) {
                 response.setStatusCode(HttpStatus.UNAUTHORIZED);
                 return getVoidMono(response, Result.fail(ResultCode.UNAUTHORIZED));
@@ -101,13 +98,11 @@ public class GlobalGatewayFilter implements GlobalFilter, Ordered {
                 response.setStatusCode(HttpStatus.UNAUTHORIZED);
                 return getVoidMono(response, Result.fail(ResultCode.UNAUTHORIZED));
             }
-
         } catch (Exception e) {
             log.error(e.getMessage());
             response.setStatusCode(HttpStatus.UNAUTHORIZED);
             return getVoidMono(response, Result.fail(ResultCode.UNAUTHORIZED));
         }
-        //放行
         return chain.filter(exchange);
     }
 

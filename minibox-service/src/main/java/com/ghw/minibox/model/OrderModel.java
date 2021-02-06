@@ -45,11 +45,11 @@ public class OrderModel {
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     private Date createDate;
 
-    @ApiModelProperty(notes = "订单更新时间")
+    @ApiModelProperty("订单更新时间")
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     private Date updateDate;
 
-    @ApiModelProperty(notes = "数据状态，0可用，1禁用")
+    @ApiModelProperty("数据状态，1可用，0禁用")
     private String state;
 
     @ApiModelProperty("订单是否交易成功")

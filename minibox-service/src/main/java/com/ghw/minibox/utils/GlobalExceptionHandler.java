@@ -59,7 +59,7 @@ public class GlobalExceptionHandler {
     public ResultVo emailException(EmailException e) {
         log.error("异常=>{}", new Date().toString());
         e.printStackTrace();
-        return Result.fail("该邮箱不存在");
+        return Result.fail("邮件发送失败");
     }
 
     /**
@@ -105,7 +105,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(QiniuException.class)
     public ResultVo qiNiuException(QiniuException e) {
         log.error("异常=>{}", e.response.toString());
-        return Result.fail("文件上传失败");
+        return Result.fail("上传失败");
     }
 
     /**
@@ -128,7 +128,7 @@ public class GlobalExceptionHandler {
     public ResultVo fileSizeLimitExceededException(FileSizeLimitExceededException e) {
         log.error("异常=>{}", new Date().toString());
         e.printStackTrace();
-        return Result.fail("单个文件最大3MB,总文件大小最大30MB");
+        return Result.fail("单个文件最大3MB,总文件最大30MB");
     }
 
     /**
@@ -139,9 +139,12 @@ public class GlobalExceptionHandler {
     public ResultVo maxUploadSizeExceededException(MaxUploadSizeExceededException e) {
         log.error("异常=>{}", new Date().toString());
         e.printStackTrace();
-        return Result.fail("单个文件最大3MB,总文件大小最大30MB");
+        return Result.fail("单个文件最大3MB,总文件最大30MB");
     }
 
+    /**
+     * 自定义异常 继承自 运行时异常，与运行时异常区分开
+     */
     @ExceptionHandler(MiniBoxException.class)
     public ResultVo miniBoxException(MiniBoxException e) {
         log.error("异常=>{}", new Date().toString());

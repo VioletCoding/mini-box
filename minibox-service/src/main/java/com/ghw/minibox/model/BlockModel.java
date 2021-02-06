@@ -38,7 +38,7 @@ public class BlockModel implements Serializable {
     @NotNull(message = "版块关联的游戏不能为空")
     private Long gameId;
 
-    @ApiModelProperty("记录状态，0有效，1无效")
+    @ApiModelProperty("记录状态，1有效，0无效")
     private String state;
 
     @ApiModelProperty("创建时间")

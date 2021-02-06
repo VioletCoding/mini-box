@@ -32,8 +32,8 @@ public class RoleModel implements Serializable {
     @NotEmpty(message = "角色名称不能为空")
     private String name;
 
-    @ApiModelProperty("状态，记录当前记录是否有效，0有效，1无效")
-    private Integer state;
+    @ApiModelProperty("状态，记录当前记录是否有效，1有效，0无效")
+    private String state;
 
     @ApiModelProperty("创建时间")
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")

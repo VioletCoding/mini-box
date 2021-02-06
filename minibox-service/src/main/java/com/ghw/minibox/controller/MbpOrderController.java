@@ -48,7 +48,7 @@ public class MbpOrderController {
     @PostMapping("confirm")
     public ResultVo confirmOrder(@RequestBody @Validated OrderModel orderModel) {
         if (orderModel.getOrderId() == null) {
-            return Result.fail();
+            return Result.fail("订单ID为空");
         }
         boolean b = orderService.submit(orderModel);
         return Result.successFlag(b);

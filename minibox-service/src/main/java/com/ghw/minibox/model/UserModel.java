@@ -60,7 +60,7 @@ public class UserModel implements Serializable {
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     private Date updateDate;
 
-    @ApiModelProperty("状态，记录当前记录是否有效，0有效，1无效")
+    @ApiModelProperty("状态，记录当前记录是否有效，1有效，0无效")
     private String state;
 
     @TableField(exist = false)
