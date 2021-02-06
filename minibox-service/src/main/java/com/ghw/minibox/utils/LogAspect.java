@@ -74,8 +74,7 @@ public class LogAspect {
         //获取这个方法
         Method method = signature.getMethod();
         //获取方法名字
-        String methodName = signature.getName();
-
+        String methodName = method.getName();
         log.info("开始执行{}方法", methodName);
         //自定义Bean，保存操作信息
         AopBean aopBean = new AopBean();
@@ -94,7 +93,6 @@ public class LogAspect {
         //获取方法入参列表
         LocalVariableTableParameterNameDiscoverer u = new LocalVariableTableParameterNameDiscoverer();
         String[] paramNames = u.getParameterNames(method);
-
         if (args != null && paramNames != null) {
             StringBuilder params = new StringBuilder();
             for (int i = 0; i < args.length; i++) {

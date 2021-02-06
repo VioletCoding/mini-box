@@ -1,9 +1,11 @@
 package com.ghw.minibox.controller;
 
+import cn.hutool.core.util.StrUtil;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.ghw.minibox.component.NimbusJoseJwt;
 import com.ghw.minibox.component.RedisUtil;
 import com.ghw.minibox.dto.PayloadDto;
+import com.ghw.minibox.exception.MiniBoxException;
 import com.ghw.minibox.model.UserModel;
 import com.ghw.minibox.service.impl.MbpUserServiceImpl;
 import com.ghw.minibox.utils.Result;
@@ -50,10 +52,13 @@ public class MbpAuthController {
      * @param authCode 验证码
      */
     @PostMapping("auth")
-    public ResultVo signInOrSignUp(@RequestParam String username, @RequestParam String authCode)
+    public ResultVo signInOrSignUp(String username, String authCode)
             throws JsonProcessingException, JOSEException {
+        if (StrUtil.isBlank(username) || StrUtil.isBlank(authCode)) {
+            throw new MiniBoxException("用户名或验证码为空");
+        }
         if (authCode.length() < 6) {
-            return Result.fail("验证码错误");
+            throw new MiniBoxException("验证码错误");
         }
         Map<String, Object> service = userService.service(username, authCode);
         return Result.success(service);

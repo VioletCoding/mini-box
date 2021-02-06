@@ -12,6 +12,7 @@ import com.ghw.minibox.mapper.MbpOrderMapper;
 import com.ghw.minibox.model.GameModel;
 import com.ghw.minibox.model.OrderModel;
 import com.ghw.minibox.utils.OrderUtil;
+import com.ghw.minibox.utils.ResultCode;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -26,7 +27,6 @@ import java.util.List;
  */
 @Service
 public class MbpOrderServiceImpl {
-
     @Resource
     private MbpOrderMapper mbpOrderMapper;
     @Resource
@@ -64,23 +64,20 @@ public class MbpOrderServiceImpl {
     public Object create(OrderModel orderModel) throws JsonProcessingException {
         //检测下是否已经购买过了
         if (this.buyFlag(orderModel.getUserId(), orderModel.getGameId(), orderUtil.SUCCESS)) {
-            throw new MiniBoxException("您已经购买过此游戏了");
+            throw new MiniBoxException(ResultCode.ORDER_PAYED.getMessage());
         }
-
         //是否创建了订单，超时时间5分钟，如果创建了就直接return订单信息
         String value = redisUtil.get(RedisUtil.ORDER_PREFIX + orderModel.getUserId() + orderModel.getGameId());
         if (!StrUtil.isBlank(value)) {
             return value;
         }
-
         //检验一下游戏是否可购买
         QueryWrapper<GameModel> gameModelQueryWrapper = new QueryWrapper<>();
         gameModelQueryWrapper.eq("id", orderModel.getGameId());
         GameModel gameModel = mbpGameMapper.selectOne(gameModelQueryWrapper);
         if (gameModel == null) {
-            throw new MiniBoxException("此游戏暂时不可购买");
+            throw new MiniBoxException(ResultCode.GAME_CANT_BE_BUY.getMessage());
         }
-
         //生成订单号
         Long orderId = orderUtil.getOrderId();
         orderModel.setOrderId(orderId);
@@ -112,7 +109,6 @@ public class MbpOrderServiceImpl {
         if (StrUtil.isBlank(value)) {
             return false;
         }
-
         orderModel.setSuccessFlag(orderUtil.SUCCESS);
         //插入订单信息
         int insert = mbpOrderMapper.insert(orderModel);

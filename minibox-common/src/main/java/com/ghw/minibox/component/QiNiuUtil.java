@@ -21,7 +21,6 @@ import java.io.InputStream;
 @Component
 public class QiNiuUtil {
     public static final String defaultPhotoLink = "http://qnbtg7yhm.hn-bkt.clouddn.com/default.jpg";
-    public static final String qiNiuLink = "http://qnbtg7yhm.hn-bkt.clouddn.com/";
     private static final String ak = "OeZ3mKc0cwT2RVq-i6tmtmPj55xOp1NdT_6U4NHU";
     private static final String sk = "NG3slWtnHU_lFhI7FimGzfF_hke9LTq9yHDn7OFV";
     private static final String bucket = "minibox-bucket-3";

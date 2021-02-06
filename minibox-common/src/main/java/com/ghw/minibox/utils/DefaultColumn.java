@@ -15,8 +15,6 @@ public enum DefaultColumn {
     NICKNAME("用户_" + IdUtil.objectId()),
     //初始个人描述
     DESCRIPTION("写点什么吧"),
-    //初始头像
-    PHOTO_LINK("http://qnbtg7yhm.hn-bkt.clouddn.com/default.jpg"),
     //初始密码，随机且唯一
     PASSWORD(IdUtil.fastSimpleUUID()),
     //初始状态

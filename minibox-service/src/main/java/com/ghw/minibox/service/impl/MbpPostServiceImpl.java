@@ -3,8 +3,6 @@ package com.ghw.minibox.service.impl;
 import cn.hutool.core.util.StrUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
-import com.ghw.minibox.component.NimbusJoseJwt;
-import com.ghw.minibox.dto.PayloadDto;
 import com.ghw.minibox.exception.MiniBoxException;
 import com.ghw.minibox.mapper.MbpCommentMapper;
 import com.ghw.minibox.mapper.MbpPostMapper;
@@ -38,24 +36,13 @@ public class MbpPostServiceImpl {
     private MbpCommentMapper mbpCommentMapper;
     @Resource
     private MbpReplyMapper mbpReplyMapper;
-    @Resource
-    private NimbusJoseJwt nimbusJoseJwt;
-
     /**
-     * 发表帖子之前
+     * 发表帖子
      *
      * @param postModel 实体
-     * @param token     token
      */
     @Transactional(rollbackFor = Throwable.class)
-    public boolean beforeSave(PostModel postModel, String token) throws Exception {
-        PayloadDto payloadDto = nimbusJoseJwt.verifyTokenByHMAC(token);
-        QueryWrapper<UserModel> queryWrapper = new QueryWrapper<>();
-        queryWrapper.eq("username", payloadDto.getUsername());
-        UserModel userModel = mbpUserMapper.selectOne(queryWrapper);
-        if (userModel == null) {
-            return false;
-        }
+    public boolean beforeSave(PostModel postModel) throws Exception {
         postModel.setState(DefaultColumn.STATE.getMessage());
         return mbpPostMapper.insert(postModel) > 0;
     }
@@ -93,8 +80,11 @@ public class MbpPostServiceImpl {
      * @param model 实体
      */
     public List<PostModel> findByModel(PostModel model) {
-        String title = model.getTitle();
-        model.setTitle(null);
+        String title = null;
+        if (model != null) {
+            title = model.getTitle();
+            model.setTitle(null);
+        }
         QueryWrapper<PostModel> queryWrapper = new QueryWrapper<>(model);
         if (!StrUtil.isBlank(title)) {
             queryWrapper.like("title", title);
@@ -139,10 +129,16 @@ public class MbpPostServiceImpl {
             //回复
             QueryWrapper<ReplyModel> replyWrapper = new QueryWrapper<>();
             replyWrapper.eq("comment_id", commentModels.get(0).getId());
-            mbpReplyMapper.delete(replyWrapper);
-            mbpCommentMapper.delete(commentWrapper);
+            int deleteReply = mbpReplyMapper.delete(replyWrapper);
+            int deleteComment = mbpCommentMapper.delete(commentWrapper);
+            if (!(deleteComment > 0) && !(deleteReply > 0)) {
+                throw new MiniBoxException("删除失败");
+            }
         }
-        mbpPostMapper.delete(wrapper);
-        return findByModel(new PostModel());
+        int deletePost = mbpPostMapper.delete(wrapper);
+        if (deletePost > 0) {
+            return findByModel(new PostModel());
+        }
+        throw new MiniBoxException("删除失败");
     }
 }

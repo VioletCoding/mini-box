@@ -29,8 +29,6 @@ public class MbpGameServiceImpl {
     private MbpTagMapper mbpTagMapper;
     @Resource
     private MbpCommentMapper mbpCommentMapper;
-    @Resource
-    private MbpBlockMapper mbpBlockMapper;
 
     /**
      * 游戏详情里的内容，包括游戏信息、评分信息、评论信息
@@ -97,6 +95,12 @@ public class MbpGameServiceImpl {
         throw new MiniBoxException("添加失败");
     }
 
+    /**
+     * 修改游戏
+     *
+     * @param gameModel 实体
+     * @return 新的游戏列表
+     */
     @Transactional(rollbackFor = Throwable.class)
     public List<GameModel> modifyGame(GameModel gameModel) {
         if (gameModel.getId() == null) {
@@ -111,6 +115,12 @@ public class MbpGameServiceImpl {
         throw new MiniBoxException("更新失败");
     }
 
+    /**
+     * 删除游戏
+     *
+     * @param id 游戏id
+     * @return 新的游戏列表
+     */
     @Transactional(rollbackFor = Throwable.class)
     public List<GameModel> removeGame(Long id) {
         int i = mbpGameMapper.deleteById(id);

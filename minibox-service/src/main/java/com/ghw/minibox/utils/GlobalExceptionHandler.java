@@ -3,8 +3,8 @@ package com.ghw.minibox.utils;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.ghw.minibox.component.NimbusJoseJwt;
-import com.ghw.minibox.vo.ResultVo;
 import com.ghw.minibox.exception.MiniBoxException;
+import com.ghw.minibox.vo.ResultVo;
 import com.nimbusds.jose.JOSEException;
 import com.qiniu.common.QiniuException;
 import lombok.extern.slf4j.Slf4j;
@@ -17,7 +17,6 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.multipart.MaxUploadSizeExceededException;
 
 import java.io.UnsupportedEncodingException;
-import java.util.Date;
 
 /**
  * @author Violet
@@ -33,7 +32,7 @@ public class GlobalExceptionHandler {
      */
     @ExceptionHandler(NullPointerException.class)
     public ResultVo nullPointException(NullPointerException e) {
-        log.error("异常=>{}", new Date().toString());
+        log.error("异常=>{}", e.getMessage());
         e.printStackTrace();
         return Result.fail();
     }
@@ -44,7 +43,7 @@ public class GlobalExceptionHandler {
      */
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResultVo methodArgumentNotValidException(MethodArgumentNotValidException e) {
-        log.error("异常=>{}", new Date().toString());
+        log.error("异常=>{}", e.getMessage());
         e.printStackTrace();
         ObjectError objectError = e.getBindingResult().getAllErrors().get(0);
         return Result.fail(objectError.getDefaultMessage());
@@ -57,7 +56,7 @@ public class GlobalExceptionHandler {
      */
     @ExceptionHandler(EmailException.class)
     public ResultVo emailException(EmailException e) {
-        log.error("异常=>{}", new Date().toString());
+        log.error("异常=>{}", e.getMessage());
         e.printStackTrace();
         return Result.fail("邮件发送失败");
     }
@@ -69,7 +68,7 @@ public class GlobalExceptionHandler {
      */
     @ExceptionHandler(InterruptedException.class)
     public ResultVo interruptedException(InterruptedException e) {
-        log.error("异常=>{}", new Date().toString());
+        log.error("异常=>{}", e.getMessage());
         e.printStackTrace();
         return Result.fail();
     }
@@ -79,7 +78,7 @@ public class GlobalExceptionHandler {
      */
     @ExceptionHandler(JsonProcessingException.class)
     public ResultVo jsonProcessingException(JsonProcessingException e) {
-        log.error("异常=>{}", new Date().toString());
+        log.error("异常=>{}", e.getMessage());
         e.printStackTrace();
         return Result.fail("Json解析失败");
     }
@@ -92,7 +91,7 @@ public class GlobalExceptionHandler {
      */
     @ExceptionHandler(JOSEException.class)
     public ResultVo jOSEException(JOSEException e) {
-        log.error("异常=>{}", new Date().toString());
+        log.error("异常=>{}", e.getMessage());
         e.printStackTrace();
         return Result.fail("jwt签发失败");
     }
@@ -114,7 +113,7 @@ public class GlobalExceptionHandler {
      */
     @ExceptionHandler(UnsupportedEncodingException.class)
     public ResultVo unSupportedEncodingException(UnsupportedEncodingException e) {
-        log.error("异常=>{}", new Date().toString());
+        log.error("异常=>{}", e.getMessage());
         e.printStackTrace();
         return Result.fail("文件编码解析失败");
     }
@@ -126,7 +125,7 @@ public class GlobalExceptionHandler {
      */
     @ExceptionHandler(FileSizeLimitExceededException.class)
     public ResultVo fileSizeLimitExceededException(FileSizeLimitExceededException e) {
-        log.error("异常=>{}", new Date().toString());
+        log.error("异常=>{}", e.getMessage());
         e.printStackTrace();
         return Result.fail("单个文件最大3MB,总文件最大30MB");
     }
@@ -137,7 +136,7 @@ public class GlobalExceptionHandler {
      */
     @ExceptionHandler(MaxUploadSizeExceededException.class)
     public ResultVo maxUploadSizeExceededException(MaxUploadSizeExceededException e) {
-        log.error("异常=>{}", new Date().toString());
+        log.error("异常=>{}", e.getMessage());
         e.printStackTrace();
         return Result.fail("单个文件最大3MB,总文件最大30MB");
     }
@@ -147,7 +146,7 @@ public class GlobalExceptionHandler {
      */
     @ExceptionHandler(MiniBoxException.class)
     public ResultVo miniBoxException(MiniBoxException e) {
-        log.error("异常=>{}", new Date().toString());
+        log.error("异常=>{}", e.getMessage());
         e.printStackTrace();
         return Result.fail(e.getMessage());
     }

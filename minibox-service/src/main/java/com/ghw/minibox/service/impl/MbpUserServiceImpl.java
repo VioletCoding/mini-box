@@ -6,15 +6,13 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.ghw.minibox.component.NimbusJoseJwt;
+import com.ghw.minibox.component.QiNiuUtil;
 import com.ghw.minibox.component.RedisUtil;
 import com.ghw.minibox.dto.PayloadDto;
 import com.ghw.minibox.exception.MiniBoxException;
 import com.ghw.minibox.mapper.*;
 import com.ghw.minibox.model.*;
-import com.ghw.minibox.utils.AopLog;
-import com.ghw.minibox.utils.DefaultColumn;
-import com.ghw.minibox.utils.SendEmail;
-import com.ghw.minibox.utils.UserRole;
+import com.ghw.minibox.utils.*;
 import com.nimbusds.jose.JOSEException;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.mail.EmailException;
@@ -57,7 +55,6 @@ public class MbpUserServiceImpl {
      * @param username 邮箱
      * @return 存在返回true，不存在返回false
      */
-    @AopLog("检查用户是否存在")
     public boolean exist(String username) {
         QueryWrapper<UserModel> queryWrapper = new QueryWrapper<>();
         queryWrapper.select("username").eq("username", username);
@@ -122,7 +119,7 @@ public class MbpUserServiceImpl {
             }
             UserModel userModel = new UserModel();
             userModel.setUserState(DefaultColumn.USER_STATE_NORMAL.getMessage());
-            userModel.setPhotoLink(DefaultColumn.PHOTO_LINK.getMessage());
+            userModel.setPhotoLink(QiNiuUtil.defaultPhotoLink);
             userModel.setDescription(DefaultColumn.DESCRIPTION.getMessage());
             userModel.setPassword(DefaultColumn.PASSWORD.getMessage());
             userModel.setState(DefaultColumn.STATE.getMessage());
@@ -132,12 +129,10 @@ public class MbpUserServiceImpl {
             if (save > 0) {
                 int i = mbpUserMapper.setUserRoles(userModel.getId(), UserRole.USER.getRoleId());
                 return i > 0;
-            } else {
-                return false;
             }
-        } else {
-            throw new MiniBoxException("验证码不正确");
+            return false;
         }
+        throw new MiniBoxException("验证码不正确");
     }
 
     @AopLog("service方法")
@@ -163,11 +158,17 @@ public class MbpUserServiceImpl {
             redisUtil.set(RedisUtil.TOKEN_PREFIX + lowerCase, token, 604800);
             map.put("token", token);
             //验证码使用过后及时删除
-            redisUtil.remove(RedisUtil.AUTH_PREFIX + lowerCase);
-            return map;
-        } else {
-            throw new MiniBoxException("验证码不正确");
+            Boolean remove = redisUtil.remove(RedisUtil.AUTH_PREFIX + lowerCase);
+            if (remove) {
+                return map;
+            }
+            //一般不太可能走到这里
+            for (int i = 0; i < 3; i++) {
+                Boolean t = redisUtil.remove(RedisUtil.AUTH_PREFIX + lowerCase);
+                if (t) break;
+            }
         }
+        throw new MiniBoxException(ResultCode.AUTH_CODE_ERROR.getMessage());
     }
 
     /**
@@ -256,16 +257,15 @@ public class MbpUserServiceImpl {
             map.put("userInfo", userModel);
             List<RoleModel> roles = mbpUserMapper.findUserRoles(userModel.getId());
             List<String> roleNames = roles.stream().map(RoleModel::getName).collect(Collectors.toList());
-            boolean admin = roleNames.stream().anyMatch(role -> role.equals("ADMIN"));
+            boolean admin = roleNames.stream().anyMatch(role -> role.equals(UserRole.ADMIN.getRole()));
             map.put("adminFlag", admin);
             PayloadDto payloadDto = nimbusJoseJwt.buildToken(userModel.getUsername(), 604800L, roleNames);
             String token = nimbusJoseJwt.generateTokenByHMAC(payloadDto);
             redisUtil.set(RedisUtil.TOKEN_PREFIX + userModel.getUsername(), token, 604800);
             map.put("token", token);
             return map;
-        } else {
-            throw new MiniBoxException("密码不正确");
         }
+        throw new MiniBoxException("密码不正确");
     }
 
     /**
@@ -311,6 +311,7 @@ public class MbpUserServiceImpl {
      * @param userId 用户id
      * @return 用户列表
      */
+    @Transactional(rollbackFor = Throwable.class)
     public boolean deleteUserAdmin(Long userId) {
         return mbpUserMapper.deleteUserAdmin(userId) > 0;
     }
@@ -350,5 +351,4 @@ public class MbpUserServiceImpl {
         }
         throw new MiniBoxException("未找到该用户");
     }
-
 }

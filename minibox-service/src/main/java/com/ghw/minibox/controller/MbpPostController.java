@@ -8,7 +8,6 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
-import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 import java.util.Map;
 
@@ -52,8 +51,8 @@ public class MbpPostController {
      * @param request   为了拿token
      */
     @PostMapping("add")
-    public ResultVo postAdd(@RequestBody @Validated PostModel postModel, HttpServletRequest request) throws Exception {
-        boolean beforeSave = postService.beforeSave(postModel, request.getHeader("accessToken"));
+    public ResultVo postAdd(@RequestBody @Validated PostModel postModel) throws Exception {
+        boolean beforeSave = postService.beforeSave(postModel);
         return Result.successFlag(beforeSave);
     }
 

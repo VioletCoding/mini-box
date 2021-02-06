@@ -28,18 +28,22 @@ public class MbpEchartsServiceImpl {
     @Resource
     private MbpUtilMapper mbpUtilMapper;
 
+    //帖子数
     public Integer postNumber() {
         return mbpPostMapper.selectCount(null);
     }
 
+    //用户数
     public Integer userNumber() {
         return mbpUserMapper.selectCount(null);
     }
 
+    //游戏数
     public Integer gameNumber() {
         return mbpGameMapper.selectCount(null);
     }
 
+    //评论数+回复数 = 全部评论数
     public Integer commentNumber() {
         Integer count = mbpReplyMapper.selectCount(null);
         return mbpCommentMapper.selectCount(null) + count;
@@ -75,7 +79,7 @@ public class MbpEchartsServiceImpl {
         model.put("commentNumber", commentNumber);
         model.put("commentPerDay", commentPerDay);
         model.put("postPerDay", postPerDay);
-        model.put("gameSalesRanking",gameSalesRankings);
+        model.put("gameSalesRanking", gameSalesRankings);
         wrapper.put("echartsData", model);
         return wrapper;
     }

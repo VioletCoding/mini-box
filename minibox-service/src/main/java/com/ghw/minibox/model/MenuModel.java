@@ -27,4 +27,6 @@ public class MenuModel implements Serializable {
     private String menuIcon;
     @ApiModelProperty("菜单路由")
     private String menuUrl;
+    @ApiModelProperty("1可用0不可用")
+    private String state;
 }

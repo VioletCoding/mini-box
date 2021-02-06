@@ -53,9 +53,8 @@ public class MbpBlockServiceImpl {
         int insert = mbpBlockMapper.insert(blockModel);
         if (insert > 0) {
             return findByModel(null);
-        } else {
-            throw new MiniBoxException("添加失败");
         }
+        throw new MiniBoxException("添加失败");
     }
 
     @Transactional(rollbackFor = Throwable.class)
@@ -65,9 +64,8 @@ public class MbpBlockServiceImpl {
         int update = mbpBlockMapper.update(blockModel, wrapper);
         if (update > 0) {
             return findByModel(null);
-        } else {
-            throw new MiniBoxException("修改失败");
         }
+        throw new MiniBoxException("修改失败");
     }
 
     /**

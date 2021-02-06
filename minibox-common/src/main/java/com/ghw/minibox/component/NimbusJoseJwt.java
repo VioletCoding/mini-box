@@ -24,12 +24,10 @@ import java.util.List;
 @Component
 @Slf4j
 public class NimbusJoseJwt {
-
     @Resource
     private RedisUtil redisUtil;
     @Resource
     private GenerateBean generateBean;
-
     private static final String SECRET = "This JWT Sign By VioletEverGarden,this is a SpringCloud Web Project";
 
     /**
@@ -91,8 +89,9 @@ public class NimbusJoseJwt {
     public PayloadDto verifyTokenByHMAC(String token) throws Exception {
         JWSObject jwsObject = JWSObject.parse(token);
         MACVerifier verifier = new MACVerifier(SECRET);
-        if (!jwsObject.verify(verifier))
+        if (!jwsObject.verify(verifier)) {
             throw new MiniBoxException("token签名不合法");
+        }
         String payload = jwsObject.getPayload().toString();
         ObjectMapper objectMapper = generateBean.getObjectMapper();
         return objectMapper.readValue(payload, PayloadDto.class);

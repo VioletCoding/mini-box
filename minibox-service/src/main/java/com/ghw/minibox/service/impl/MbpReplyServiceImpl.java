@@ -15,10 +15,8 @@ import javax.annotation.Resource;
  */
 @Service
 public class MbpReplyServiceImpl {
-
     @Resource
     private MbpReplyMapper mbpReplyMapper;
-
     /**
      * 发表回复
      *

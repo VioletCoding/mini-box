@@ -9,30 +9,15 @@ import com.ghw.minibox.vo.ResultVo;
  */
 
 public class Result {
-
     public static ResultVo success() {
         return new ResultVo(ResultCode.OK.getCode(), ResultCode.OK.getMessage());
     }
 
     public static ResultVo successFlag(boolean b) {
-        if (b)
+        if (b) {
             return new ResultVo(ResultCode.OK.getCode(), ResultCode.OK.getMessage());
-        else
-            return new ResultVo(ResultCode.BAD_REQUEST.getCode(), ResultCode.BAD_REQUEST.getMessage());
-    }
-
-    public static ResultVo successFlag(boolean b, String failMessage) {
-        if (b)
-            return new ResultVo(ResultCode.OK.getCode(), ResultCode.OK.getMessage());
-        else
-            return new ResultVo(ResultCode.BAD_REQUEST.getCode(), failMessage);
-    }
-
-    public static ResultVo successFlag(boolean b, String failMessage, Object data) {
-        if (b)
-            return new ResultVo(ResultCode.OK.getCode(), ResultCode.OK.getMessage(), data);
-        else
-            return new ResultVo(ResultCode.BAD_REQUEST.getCode(), failMessage, data);
+        }
+        return new ResultVo(ResultCode.BAD_REQUEST.getCode(), ResultCode.BAD_REQUEST.getMessage());
     }
 
     public static ResultVo success(String message) {
@@ -54,14 +39,4 @@ public class Result {
     public static ResultVo fail(ResultCode r) {
         return new ResultVo().setCode(r.getCode()).setMessage(r.getMessage());
     }
-
-    public static ResultVo fail(ResultCode r, Object data) {
-        return new ResultVo(r.getCode(), r.getMessage(), data);
-    }
-
-    public static ResultVo custom(int code, String message) {
-        return new ResultVo().setCode(code).setMessage(message);
-    }
-
-
 }

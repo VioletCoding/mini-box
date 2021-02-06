@@ -10,9 +10,7 @@ import org.springframework.stereotype.Component;
  */
 @Component
 public class GenerateBean {
-
     public ObjectMapper getObjectMapper() {
         return new ObjectMapper();
     }
-
 }

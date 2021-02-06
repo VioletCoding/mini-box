@@ -4,7 +4,6 @@ import com.qiniu.common.QiniuException;
 import com.qiniu.http.Response;
 import com.qiniu.storage.UpCompletionHandler;
 import lombok.Data;
-import lombok.experimental.Accessors;
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -14,19 +13,16 @@ import lombok.extern.slf4j.Slf4j;
  */
 @Slf4j
 public class UpCompletionHandlerImpl implements UpCompletionHandler {
-
     /**
      * 七牛云响应类
      */
     @Data
-    @Accessors(chain = true)
     static class QiNiuPutRet {
         private String key;
         private String hash;
         private String bucket;
         private long fsize;
     }
-
 
     /**
      * 七牛云上传异步回调函数

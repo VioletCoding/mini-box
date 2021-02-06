@@ -27,18 +27,15 @@ public class MbpCommentServiceImpl {
      */
     @Transactional(rollbackFor = Throwable.class)
     public boolean save(CommentModel model) {
-
         if (model.getPostId() == null && model.getGameId() == null) {
             throw new MiniBoxException("帖子ID或游戏ID为空");
         }
-
         if (model.getGameId() != null) {
             if (model.getScore() == null) {
                 throw new MiniBoxException("游戏评分不能为空");
             }
             model.setPostId(null);
         }
-
         model.setState(DefaultColumn.STATE.getMessage());
         return mbpCommentMapper.insert(model) > 0;
     }
