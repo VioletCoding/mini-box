@@ -72,6 +72,9 @@ public class MbpAuthController {
      */
     @PostMapping("passwordLogin")
     public ResultVo usernameAndPasswordLogin(@RequestBody UserModel userModel) throws JsonProcessingException, JOSEException {
+        if (StrUtil.isBlank(userModel.getUsername()) || StrUtil.isBlank(userModel.getPassword())) {
+            throw new MiniBoxException("用户名或验证码为空");
+        }
         HashMap<String, Object> map = userService.usingPasswordLogin(userModel.getUsername(), userModel.getPassword());
         return Result.success(map);
     }

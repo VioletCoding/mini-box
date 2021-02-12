@@ -12,7 +12,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
-import javax.validation.constraints.NotNull;
 import java.text.ParseException;
 import java.util.List;
 
@@ -43,7 +42,10 @@ public class NimbusJoseJwt {
      * @return token 返回token
      * @throws JOSEException 抛出此异常时，生成token失败
      */
-    public String generateTokenByHMAC(@NotNull PayloadDto payloadParam) throws JOSEException, JsonProcessingException {
+    public String generateTokenByHMAC(PayloadDto payloadParam) throws JOSEException, JsonProcessingException {
+        if (payloadParam == null) {
+            throw new MiniBoxException("Payload is null");
+        }
         JWSHeader jwsHeader = new JWSHeader.Builder(JWSAlgorithm.HS256).type(JOSEObjectType.JWT).build();
         ObjectMapper objectMapper = generateBean.getObjectMapper();
         String obj2json = objectMapper.writeValueAsString(payloadParam);

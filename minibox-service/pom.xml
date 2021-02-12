@@ -40,11 +40,6 @@
             <groupId>com.ghw</groupId>
             <artifactId>minibox-common</artifactId>
         </dependency>
-        <!--openfeign-->
-        <dependency>
-            <groupId>org.springframework.cloud</groupId>
-            <artifactId>spring-cloud-starter-openfeign</artifactId>
-        </dependency>
         <!--Nacos注册中心和配置中心-->
         <dependency>
             <groupId>com.alibaba.cloud</groupId>
@@ -81,16 +76,16 @@
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
-                <!--<configuration>-->
-                <!--    <mainClass>com.ghw.minibox.ServiceMain</mainClass>-->
-                <!--</configuration>-->
-                <!--<executions>-->
-                <!--    <execution>-->
-                <!--        <goals>-->
-                <!--            <goal>repackage</goal>-->
-                <!--        </goals>-->
-                <!--    </execution>-->
-                <!--</executions>-->
+                <configuration>
+                    <mainClass>com.ghw.minibox.ServiceMain</mainClass>
+                </configuration>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>repackage</goal>
+                        </goals>
+                    </execution>
+                </executions>
             </plugin>
         </plugins>
     </build>

@@ -48,10 +48,9 @@ public class MbpPostController {
      * 发表帖子
      *
      * @param postModel 实体
-     * @param request   为了拿token
      */
     @PostMapping("add")
-    public ResultVo postAdd(@RequestBody @Validated PostModel postModel) throws Exception {
+    public ResultVo postAdd(@RequestBody @Validated PostModel postModel){
         boolean beforeSave = postService.beforeSave(postModel);
         return Result.successFlag(beforeSave);
     }

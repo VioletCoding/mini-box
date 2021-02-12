@@ -36,13 +36,14 @@ public class MbpPostServiceImpl {
     private MbpCommentMapper mbpCommentMapper;
     @Resource
     private MbpReplyMapper mbpReplyMapper;
+
     /**
      * 发表帖子
      *
      * @param postModel 实体
      */
     @Transactional(rollbackFor = Throwable.class)
-    public boolean beforeSave(PostModel postModel) throws Exception {
+    public boolean beforeSave(PostModel postModel) {
         postModel.setState(DefaultColumn.STATE.getMessage());
         return mbpPostMapper.insert(postModel) > 0;
     }
