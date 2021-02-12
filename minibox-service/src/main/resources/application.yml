@@ -1,7 +1,6 @@
-#端口号
 server:
   port: 20002
-  #应用名
+
 spring:
   datasource:
     druid:
@@ -12,25 +11,22 @@ spring:
     multipart:
       max-file-size: 5MB
       max-request-size: 50MB
-      #激活的配置中心的配置文件
   application:
     name: MINIBOX-SERVICE
     cloud:
       nacos:
         discovery:
-          #    nacos注册中心
           server-addr: localhost:8848
           namespace: 55fbbffc-f66a-4226-96a7-fb1c2245651d
           group: MINIBOX
 
-#mybatis config
+
 mybatis:
   mapper-locations:
     - classpath:mapper/*.xml
     - classpath*:com/**/mapper/*.xml
 
 
-#print log
 logging:
   level:
     com.ghw.minibox.mapper: debug
