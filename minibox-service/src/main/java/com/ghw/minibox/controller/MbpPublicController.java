@@ -23,7 +23,7 @@ import java.util.Map;
  */
 @RestController
 @RequestMapping("publicApi")
-public class PublicController {
+public class MbpPublicController {
     @Resource
     private QiNiuUtil qiNiuUtil;
     @Resource

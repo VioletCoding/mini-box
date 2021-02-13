@@ -52,14 +52,14 @@ public class MbpAuthController {
      * @param authCode 验证码
      */
     @PostMapping("auth")
-    public ResultVo signInOrSignUp(String username, String authCode)
-            throws JsonProcessingException, JOSEException {
-        if (StrUtil.isBlank(username) || StrUtil.isBlank(authCode)) {
-            throw new MiniBoxException("用户名或验证码为空");
+    public ResultVo signInOrSignUp(String username, String authCode) throws JsonProcessingException, JOSEException {
+        if (StrUtil.isBlank(username)) {
+            throw new MiniBoxException("用户名为空");
         }
-        if (authCode.length() < 6) {
+        if (StrUtil.isBlank(authCode) || authCode.length() < 6) {
             throw new MiniBoxException("验证码错误");
         }
+
         Map<String, Object> service = userService.service(username, authCode);
         return Result.success(service);
     }
@@ -72,9 +72,13 @@ public class MbpAuthController {
      */
     @PostMapping("passwordLogin")
     public ResultVo usernameAndPasswordLogin(@RequestBody UserModel userModel) throws JsonProcessingException, JOSEException {
-        if (StrUtil.isBlank(userModel.getUsername()) || StrUtil.isBlank(userModel.getPassword())) {
-            throw new MiniBoxException("用户名或验证码为空");
+        if (StrUtil.isBlank(userModel.getUsername())) {
+            throw new MiniBoxException("用户名为空");
         }
+        if (StrUtil.isBlank(userModel.getPassword())) {
+            throw new MiniBoxException("密码为空");
+        }
+
         HashMap<String, Object> map = userService.usingPasswordLogin(userModel.getUsername(), userModel.getPassword());
         return Result.success(map);
     }

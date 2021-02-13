@@ -20,13 +20,11 @@ public class RedisUtil {
     public static final String ORDER_PREFIX = "order:";
     public static final String REDIS_PREFIX = "minibox:";
     public static final String USER_PREFIX = "user:";
+    public static final String POST_PREFIX = "post:";
+    public static final String GAME_PREFIX = "game:";
 
     @Resource
     private StringRedisTemplate stringRedisTemplate;
-
-    public void set(String key, String value) {
-        stringRedisTemplate.opsForValue().set(key, value);
-    }
 
     /**
      * expire 单位是秒

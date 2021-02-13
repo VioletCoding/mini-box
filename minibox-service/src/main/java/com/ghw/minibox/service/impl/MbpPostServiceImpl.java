@@ -3,6 +3,7 @@ package com.ghw.minibox.service.impl;
 import cn.hutool.core.util.StrUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
+import com.ghw.minibox.component.RedisUtil;
 import com.ghw.minibox.exception.MiniBoxException;
 import com.ghw.minibox.mapper.MbpCommentMapper;
 import com.ghw.minibox.mapper.MbpPostMapper;
@@ -36,6 +37,8 @@ public class MbpPostServiceImpl {
     private MbpCommentMapper mbpCommentMapper;
     @Resource
     private MbpReplyMapper mbpReplyMapper;
+    @Resource
+    private RedisUtil redisUtil;
 
     /**
      * 发表帖子
