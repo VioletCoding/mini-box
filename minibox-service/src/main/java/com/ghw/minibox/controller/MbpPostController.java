@@ -51,7 +51,7 @@ public class MbpPostController {
      */
     @PostMapping("add")
     public ResultVo postAdd(@RequestBody @Validated PostModel postModel){
-        boolean beforeSave = postService.beforeSave(postModel);
+        boolean beforeSave = postService.savePost(postModel);
         return Result.successFlag(beforeSave);
     }
 

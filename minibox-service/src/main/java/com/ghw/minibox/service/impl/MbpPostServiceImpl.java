@@ -3,7 +3,6 @@ package com.ghw.minibox.service.impl;
 import cn.hutool.core.util.StrUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
-import com.ghw.minibox.component.RedisUtil;
 import com.ghw.minibox.exception.MiniBoxException;
 import com.ghw.minibox.mapper.MbpCommentMapper;
 import com.ghw.minibox.mapper.MbpPostMapper;
@@ -37,8 +36,6 @@ public class MbpPostServiceImpl {
     private MbpCommentMapper mbpCommentMapper;
     @Resource
     private MbpReplyMapper mbpReplyMapper;
-    @Resource
-    private RedisUtil redisUtil;
 
     /**
      * 发表帖子
@@ -46,9 +43,10 @@ public class MbpPostServiceImpl {
      * @param postModel 实体
      */
     @Transactional(rollbackFor = Throwable.class)
-    public boolean beforeSave(PostModel postModel) {
+    public boolean savePost(PostModel postModel) {
         postModel.setState(DefaultColumn.STATE.getMessage());
-        return mbpPostMapper.insert(postModel) > 0;
+        int insert = mbpPostMapper.insert(postModel);
+        return insert > 0;
     }
 
     /**
@@ -130,7 +128,7 @@ public class MbpPostServiceImpl {
         List<CommentModel> commentModels = mbpCommentMapper.selectList(commentWrapper);
         //如果有评论，才删
         if (commentModels.size() > 0) {
-            //回复
+            //删除回复
             QueryWrapper<ReplyModel> replyWrapper = new QueryWrapper<>();
             replyWrapper.eq("comment_id", commentModels.get(0).getId());
             int deleteReply = mbpReplyMapper.delete(replyWrapper);
