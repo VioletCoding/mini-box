@@ -7,7 +7,7 @@ import com.ghw.minibox.component.RedisUtil;
 import com.ghw.minibox.dto.PayloadDto;
 import com.ghw.minibox.exception.MiniBoxException;
 import com.ghw.minibox.model.UserModel;
-import com.ghw.minibox.service.impl.MbpUserServiceImpl;
+import com.ghw.minibox.service.impl.MbpUserService;
 import com.ghw.minibox.utils.Result;
 import com.ghw.minibox.vo.ResultVo;
 import com.nimbusds.jose.JOSEException;
@@ -28,7 +28,7 @@ import java.util.Map;
 @RequestMapping("authApi")
 public class MbpAuthController {
     @Resource
-    private MbpUserServiceImpl userService;
+    private MbpUserService userService;
     @Resource
     private NimbusJoseJwt nimbusJoseJwt;
     @Resource

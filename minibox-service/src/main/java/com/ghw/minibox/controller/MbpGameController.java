@@ -1,7 +1,7 @@
 package com.ghw.minibox.controller;
 
 import com.ghw.minibox.model.GameModel;
-import com.ghw.minibox.service.impl.MbpGameServiceImpl;
+import com.ghw.minibox.service.impl.MbpGameService;
 import com.ghw.minibox.utils.Result;
 import com.ghw.minibox.vo.ResultVo;
 import org.springframework.validation.annotation.Validated;
@@ -20,7 +20,7 @@ import java.util.Map;
 @RequestMapping("gameApi")
 public class MbpGameController {
     @Resource
-    private MbpGameServiceImpl gameService;
+    private MbpGameService gameService;
 
     /**
      * 游戏列表，可以条件查询

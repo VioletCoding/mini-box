@@ -27,7 +27,7 @@ import java.util.Map;
  * @date 2021/2/1
  */
 @Service
-public class MbpPostServiceImpl {
+public class MbpPostService {
     @Resource
     private MbpPostMapper mbpPostMapper;
     @Resource

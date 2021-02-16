@@ -14,7 +14,7 @@ import javax.annotation.Resource;
  * @date 2021/2/2
  */
 @Service
-public class MbpReplyServiceImpl {
+public class MbpReplyService {
     @Resource
     private MbpReplyMapper mbpReplyMapper;
     /**

@@ -2,8 +2,8 @@ package com.ghw.minibox.controller;
 
 import com.ghw.minibox.model.CommentModel;
 import com.ghw.minibox.model.ReplyModel;
-import com.ghw.minibox.service.impl.MbpCommentServiceImpl;
-import com.ghw.minibox.service.impl.MbpReplyServiceImpl;
+import com.ghw.minibox.service.impl.MbpCommentService;
+import com.ghw.minibox.service.impl.MbpReplyService;
 import com.ghw.minibox.utils.Result;
 import com.ghw.minibox.vo.ResultVo;
 import org.springframework.validation.annotation.Validated;
@@ -23,9 +23,9 @@ import javax.annotation.Resource;
 @RequestMapping("commentApi")
 public class MbpCommentController {
     @Resource
-    private MbpCommentServiceImpl commentService;
+    private MbpCommentService commentService;
     @Resource
-    private MbpReplyServiceImpl replyService;
+    private MbpReplyService replyService;
 
     /**
      * 发表评论

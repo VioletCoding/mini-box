@@ -3,7 +3,7 @@ package com.ghw.minibox.controller;
 import com.ghw.minibox.model.CommentModel;
 import com.ghw.minibox.model.PostModel;
 import com.ghw.minibox.model.UserModel;
-import com.ghw.minibox.service.impl.MbpUserServiceImpl;
+import com.ghw.minibox.service.impl.MbpUserService;
 import com.ghw.minibox.utils.Result;
 import com.ghw.minibox.vo.ResultVo;
 import org.springframework.web.bind.annotation.*;
@@ -20,7 +20,7 @@ import java.util.List;
 @RequestMapping("userApi")
 public class MbpUserController {
     @Resource
-    private MbpUserServiceImpl userService;
+    private MbpUserService userService;
 
     /**
      * 用户个人信息

@@ -31,7 +31,7 @@ import java.util.stream.Collectors;
  */
 @Service
 @Slf4j
-public class MbpUserServiceImpl {
+public class MbpUserService {
     @Resource
     private MbpUserMapper mbpUserMapper;
     @Resource
@@ -329,26 +329,26 @@ public class MbpUserServiceImpl {
             //删回复
             QueryWrapper<ReplyModel> roleWrapper = new QueryWrapper<>();
             roleWrapper.eq("user_id", id);
-            int deleteReply = mbpReplyMapper.delete(roleWrapper);
+            mbpReplyMapper.delete(roleWrapper);
             //删评论
             QueryWrapper<CommentModel> commentWrapper = new QueryWrapper<>();
             commentWrapper.eq("user_id", id);
-            int deleteComment = mbpCommentMapper.delete(commentWrapper);
+            mbpCommentMapper.delete(commentWrapper);
             //删帖子
             QueryWrapper<PostModel> postWrapper = new QueryWrapper<>();
             postWrapper.eq("author_id", id);
-            int deletePost = mbpPostMapper.delete(postWrapper);
+            mbpPostMapper.delete(postWrapper);
             //删订单
             QueryWrapper<OrderModel> orderWrapper = new QueryWrapper<>();
             orderWrapper.eq("user_id", id);
-            int deleteOrder = mbpOrderMapper.delete(orderWrapper);
+            mbpOrderMapper.delete(orderWrapper);
             //删角色
-            int deleteUserRoles = mbpUserMapper.deleteUserRoles(id);
-            if (deleteReply > 0 && deleteComment > 0 && deletePost > 0 && deleteOrder > 0 && deleteUserRoles > 0) {
+            mbpUserMapper.deleteUserRoles(id);
+            int deleteById = mbpUserMapper.deleteById(id);
+            if (deleteById > 0) {
                 return userList(null);
             }
-            throw new MiniBoxException("删除失败");
         }
-        throw new MiniBoxException("未找到该用户");
+        throw new MiniBoxException("删除失败");
     }
 }

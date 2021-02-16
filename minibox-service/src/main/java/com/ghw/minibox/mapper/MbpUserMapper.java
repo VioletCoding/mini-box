@@ -60,6 +60,4 @@ public interface MbpUserMapper extends BaseMapper<UserModel> {
      * @param id 用户id
      */
     UserModel findUserDetail(Long id);
-
-
 }

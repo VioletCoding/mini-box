@@ -20,7 +20,7 @@ import java.util.Map;
  * @date 2021/2/2
  */
 @Service
-public class MbpGameServiceImpl {
+public class MbpGameService {
     @Resource
     private MbpGameMapper mbpGameMapper;
     @Resource

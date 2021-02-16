@@ -2,7 +2,7 @@ package com.ghw.minibox.controller;
 
 import cn.hutool.core.util.IdUtil;
 import com.ghw.minibox.component.QiNiuUtil;
-import com.ghw.minibox.service.impl.MbpEchartsServiceImpl;
+import com.ghw.minibox.service.impl.MbpEchartsService;
 import com.ghw.minibox.utils.Result;
 import com.ghw.minibox.vo.ResultVo;
 import io.swagger.annotations.ApiOperation;
@@ -27,7 +27,7 @@ public class MbpPublicController {
     @Resource
     private QiNiuUtil qiNiuUtil;
     @Resource
-    private MbpEchartsServiceImpl echartsService;
+    private MbpEchartsService echartsService;
 
     @ApiOperation("上传文件公用接口,可多文件上传,单次单个文件最大3MB,单次全部文件加起来不能超过30MB")
     @PostMapping("upload")

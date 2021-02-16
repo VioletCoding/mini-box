@@ -11,6 +11,7 @@ import com.ghw.minibox.mapper.MbpGameMapper;
 import com.ghw.minibox.mapper.MbpOrderMapper;
 import com.ghw.minibox.model.GameModel;
 import com.ghw.minibox.model.OrderModel;
+import com.ghw.minibox.utils.DefaultColumn;
 import com.ghw.minibox.utils.OrderUtil;
 import com.ghw.minibox.utils.ResultCode;
 import org.springframework.stereotype.Service;
@@ -26,7 +27,7 @@ import java.util.List;
  * @date 2021/2/2
  */
 @Service
-public class MbpOrderServiceImpl {
+public class MbpOrderService {
     @Resource
     private MbpOrderMapper mbpOrderMapper;
     @Resource
@@ -73,7 +74,8 @@ public class MbpOrderServiceImpl {
         }
         //检验一下游戏是否可购买
         QueryWrapper<GameModel> gameModelQueryWrapper = new QueryWrapper<>();
-        gameModelQueryWrapper.eq("id", orderModel.getGameId());
+        gameModelQueryWrapper.eq("id", orderModel.getGameId())
+                .eq("state", DefaultColumn.STATE.getMessage());
         GameModel gameModel = mbpGameMapper.selectOne(gameModelQueryWrapper);
         if (gameModel == null) {
             throw new MiniBoxException(ResultCode.GAME_CANT_BE_BUY.getMessage());

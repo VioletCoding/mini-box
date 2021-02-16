@@ -1,6 +1,6 @@
 package com.ghw.minibox.controller;
 
-import com.ghw.minibox.service.impl.MbpSearchServiceImpl;
+import com.ghw.minibox.service.impl.MbpSearchService;
 import com.ghw.minibox.utils.Result;
 import com.ghw.minibox.vo.ResultVo;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -20,7 +20,7 @@ import java.util.Map;
 @RequestMapping("searchApi")
 public class MbpSearchController {
     @Resource
-    private MbpSearchServiceImpl mbpSearchService;
+    private MbpSearchService mbpSearchService;
 
     @GetMapping("search")
     public ResultVo search(@RequestParam String keyword) {

@@ -17,7 +17,7 @@ import java.util.List;
  * @date 2021/2/5
  */
 @Service
-public class MbpMenuServiceImpl {
+public class MbpMenuService {
     @Resource
     private MbpMenuMapper mbpMenuMapper;
 

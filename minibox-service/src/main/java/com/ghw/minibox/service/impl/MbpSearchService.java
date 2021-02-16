@@ -18,7 +18,7 @@ import java.util.Map;
  * @date 2021/2/15
  */
 @Service
-public class MbpSearchServiceImpl {
+public class MbpSearchService {
 
     @Resource
     private MbpPostMapper mbpPostMapper;

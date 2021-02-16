@@ -14,7 +14,7 @@ import java.util.Map;
  * @date 2021/2/5
  */
 @Service
-public class MbpEchartsServiceImpl {
+public class MbpEchartsService {
     @Resource
     private MbpUserMapper mbpUserMapper;
     @Resource

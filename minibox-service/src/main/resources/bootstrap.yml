@@ -13,12 +13,12 @@ spring:
       max-request-size: 50MB
   application:
     name: MINIBOX-SERVICE
-    cloud:
-      nacos:
-        discovery:
-          server-addr: localhost:8848
-          namespace: 55fbbffc-f66a-4226-96a7-fb1c2245651d
-          group: MINIBOX
+  cloud:
+    nacos:
+      discovery:
+        server-addr: 127.0.0.1:8848
+        namespace: 55fbbffc-f66a-4226-96a7-fb1c2245651d
+        group: MINIBOX
 
 
 mybatis:

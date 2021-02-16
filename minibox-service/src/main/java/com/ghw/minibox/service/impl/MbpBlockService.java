@@ -19,7 +19,7 @@ import java.util.List;
  * @date 2021/2/1
  */
 @Service
-public class MbpBlockServiceImpl {
+public class MbpBlockService {
     @Resource
     private MbpBlockMapper mbpBlockMapper;
     @Resource

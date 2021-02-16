@@ -2,7 +2,7 @@ package com.ghw.minibox.controller;
 
 import com.ghw.minibox.exception.MiniBoxException;
 import com.ghw.minibox.model.MenuModel;
-import com.ghw.minibox.service.impl.MbpMenuServiceImpl;
+import com.ghw.minibox.service.impl.MbpMenuService;
 import com.ghw.minibox.utils.Result;
 import com.ghw.minibox.vo.ResultVo;
 import org.springframework.validation.annotation.Validated;
@@ -20,7 +20,7 @@ import java.util.List;
 @RequestMapping("menuApi")
 public class MbpMenuController {
     @Resource
-    private MbpMenuServiceImpl mbpMenuService;
+    private MbpMenuService mbpMenuService;
 
     /**
      * 增加菜单

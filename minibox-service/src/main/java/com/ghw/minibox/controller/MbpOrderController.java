@@ -2,7 +2,7 @@ package com.ghw.minibox.controller;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.ghw.minibox.model.OrderModel;
-import com.ghw.minibox.service.impl.MbpOrderServiceImpl;
+import com.ghw.minibox.service.impl.MbpOrderService;
 import com.ghw.minibox.utils.Result;
 import com.ghw.minibox.vo.ResultVo;
 import io.swagger.annotations.ApiOperation;
@@ -23,7 +23,7 @@ import javax.annotation.Resource;
 @RequestMapping("orderApi")
 public class MbpOrderController {
     @Resource
-    private MbpOrderServiceImpl orderService;
+    private MbpOrderService orderService;
 
     /**
      * 生成订单
