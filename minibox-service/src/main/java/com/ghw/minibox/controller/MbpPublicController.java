@@ -2,7 +2,7 @@ package com.ghw.minibox.controller;
 
 import cn.hutool.core.util.IdUtil;
 import com.ghw.minibox.component.QiNiuUtil;
-import com.ghw.minibox.service.impl.MbpEchartsService;
+import com.ghw.minibox.service.MbpEchartsService;
 import com.ghw.minibox.utils.Result;
 import com.ghw.minibox.vo.ResultVo;
 import io.swagger.annotations.ApiOperation;

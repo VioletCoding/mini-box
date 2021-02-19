@@ -6,7 +6,6 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.experimental.Accessors;
-import org.springframework.data.annotation.Id;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
@@ -25,7 +24,7 @@ import java.util.Date;
 @TableName("mb_game")
 public class GameModel implements Serializable {
     private static final long serialVersionUID = -20810077618725182L;
-    @Id
+
     @ApiModelProperty("主键")
     private Long id;
 
@@ -42,7 +41,7 @@ public class GameModel implements Serializable {
     private String state;
 
     @ApiModelProperty("游戏评分，最大10分，保留一位小数，算法为所有评分总和除以评分人数=评分")
-    private Double score;
+    private BigDecimal score;
 
     @ApiModelProperty("游戏简介")
     @NotBlank(message = "游戏简介description不能为空")

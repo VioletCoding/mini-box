@@ -10,11 +10,19 @@ import java.util.Map;
  */
 
 public interface MbpUtilMapper {
-
+    /**
+     * 每天的评论数
+     */
     List<Map<String, Object>> commentPerDay();
 
+    /**
+     * 每天的帖子数
+     */
     List<Map<String, Object>> postPerDay();
 
-    List<Map<String,Object>> gameSalesRankings();
+    /**
+     * 游戏销量排行榜
+     */
+    List<Map<String, Object>> gameSalesRankings();
 
 }

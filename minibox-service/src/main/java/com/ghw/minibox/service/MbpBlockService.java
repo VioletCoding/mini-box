@@ -1,4 +1,4 @@
-package com.ghw.minibox.service.impl;
+package com.ghw.minibox.service;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
@@ -15,7 +15,7 @@ import java.util.List;
 
 /**
  * @author Violet
- * @description 版块 业务逻辑 层
+ * @description 版块 业务逻辑层
  * @date 2021/2/1
  */
 @Service

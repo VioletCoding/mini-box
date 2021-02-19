@@ -46,7 +46,10 @@ public class NimbusJoseJwt {
         if (payloadParam == null) {
             throw new MiniBoxException("Payload is null");
         }
-        JWSHeader jwsHeader = new JWSHeader.Builder(JWSAlgorithm.HS256).type(JOSEObjectType.JWT).build();
+        JWSHeader jwsHeader = new JWSHeader
+                .Builder(JWSAlgorithm.HS256)
+                .type(JOSEObjectType.JWT)
+                .build();
         ObjectMapper objectMapper = generateBean.getObjectMapper();
         String obj2json = objectMapper.writeValueAsString(payloadParam);
         Payload payload = new Payload(obj2json);
@@ -54,7 +57,8 @@ public class NimbusJoseJwt {
         JWSSigner jwsSigner = new MACSigner(SECRET);
         jwsObject.sign(jwsSigner);
         String serialize = jwsObject.serialize();
-        redisUtil.set(RedisUtil.TOKEN_PREFIX + payloadParam.getUsername(), serialize, payloadParam.getExp());
+        String key = RedisUtil.TOKEN_PREFIX + payloadParam.getUsername();
+        redisUtil.set(key, serialize, payloadParam.getExp());
         return serialize;
     }
 

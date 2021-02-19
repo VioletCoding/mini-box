@@ -2,7 +2,7 @@ package com.ghw.minibox.controller;
 
 import com.ghw.minibox.exception.MiniBoxException;
 import com.ghw.minibox.model.MenuModel;
-import com.ghw.minibox.service.impl.MbpMenuService;
+import com.ghw.minibox.service.MbpMenuService;
 import com.ghw.minibox.utils.Result;
 import com.ghw.minibox.vo.ResultVo;
 import org.springframework.validation.annotation.Validated;

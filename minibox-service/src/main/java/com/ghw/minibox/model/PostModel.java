@@ -6,7 +6,6 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.experimental.Accessors;
-import org.springframework.data.annotation.Id;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
@@ -24,7 +23,7 @@ import java.util.Date;
 @TableName("mb_post")
 public class PostModel implements Serializable {
     private static final long serialVersionUID = -34132088850314000L;
-    @Id
+
     @ApiModelProperty("主键")
     private Long id;
 

@@ -46,6 +46,7 @@
                 AND mc.game_id = #{gameId}
             </if>
         </where>
+        ORDER BY mc.create_date DESC;
     </select>
 
     <resultMap id="commentAndPositionByUserId" type="com.ghw.minibox.model.CommentModel">

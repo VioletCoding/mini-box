@@ -1,4 +1,4 @@
-package com.ghw.minibox.service.impl;
+package com.ghw.minibox.service;
 
 import cn.hutool.core.util.StrUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;

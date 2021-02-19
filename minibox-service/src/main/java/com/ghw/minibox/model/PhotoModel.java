@@ -8,6 +8,7 @@ import lombok.Data;
 import lombok.experimental.Accessors;
 
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 import java.util.Date;
 
@@ -31,6 +32,7 @@ public class PhotoModel implements Serializable {
     private String photoLink;
 
     @ApiModelProperty("游戏id")
+    @NotNull(message = "游戏id不可为空")
     private Long gameId;
 
     @ApiModelProperty("状态，记录该条状态是否有效,1有效，0无效")

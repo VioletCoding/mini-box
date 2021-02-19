@@ -7,7 +7,7 @@ import com.ghw.minibox.component.RedisUtil;
 import com.ghw.minibox.dto.PayloadDto;
 import com.ghw.minibox.exception.MiniBoxException;
 import com.ghw.minibox.model.UserModel;
-import com.ghw.minibox.service.impl.MbpUserService;
+import com.ghw.minibox.service.MbpUserService;
 import com.ghw.minibox.utils.Result;
 import com.ghw.minibox.vo.ResultVo;
 import com.nimbusds.jose.JOSEException;
@@ -16,7 +16,6 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
-import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -40,19 +39,20 @@ public class MbpAuthController {
      * @param username 邮箱
      */
     @PostMapping("authCode")
-    public ResultVo sendAuthCode(@RequestParam String username) throws EmailException {
-        userService.sendAuthCode(username);
+    public ResultVo sendAuthCode(@RequestBody Map<String, String> username) throws EmailException {
+        userService.sendAuthCode(username.get("username"));
         return Result.success();
     }
 
     /**
      * 自动登录或注册，登陆或注册成功会返回当前用户的部分信息
      *
-     * @param username 邮箱
-     * @param authCode 验证码
+     * @param params 邮箱username 验证码authCode
      */
     @PostMapping("auth")
-    public ResultVo signInOrSignUp(String username, String authCode) throws JsonProcessingException, JOSEException {
+    public ResultVo signInOrSignUp(@RequestBody Map<String,String> params) throws JsonProcessingException, JOSEException {
+        String authCode = params.get("authCode");
+        String username = params.get("username");
         if (StrUtil.isBlank(username)) {
             throw new MiniBoxException("用户名为空");
         }
@@ -79,7 +79,7 @@ public class MbpAuthController {
             throw new MiniBoxException("密码为空");
         }
 
-        HashMap<String, Object> map = userService.usingPasswordLogin(userModel.getUsername(), userModel.getPassword());
+        Map<String, Object> map = userService.usingPasswordLogin(userModel.getUsername(), userModel.getPassword());
         return Result.success(map);
     }
 

@@ -1,7 +1,7 @@
 package com.ghw.minibox.controller;
 
 import com.ghw.minibox.model.PostModel;
-import com.ghw.minibox.service.impl.MbpPostService;
+import com.ghw.minibox.service.MbpPostService;
 import com.ghw.minibox.utils.Result;
 import com.ghw.minibox.vo.ResultVo;
 import org.springframework.validation.annotation.Validated;

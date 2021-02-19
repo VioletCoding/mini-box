@@ -1,4 +1,4 @@
-package com.ghw.minibox.service.impl;
+package com.ghw.minibox.service;
 
 import com.ghw.minibox.mapper.MbpReplyMapper;
 import com.ghw.minibox.model.ReplyModel;

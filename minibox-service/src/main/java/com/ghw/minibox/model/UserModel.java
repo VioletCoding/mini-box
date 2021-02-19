@@ -36,12 +36,12 @@ public class UserModel implements Serializable {
     @ApiModelProperty("昵称")
     private String nickname;
 
-    @ApiModelProperty("用户名，本系统是邮箱，需要程序校验")
+    @ApiModelProperty("用户名")
     @Email(message = "邮箱格式不正确")
     @NotBlank(message = "用户名不能为空")
     private String username;
 
-    @ApiModelProperty("密码，MD5加密")
+    @ApiModelProperty("密码")
     @NotBlank(message = "密码不能为空")
     @Size(max = 16)
     private String password;
@@ -56,7 +56,7 @@ public class UserModel implements Serializable {
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     private Date createDate;
 
-    @ApiModelProperty("字段更新时间，修改该条记录则自动更新这个字段")
+    @ApiModelProperty("更新时间")
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     private Date updateDate;
 

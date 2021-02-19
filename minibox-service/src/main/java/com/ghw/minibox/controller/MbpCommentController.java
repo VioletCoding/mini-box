@@ -2,8 +2,8 @@ package com.ghw.minibox.controller;
 
 import com.ghw.minibox.model.CommentModel;
 import com.ghw.minibox.model.ReplyModel;
-import com.ghw.minibox.service.impl.MbpCommentService;
-import com.ghw.minibox.service.impl.MbpReplyService;
+import com.ghw.minibox.service.MbpCommentService;
+import com.ghw.minibox.service.MbpReplyService;
 import com.ghw.minibox.utils.Result;
 import com.ghw.minibox.vo.ResultVo;
 import org.springframework.validation.annotation.Validated;

@@ -1,4 +1,4 @@
-package com.ghw.minibox.service.impl;
+package com.ghw.minibox.service;
 
 import cn.hutool.core.util.StrUtil;
 import cn.hutool.crypto.SecureUtil;
@@ -135,6 +135,24 @@ public class MbpUserService {
         throw new MiniBoxException("验证码不正确");
     }
 
+    public Map<String, Object> returnData(UserModel userModel) throws JsonProcessingException, JOSEException {
+        Map<String, Object> map = new HashMap<>();
+        map.put("userInfo", userModel);
+        //获取角色列表，为了组建token
+        List<RoleModel> roles = mbpUserMapper.findUserRoles(userModel.getId());
+        List<String> roleNames = roles.stream().map(RoleModel::getName).collect(Collectors.toList());
+        boolean adminFlag = roleNames.stream().anyMatch(role -> role.equals(UserRole.ADMIN.getRole()));
+        map.put("adminFlag", adminFlag);
+        //7天有效期
+        String username = userModel.getUsername();
+        PayloadDto payloadDto = nimbusJoseJwt.buildToken(username, 604800L, roleNames);
+        String token = nimbusJoseJwt.generateTokenByHMAC(payloadDto);
+        //存储token,7天过期
+        redisUtil.set(RedisUtil.TOKEN_PREFIX + username, token, 604800);
+        map.put("token", token);
+        return map;
+    }
+
     @AopLog("service方法")
     public Map<String, Object> service(String username, String authCode) throws JsonProcessingException, JOSEException {
         boolean b = registerOrLogin(username, authCode);
@@ -142,33 +160,44 @@ public class MbpUserService {
             //返回部分用户信息
             String lowerCase = username.toLowerCase();
             QueryWrapper<UserModel> userWrapper = new QueryWrapper<>();
-            userWrapper.select("id", "nickname", "description", "photo_link")
+            userWrapper.select("id", "nickname", "description", "photo_link", "nickname","username")
                     .eq("username", lowerCase);
             UserModel userModel = mbpUserMapper.selectOne(userWrapper);
-            HashMap<String, Object> map = new HashMap<>();
-            map.put("userInfo", userModel);
-            //获取角色列表，为了组建token
-            List<RoleModel> roles = mbpUserMapper.findUserRoles(userModel.getId());
-            List<String> roleNameList = roles.stream().map(RoleModel::getName).collect(Collectors.toList());
-            map.put("userRoles", roleNameList);
-            //7天有效期
-            PayloadDto payloadDto = nimbusJoseJwt.buildToken(lowerCase, 604800L, roleNameList);
-            String token = nimbusJoseJwt.generateTokenByHMAC(payloadDto);
-            //存储token,7天过期
-            redisUtil.set(RedisUtil.TOKEN_PREFIX + lowerCase, token, 604800);
-            map.put("token", token);
+            Map<String, Object> map = this.returnData(userModel);
             //验证码使用过后及时删除
-            Boolean remove = redisUtil.remove(RedisUtil.AUTH_PREFIX + lowerCase);
+            Boolean remove = redisUtil.remove(RedisUtil.AUTH_PREFIX + userModel.getUsername());
             if (remove) {
                 return map;
             }
             //一般不太可能走到这里
             for (int i = 0; i < 3; i++) {
-                Boolean t = redisUtil.remove(RedisUtil.AUTH_PREFIX + lowerCase);
+                Boolean t = redisUtil.remove(RedisUtil.AUTH_PREFIX + userModel.getUsername());
                 if (t) break;
             }
         }
         throw new MiniBoxException(ResultCode.AUTH_CODE_ERROR.getMessage());
+    }
+
+    /**
+     * 用户名或密码登陆
+     *
+     * @param username 用户名
+     * @param password 密码
+     */
+    public Map<String, Object> usingPasswordLogin(String username, String password) throws JsonProcessingException, JOSEException {
+        String md5 = SecureUtil.md5(password);
+        QueryWrapper<UserModel> wrapper = new QueryWrapper<>();
+        wrapper.select("password", "id", "nickname", "description", "photo_link", "username")
+                .eq("username", username);
+        UserModel userModel = mbpUserMapper.selectOne(wrapper);
+        if (userModel == null) {
+            throw new MiniBoxException("用户名不存在");
+        }
+        if (userModel.getPassword().equals(md5)) {
+            userModel.setPassword(null);
+            return returnData(userModel);
+        }
+        throw new MiniBoxException("密码不正确");
     }
 
     /**
@@ -234,38 +263,6 @@ public class MbpUserService {
                 .set("password", md5)
                 .eq("id", id);
         return mbpUserMapper.update(null, wrapper) > 0;
-    }
-
-    /**
-     * 用户名或密码登陆
-     *
-     * @param username 用户名
-     * @param password 密码
-     */
-    public HashMap<String, Object> usingPasswordLogin(String username, String password) throws JsonProcessingException, JOSEException {
-        String md5 = SecureUtil.md5(password);
-        QueryWrapper<UserModel> wrapper = new QueryWrapper<>();
-        wrapper.select("password", "id", "nickname", "description", "photo_link")
-                .eq("username", username);
-        UserModel userModel = mbpUserMapper.selectOne(wrapper);
-        if (userModel == null) {
-            throw new MiniBoxException("用户名不存在");
-        }
-        if (userModel.getPassword().equals(md5)) {
-            HashMap<String, Object> map = new HashMap<>();
-            userModel.setPassword(null);
-            map.put("userInfo", userModel);
-            List<RoleModel> roles = mbpUserMapper.findUserRoles(userModel.getId());
-            List<String> roleNames = roles.stream().map(RoleModel::getName).collect(Collectors.toList());
-            boolean admin = roleNames.stream().anyMatch(role -> role.equals(UserRole.ADMIN.getRole()));
-            map.put("adminFlag", admin);
-            PayloadDto payloadDto = nimbusJoseJwt.buildToken(userModel.getUsername(), 604800L, roleNames);
-            String token = nimbusJoseJwt.generateTokenByHMAC(payloadDto);
-            redisUtil.set(RedisUtil.TOKEN_PREFIX + userModel.getUsername(), token, 604800);
-            map.put("token", token);
-            return map;
-        }
-        throw new MiniBoxException("密码不正确");
     }
 
     /**
