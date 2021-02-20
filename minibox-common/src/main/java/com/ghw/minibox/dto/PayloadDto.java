@@ -32,6 +32,9 @@ public class PayloadDto {
     @ApiModelProperty("用户名")
     private final String username;
 
+    @ApiModelProperty("用户id")
+    private final Long userId;
+
     @ApiModelProperty("用户拥有的权限")
     private final List<String> authorities;
 }

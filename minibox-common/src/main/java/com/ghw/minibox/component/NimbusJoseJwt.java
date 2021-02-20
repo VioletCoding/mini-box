@@ -70,9 +70,10 @@ public class NimbusJoseJwt {
      * @param authorities 权限
      * @return token
      */
-    public PayloadDto buildToken(String username, Long exp, List<String> authorities) {
+    public PayloadDto buildToken(String username,Long userId,Long exp, List<String> authorities) {
         return PayloadDto.builder()
                 .username(username)
+                .userId(userId)
                 .exp(exp)
                 .iat(System.currentTimeMillis())
                 .jti(IdUtil.fastSimpleUUID())

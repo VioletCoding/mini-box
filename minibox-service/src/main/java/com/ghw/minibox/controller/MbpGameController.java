@@ -8,6 +8,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 import java.util.Map;
 
@@ -41,8 +42,8 @@ public class MbpGameController {
      * @return 游戏详情
      */
     @GetMapping("detail")
-    public ResultVo gameDetail(@RequestParam Long id) {
-        Map<String, Object> gameDetail = gameService.gameDetail(id);
+    public ResultVo gameDetail(@RequestParam Long id, HttpServletRequest request) throws Exception {
+        Map<String, Object> gameDetail = gameService.gameDetail(request, id);
         return Result.success(gameDetail);
     }
 

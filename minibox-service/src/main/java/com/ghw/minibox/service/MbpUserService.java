@@ -145,7 +145,8 @@ public class MbpUserService {
         map.put("adminFlag", adminFlag);
         //7天有效期
         String username = userModel.getUsername();
-        PayloadDto payloadDto = nimbusJoseJwt.buildToken(username, 604800L, roleNames);
+        Long id = userModel.getId();
+        PayloadDto payloadDto = nimbusJoseJwt.buildToken(username, id, 604800L, roleNames);
         String token = nimbusJoseJwt.generateTokenByHMAC(payloadDto);
         //存储token,7天过期
         redisUtil.set(RedisUtil.TOKEN_PREFIX + username, token, 604800);
@@ -160,7 +161,7 @@ public class MbpUserService {
             //返回部分用户信息
             String lowerCase = username.toLowerCase();
             QueryWrapper<UserModel> userWrapper = new QueryWrapper<>();
-            userWrapper.select("id", "nickname", "description", "photo_link", "nickname","username")
+            userWrapper.select("id", "nickname", "description", "photo_link", "nickname", "username")
                     .eq("username", lowerCase);
             UserModel userModel = mbpUserMapper.selectOne(userWrapper);
             Map<String, Object> map = this.returnData(userModel);

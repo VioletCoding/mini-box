@@ -3,6 +3,8 @@ package com.ghw.minibox.service;
 import cn.hutool.core.util.StrUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
+import com.ghw.minibox.component.NimbusJoseJwt;
+import com.ghw.minibox.dto.PayloadDto;
 import com.ghw.minibox.exception.MiniBoxException;
 import com.ghw.minibox.mapper.*;
 import com.ghw.minibox.model.*;
@@ -10,6 +12,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -29,13 +32,36 @@ public class MbpGameService {
     private MbpTagMapper mbpTagMapper;
     @Resource
     private MbpCommentMapper mbpCommentMapper;
+    @Resource
+    private NimbusJoseJwt nimbusJoseJwt;
+    @Resource
+    private MbpOrderMapper mbpOrderMapper;
+
+    /**
+     * 检查登录用户是否已经购买了此游戏
+     *
+     * @param request request
+     * @param gameId  游戏id
+     * @return true 已经购买 ，false 未购买
+     */
+    private boolean buyFlag(HttpServletRequest request, Long gameId) throws Exception {
+        //1.解析token
+        String accessToken = request.getHeader("accessToken");
+        PayloadDto payloadDto = nimbusJoseJwt.verifyTokenByHMAC(accessToken);
+        //2.查看当前登录用户是否购买此游戏
+        QueryWrapper<OrderModel> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("game_id", gameId)
+                .eq("user_id", payloadDto.getUserId());
+        OrderModel orderModel = mbpOrderMapper.selectOne(queryWrapper);
+        return orderModel != null;
+    }
 
     /**
      * 游戏详情里的内容，包括游戏信息、评分信息、评论信息
      *
      * @param id 游戏id
      */
-    public Map<String, Object> gameDetail(Long id) {
+    public Map<String, Object> gameDetail(HttpServletRequest request, Long id) throws Exception {
         HashMap<String, Object> map = new HashMap<>();
         //游戏详情
         QueryWrapper<GameModel> wrapper = new QueryWrapper<>();
@@ -57,6 +83,9 @@ public class MbpGameService {
         CommentModel commentModel = new CommentModel().setGameId(gameModel.getId());
         List<CommentModel> commentInfo = mbpCommentMapper.findCommentAndReplyByModel(commentModel);
         map.put("commentInfo", commentInfo);
+        //购买标识
+        boolean buyFlag = this.buyFlag(request, id);
+        map.put("buyFlag", buyFlag);
         return map;
     }
 
