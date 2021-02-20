@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
 
 /**
  * @author Violet
@@ -34,8 +35,8 @@ public class MbpCommentController {
      * @return 是否成功
      */
     @PostMapping("add")
-    public ResultVo publishComment(@RequestBody @Validated CommentModel commentModel) {
-        boolean save = commentService.save(commentModel);
+    public ResultVo publishComment(@RequestBody @Validated CommentModel commentModel, HttpServletRequest request) throws Exception {
+        boolean save = commentService.save(request, commentModel);
         return Result.successFlag(save);
     }
 

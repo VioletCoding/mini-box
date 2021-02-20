@@ -57,6 +57,25 @@ public class MbpGameService {
     }
 
     /**
+     * 每个游戏只能评论一次，防止刷评分
+     *
+     * @param request request
+     * @param gameId  游戏id
+     * @return true 已经评论过了  false 未评论
+     */
+    public boolean commentFlag(HttpServletRequest request, Long gameId) throws Exception {
+        //1.解析token
+        String accessToken = request.getHeader("accessToken");
+        PayloadDto payloadDto = nimbusJoseJwt.verifyTokenByHMAC(accessToken);
+        //2.只能评论一次
+        QueryWrapper<CommentModel> countWrapper = new QueryWrapper<>();
+        countWrapper.eq("game_id", gameId)
+                .eq("user_id", payloadDto.getUserId());
+        Integer once = mbpCommentMapper.selectCount(countWrapper);
+        return once > 0;
+    }
+
+    /**
      * 游戏详情里的内容，包括游戏信息、评分信息、评论信息
      *
      * @param id 游戏id
@@ -86,6 +105,8 @@ public class MbpGameService {
         //购买标识
         boolean buyFlag = this.buyFlag(request, id);
         map.put("buyFlag", buyFlag);
+        boolean commentFlag = this.commentFlag(request, gameModel.getId());
+        map.put("commentFlag", commentFlag);
         return map;
     }
 

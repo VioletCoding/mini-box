@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
 import java.math.BigDecimal;
 import java.util.List;
 
@@ -31,6 +32,8 @@ public class MbpCommentService {
     private MbpOrderMapper mbpOrderMapper;
     @Resource
     private MbpGameMapper mbpGameMapper;
+    @Resource
+    private MbpGameService mbpGameService;
 
     /**
      * 发表评论
@@ -39,7 +42,7 @@ public class MbpCommentService {
      * @return 是否成功
      */
     @Transactional(rollbackFor = Throwable.class)
-    public boolean save(CommentModel model) {
+    public boolean save(HttpServletRequest request, CommentModel model) throws Exception {
         if (model.getPostId() == null && model.getGameId() == null) {
             throw new MiniBoxException("帖子ID或游戏ID为空");
         }
@@ -50,11 +53,16 @@ public class MbpCommentService {
                     .eq("game_id", model.getGameId())
                     .eq("user_id", model.getUserId());
             Integer count = mbpOrderMapper.selectCount(wrapper);
-            if (count <= 0) {
+            if (count == 0) {
                 throw new MiniBoxException("请先购买游戏");
             }
             if (model.getScore() == null) {
                 throw new MiniBoxException("游戏评分不能为空");
+            }
+            //2.只能评论一次
+            boolean flag = mbpGameService.commentFlag(request, model.getGameId());
+            if (flag) {
+                throw new MiniBoxException("只能评论一次");
             }
             model.setPostId(null);
             updateGameScore(model.getGameId());

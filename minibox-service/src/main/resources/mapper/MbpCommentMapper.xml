@@ -79,6 +79,7 @@
                  LEFT JOIN mb_post mp ON mp.id = mc.post_id
                  LEFT JOIN mb_game mg ON mg.id = mc.game_id
         WHERE mc.user_id = #{userId}
+        ORDER BY mc.create_date DESC;
     </select>
 
 </mapper>

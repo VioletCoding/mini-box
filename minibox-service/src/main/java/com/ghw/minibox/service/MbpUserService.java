@@ -219,7 +219,8 @@ public class MbpUserService {
         //帖子信息
         QueryWrapper<PostModel> postWrapper = new QueryWrapper<>();
         postWrapper.select("id", "title", "photo_link")
-                .eq("author_id", id);
+                .eq("author_id", id)
+                .orderByDesc("create_date");
         return mbpPostMapper.selectList(postWrapper);
     }
 
