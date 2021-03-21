@@ -28,16 +28,6 @@ import java.io.UnsupportedEncodingException;
 @Slf4j
 public class GlobalExceptionHandler {
     /**
-     * 防止空指针是每一个程序员的责任，必须做好入参校验
-     */
-    @ExceptionHandler(NullPointerException.class)
-    public ResultVo nullPointException(NullPointerException e) {
-        log.error("异常=>{}", e.getMessage());
-        e.printStackTrace();
-        return Result.fail();
-    }
-
-    /**
      * Hibernate-Validator 异常，在Controller标注了@Validated注解的话
      * 如果传入的实体里的某个入参与实体里要求检验的参数规则不一样，那么抛出此异常
      */
@@ -48,7 +38,15 @@ public class GlobalExceptionHandler {
         ObjectError objectError = e.getBindingResult().getAllErrors().get(0);
         return Result.fail(objectError.getDefaultMessage());
     }
-
+    /**
+     * 防止空指针是每一个程序员的责任，必须做好入参校验
+     */
+    @ExceptionHandler(NullPointerException.class)
+    public ResultVo nullPointException(NullPointerException e) {
+        log.error("异常=>{}", e.getMessage());
+        e.printStackTrace();
+        return Result.fail();
+    }
 
     /**
      * 邮件异常，如果抛出此异常，大概率是对应邮箱服务器里未找到对应的邮箱账户，那么会抛出此异常

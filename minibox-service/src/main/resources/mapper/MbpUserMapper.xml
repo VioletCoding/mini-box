@@ -5,12 +5,12 @@
         SELECT mr.id, mr.name
         FROM mb_role mr
                  LEFT JOIN mb_user_role mur
-                           ON mur.roleId = mr.id
-        WHERE mur.userId = #{id}
+                           ON mur.role_id = mr.id
+        WHERE mur.user_id = #{id}
     </select>
 
     <insert id="setUserRoles" useGeneratedKeys="true">
-        INSERT INTO mb_user_role(userId, roleId)
+        INSERT INTO mb_user_role(user_id, role_id)
         VALUES (#{id}, #{roleId});
     </insert>
 
@@ -75,8 +75,8 @@
         mr.id role_id,
         mr.name role_name
         FROM mb_user mu
-        LEFT JOIN mb_user_role mur ON mur.userId = mu.id
-        LEFT JOIN mb_role mr ON mr.id = mur.roleId
+        LEFT JOIN mb_user_role mur ON mur.user_id = mu.id
+        LEFT JOIN mb_role mr ON mr.id = mur.role_id
         <where>
             <if test="id != null">
                 AND mu.id = #{id}
@@ -96,13 +96,13 @@
     <delete id="deleteUserRoles">
         DELETE
         FROM mb_user_role
-        WHERE userId = #{id}
+        WHERE user_id = #{id}
     </delete>
 
     <delete id="deleteUserAdmin">
         DELETE
         FROM mb_user_role
-        WHERE userId = #{id}
-          AND roleId = 10001
+        WHERE user_id = #{id}
+          AND role_id = 10001
     </delete>
 </mapper>

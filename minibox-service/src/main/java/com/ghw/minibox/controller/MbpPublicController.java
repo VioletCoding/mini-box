@@ -2,6 +2,12 @@ package com.ghw.minibox.controller;
 
 import cn.hutool.core.util.IdUtil;
 import com.ghw.minibox.component.QiNiuUtil;
+import com.ghw.minibox.mapper.MbpBlockMapper;
+import com.ghw.minibox.mapper.MbpGameMapper;
+import com.ghw.minibox.mapper.MbpPhotoMapper;
+import com.ghw.minibox.mapper.MbpPostMapper;
+import com.ghw.minibox.model.GameModel;
+import com.ghw.minibox.model.PostModel;
 import com.ghw.minibox.service.MbpEchartsService;
 import com.ghw.minibox.utils.Result;
 import com.ghw.minibox.vo.ResultVo;
@@ -28,6 +34,36 @@ public class MbpPublicController {
     private QiNiuUtil qiNiuUtil;
     @Resource
     private MbpEchartsService echartsService;
+    @Resource
+    private MbpPhotoMapper mbpPhotoMapper;
+    @Resource
+    private MbpBlockMapper mbpBlockMapper;
+    @Resource
+    private MbpGameMapper mbpGameMapper;
+    @Resource
+    private MbpPostMapper mbpPostMapper;
+
+    @GetMapping("update")
+    public void updateQiNiuLink(){
+        List<GameModel> gameModels = mbpGameMapper.selectList(null);
+        gameModels.forEach(p -> {
+            String s = p.getPhotoLink();
+            String newPhotoLink = s.replace("qorvzwz4v", "qqb6nk4ol");
+            p.setPhotoLink(newPhotoLink);
+            mbpGameMapper.updateById(p);
+        });
+
+        List<PostModel> postModels = mbpPostMapper.selectList(null);
+        postModels.forEach(p -> {
+            String s = p.getPhotoLink();
+            String newPhotoLink = s.replace("qorvzwz4v", "qqb6nk4ol");
+            p.setPhotoLink(newPhotoLink);
+            String content = p.getContent();
+            String s1 = content.replace("qorvzwz4v", "qqb6nk4ol");
+            p.setContent(s1);
+            mbpPostMapper.updateById(p);
+        });
+    }
 
     @ApiOperation("上传文件公用接口,可多文件上传,单次单个文件最大3MB,单次全部文件加起来不能超过30MB")
     @PostMapping("upload")
